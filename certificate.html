@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Certificate</title>
+    <link rel="stylesheet" href="certificate.css">
+    <script src="certificate.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="#">Courses</a></li>
+            </ul>
+        </nav>
+        <div class="user-profile">
+            <div class="user-initials">ZN</div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="upload-form">
+            <h2>Upload Certificate</h2>
+            <form action="/submit-certificate" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="course-name">Course Name:</label>
+                    <input type="text" id="course-name" name="course-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="course-credits">Course Credits:</label>
+                    <input type="text" id="course-credits" name="course-credits" required>
+                </div>
+                <div class="form-group">
+                    <label for="course-college">Course College:</label>
+                    <input type="text" id="course-college" name="course-college" required>
+                </div>
+                <div class="form-group">
+                    <label for="certificate-upload">Upload certificate:</label>
+                    <input type="file" id="certificate-upload" name="certificate-upload" required>
+                </div>
+                <button type="submit" class="submit-button" onclick="show('popup')">Submit</button>
+                <div class="popup" id="popup">
+                    <p>Certificate Uploaded</p>
+                    <a href="#" onclick="hide('popup')">Close</a>
+                </div>
+
+            </form>
+            <a href="dashboard.html" class="back-link">← Back</a>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="footer-info">
+            <p>Address: 1, Nathibai Thackersey Road, Mumbai 400020</p>
+            <p>Contact Information:</p>
+            <p>Website: <a href="https://sndt.ac.in/">https://sndt.ac.in/</a></p>
+            <p>Phone: 022-2203 1879 | 022-2203 2159</p>
+        </div>
+    </footer>
+</body>
+</html>
