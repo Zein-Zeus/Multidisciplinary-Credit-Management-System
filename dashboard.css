@@ -4,30 +4,48 @@ body {
     margin: 0;
     padding: 0;
 }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+}
 
-header {
+nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #fff;
-    padding: 20px;
+    padding: 10px 20px;
+    background-color: white;
     border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
 }
 
 .logo img {
-    height: 50px;
+    height: 50px; /* Adjust this size according to your logo */
 }
 
 nav ul {
-    list-style: none;
     display: flex;
-    gap: 20px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center; /* Center the navigation links */
+}
+
+nav ul li {
+    margin: 0 15px;
 }
 
 nav ul li a {
     text-decoration: none;
-    color: #333;
+    color: black;
     font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: #007BFF;
 }
 
 .user-profile {
@@ -37,10 +55,13 @@ nav ul li a {
 
 .user-initials {
     background-color: #333;
-    color: #fff;
+    color: white;
     border-radius: 50%;
-    padding: 10px;
-    margin-right: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-weight: bold;
 }
 
