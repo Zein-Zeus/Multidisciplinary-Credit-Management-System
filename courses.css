@@ -1,0 +1,331 @@
+body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+}
+
+.container {
+    width: 1440px;
+    height: 1024px;
+    position: relative;
+    background: #F5F7FF;
+}
+
+.header {
+    width: 1440px;
+    height: 81px;
+    position: absolute;
+}
+
+.header-background {
+    width: 100%;
+    height: 81px;
+    background: white;
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 21px;
+    left: 1351px;
+    background: #D9D9D9;
+    border-radius: 9999px;
+}
+
+.notification-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 33px;
+    left: 1399px;
+}
+
+.notification-bell {
+    width: 10px;
+    height: 5px;
+    border: 2px #1E1E1E solid;
+}
+
+.message-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 28px;
+    left: 1298px;
+}
+
+.message-circle {
+    width: 14.97px;
+    height: 14.97px;
+    border: 2px #1E1E1E solid;
+}
+
+.username {
+    position: absolute;
+    top: 26px;
+    left: 1355px;
+    color: black;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.courses {
+    width: 78px;
+    height: 26px;
+    position: absolute;
+    top: 27px;
+    left: 310px;
+    color: black;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.logo {
+    width: 89px;
+    height: 64px;
+    position: absolute;
+    top: 8px;
+    left: 17px;
+}
+
+.home, .dashboard {
+    position: absolute;
+    color: black;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.home {
+    width: 43px;
+    height: 26px;
+    top: 27px;
+    left: 144px;
+}
+
+.dashboard {
+    width: 78px;
+    height: 26px;
+    top: 28px;
+    left: 210px;
+}
+
+.welcome-message {
+    width: 582px;
+    height: 65px;
+    position: absolute;
+    top: 97px;
+    left: 62px;
+    color: black;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 67.20px;
+}
+
+.search-bar {
+    width: 706px;
+    height: 40px;
+    position: absolute;
+    top: 179px;
+    left: 62px;
+}
+
+.search-input {
+    width: 663px;
+    height: 40px;
+    background: white;
+    border-radius: 8px;
+    border: 1px #D9D9D9 solid;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+}
+
+.search-placeholder {
+    color: #B3B3B3;
+    font-size: 16px;
+    line-height: 16px;
+}
+
+.search-additional-info {
+    width: 54px;
+    height: 40px;
+    position: absolute;
+    top: 0;
+    left: 652px;
+    background: #7469B6;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.search-icon {
+    width: 32px;
+    height: 33px;
+    position: absolute;
+    top: 3px;
+    left: 663px;
+}
+
+/* .search-icon-inner {
+    width: 24px;
+    height: 24.75px;
+    border: 4px #F5F5F5 solid;
+} */
+
+.sidebar {
+    width: 368px;
+    height: 764px;
+    position: absolute;
+    top: 261px;
+    left: 26px;
+}
+
+.sidebar-background {
+    width: 368px;
+    height: 764px;
+    background: #EAEEFF;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.filter-by {
+    width: 310px;
+    height: 49px;
+    position: absolute;
+    top: 30px;
+    left: 34px;
+    color: black;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.college, .degree {
+    width: 273px;
+    height: 30px;
+    position: absolute;
+    color: black;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.college {
+    top: 98px;
+}
+
+.degree {
+    top: 241px;
+}
+
+.post-graduate, .junior-college, .school {
+    position: absolute;
+    top: 161px;
+    width: 273px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.post-graduate {
+    top: 161px;
+}
+
+.junior-college {
+    top: 191px;
+}
+
+.school {
+    top: 221px;
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #000;
+    margin-right: 10px;
+}
+
+.label {
+    color: black;
+    font-size: 18px;
+}
+
+.college-item, .degree-item {
+    position: absolute;
+    width: 273px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.college-item {
+    top: 278px;
+}
+
+.degree-item {
+    top: 317px;
+}
+
+.content-item {
+    width: 291px;
+    height: 175px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 297px;
+    left: 480px;
+}
+
+.blue {
+    background: #6E6E6E;
+}
+
+.light-blue {
+    background: #9D9D9D;
+}
+
+.item-image {
+    width: 291px;
+    height: 175px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.item-badge {
+    width: 74px;
+    height: 24px;
+    background: #6E6E6E;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+}
+
+.item-title {
+    width: 258px;
+    height: 24px;
+    position: absolute;
+    top: 148px;
+    left: 16px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.item-details {
+    width: 258px;
+    height: 60px;
+    position: absolute;
+    top: 176px;
+    left: 16px;
+    color: white;
+    font-size: 14px;
+}
