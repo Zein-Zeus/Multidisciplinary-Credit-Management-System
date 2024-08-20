@@ -21,6 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Redirect to the next page
-        window.location.href = 'login.html'; // Change this URL to your next page
+        window.location.href = 'home.html'; // Change this URL to your next page
     });
 });
