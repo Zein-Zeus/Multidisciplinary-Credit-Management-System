@@ -1,390 +1,315 @@
-body {
+* {
     margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f5f7fa;
-}
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f5f7fa;
+    font-family: Inter, sans-serif;
+    box-sizing:border-box;
 }
 
-nav {
+#main-container {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: white;
-    border-bottom: 1px solid #ccc;
-    box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    left: 0;
+    height: 1024px;
+    position: relative;
+    background: #F5F7FF;
 }
 
-.logo img {
-    height: 50px; /* Adjust this size according to your logo */
-}
-
-nav ul {
-    display: flex;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    flex: 1;
-    justify-content: center; /* Center the navigation links */
-}
-
-nav ul li {
-    margin: 0 15px;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: black;
-    font-weight: bold;
-}
-
-nav ul li a:hover {
-    color: #007BFF;
-}
-
-.user-profile {
-    display: flex;
-    align-items: center;
-}
-
-.user-initials {
-    background-color: #333;
-    color: white;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-}
-
-.header {
-    width: 1440px;
+#header {
+    width: 100%;
     height: 81px;
     position: absolute;
+    background: white;
 }
 
 .header-background {
     width: 100%;
     height: 81px;
+    position: absolute;
     background: white;
 }
 
-.profile-icon {
+.student-initials-background {
     width: 40px;
     height: 40px;
-    position: absolute;
-    top: 21px;
     left: 1351px;
-    background: #D9D9D9;
-    border-radius: 9999px;
-}
-
-.notification-icon {
-    width: 20px;
-    height: 20px;
+    top: 21px;
+    border-radius: 50%;
+    background-color: #d9d9d9;
     position: absolute;
-    top: 33px;
-    left: 1399px;
 }
 
-.notification-bell {
-    width: 10px;
-    height: 5px;
-    border: 2px #1E1E1E solid;
-}
-
-.message-icon {
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    top: 28px;
-    left: 1298px;
-}
-
-.message-circle {
-    width: 14.97px;
-    height: 14.97px;
-    border: 2px #1E1E1E solid;
-}
-
-.username {
-    position: absolute;
-    top: 26px;
-    left: 1355px;
+.student-initials {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: black;
-    font-size: 24px;
-    font-weight: 500;
+    font-size: 25px;
+    font-weight: normal;
 }
 
-.courses {
-    width: 78px;
-    height: 26px;
+.notification-bell{
     position: absolute;
-    top: 27px;
-    left: 310px;
+    width: 22px;
+    height: 22px;
+    left: 1245px;
+    top: 29px;
+}
+
+.night-mode{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 1298px;
+    top: 29px;
+}
+
+.profile-dropdown{
+    width: 20px;
+    height: 20px;
+    left: 1399px ;
+    top: 33px;
+    position: absolute;
+}
+
+.nav-item {
+    position: absolute;
     color: black;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 400;
+}
+
+#courses {
+    left: 310px;
+    top: 27px;
+    font-weight: bold;
+}
+
+#home {
+    left: 144px;
+    top: 27px;
+}
+
+#dashboard {
+    left: 210px;
+    top: 28px;
 }
 
 .logo {
     width: 89px;
     height: 64px;
     position: absolute;
-    top: 8px;
     left: 17px;
+    top: 8px;
 }
 
-.home, .dashboard {
-    position: absolute;
-    color: black;
-    font-size: 15px;
-    font-weight: 400;
-}
-
-.home {
-    width: 43px;
-    height: 26px;
-    top: 27px;
-    left: 144px;
-}
-
-.dashboard {
-    width: 78px;
-    height: 26px;
-    top: 28px;
-    left: 210px;
-}
-
-.welcome-message {
+#welcome-section {
     width: 582px;
     height: 65px;
     position: absolute;
-    top: 97px;
     left: 62px;
+    top: 97px;
+}
+
+.welcome-text {
     color: black;
     font-size: 48px;
     font-weight: 700;
     line-height: 67.20px;
 }
 
-.search-bar {
+.search-bar{
+    width: 100%;
+    height: 100%;
+    
+}
+#search-section {
     width: 706px;
     height: 40px;
     position: absolute;
-    top: 179px;
     left: 62px;
+    top: 179px;
 }
 
-.search-input {
+.search-box {
     width: 663px;
-    height: 40px;
+    height: 39px;
+    position: absolute;
     background: white;
     border-radius: 8px;
-    border: 1px #D9D9D9 solid;
+    border: 0.5px #D9D9D9 solid;
     display: flex;
     align-items: center;
-    padding: 12px 16px;
 }
 
 .search-placeholder {
+    position: absolute;
+    left: 5px;
     color: #B3B3B3;
     font-size: 16px;
-    line-height: 16px;
+    font-weight: normal;
 }
 
-.search-additional-info {
+.search-background {
     width: 54px;
     height: 40px;
     position: absolute;
-    top: 0;
-    left: 652px;
-    background: #7469B6;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.search-icon {
-    width: 32px;
-    height: 33px;
-    position: absolute;
-    top: 3px;
-    left: 663px;
-}
-
-/* .search-icon-inner {
-    width: 24px;
-    height: 24.75px;
-    border: 4px #F5F5F5 solid;
-} */
-
-.sidebar {
-    width: 368px;
-    height: 764px;
-    position: absolute;
-    top: 261px;
-    left: 26px;
-}
-
-.sidebar-background {
-    width: 368px;
-    height: 764px;
-    background: #EAEEFF;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-}
-
-.filter-by {
-    width: 310px;
-    height: 49px;
-    position: absolute;
-    top: 30px;
-    left: 34px;
-    color: black;
-    font-size: 26px;
-    font-weight: 600;
-}
-
-.college, .degree {
-    width: 273px;
-    height: 30px;
-    position: absolute;
-    color: black;
-    font-size: 22px;
-    font-weight: 500;
-}
-
-.college {
-    top: 98px;
-}
-
-.degree {
-    top: 241px;
-}
-
-.post-graduate, .junior-college, .school {
-    position: absolute;
-    top: 161px;
-    width: 273px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    font-size: 18px;
-    font-weight: 400;
-}
-
-.post-graduate {
-    top: 161px;
-}
-
-.junior-college {
-    top: 191px;
-}
-
-.school {
-    top: 221px;
-}
-
-.checkbox {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #000;
-    margin-right: 10px;
-}
-
-.label {
-    color: black;
-    font-size: 18px;
-}
-
-.college-item, .degree-item {
-    position: absolute;
-    width: 273px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    font-size: 18px;
-    font-weight: 400;
-}
-
-.college-item {
-    top: 278px;
-}
-
-.degree-item {
-    top: 317px;
-}
-
-.content-item {
-    width: 291px;
-    height: 175px;
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 297px;
-    left: 480px;
-}
-
-.blue {
-    background: #6E6E6E;
-}
-
-.light-blue {
-    background: #9D9D9D;
-}
-
-.item-image {
-    width: 291px;
-    height: 175px;
-    object-fit: cover;
-    border-radius: 20px;
-}
-
-.item-badge {
-    width: 74px;
-    height: 24px;
-    background: #6E6E6E;
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    position: absolute;
-    top: 16px;
-    left: 16px;
+    background: #7469B6;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+    left: 652px;
 }
 
-.item-title {
-    width: 258px;
-    height: 24px;
+.search-icon{
+    width: 32px;
+    height: 33px;
     position: absolute;
-    top: 148px;
-    left: 16px;
-    color: white;
+}
+
+#filter-sidebar {
+    width: 368px;
+    height: 764px;
+    position: absolute;
+    left: 26px;
+    top: 261px;
+}
+
+.filter-background {
+    width: 100%;
+    height: 100%;
+    border-radius: 5%;
+    border: 1px #D9D9D9 solid;
+    background-color: #EAEEFF;
+}
+
+.filter-title {
+    color: black;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 30px;
+    padding: 16px;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+}
+
+#college, #degree {
+    position: relative;
+    display: inline-block;
+    width: 300px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.filter-checkbox {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background-color: #ffffff;
+    border-radius: 3px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.filter-text:hover {
+    background-color: #9f97cb;
+}
+
+.filter-text {
+    color: #1E1E1E;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
-.item-details {
-    width: 258px;
-    height: 60px;
+#course-cards {
     position: absolute;
-    top: 176px;
-    left: 16px;
+    width: 1001px;
+    height: 790px;
+    left: 418px;
+    top: 261px;
+    background-color: #EAEEFF;
+    border: 1px #D9D9D9 solid;
+    border-radius: 5%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 20px; 
+}
+
+.card {
+    width: 291px;
+    height: 295px;
+    background-color: #c5cffc;
+    border-radius: 8px;
+    border: 1px #D9D9D9 solid;
+    position: relative; 
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card-image {
+    width: 100%; 
+    height: 175px; 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 291px; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-background {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
     color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px;
+    color: #000000;
+}
+
+a {
+    color: black; 
+    text-decoration: none; 
+}
+ a:hover{
+    text-decoration: underline; 
+ }
+
+.card-details {
+    padding: 0 15px 15px 15px;
+    color: #666;
+}
+
+.card-details p {
+    margin: 2px 0;
     font-size: 14px;
 }
