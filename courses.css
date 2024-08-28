@@ -1,99 +1,9 @@
 * {
     margin: 0;
     font-family: Inter, sans-serif;
-    box-sizing:border-box;
-}
-nav {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: white;
-    border-bottom: 1px solid #ccc;
     box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    left: 0;
-  }
-  
-  .logo img {
-    height: 50px; /* Adjust this size according to your logo */
-  }
-  
-  nav ul {
-    display: flex;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    flex: 1;
-    justify-content: center; /* Center the navigation links */
-  }
-  
-  nav ul li {
-    margin: 0 15px;
-  }
-  
-  nav ul li a {
-    text-decoration: none;
-    color: black;
-    font-weight: bold;
-  }
-  
-  nav ul li a:hover {
-    color: #007BFF;
-  }
-  
-  .user-profile {
-    display: flex;
-    align-items: center;
-  }
-  
-  .user-initials {
-    background-color: #333;
-    color: white;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-  }
-    
-    .profile-dropdown {
-      width: 14.55px;
-      height: 14.55px;
-      position: absolute;
-      left: 1412.37px;
-      top: 21.82px;
-    }
-    
-    
-    .nav-links .nav-link{
-      position: relative;
-      color: black;
-      font-size: 16px;
-      font-family: Inter;
-      font-weight: 600;
-      word-wrap: break-word;
-      text-decoration: none;
-    }
-    
-    .nav-links .nav-link:nth-child(1) {
-      left: 111.27px;
-      top: 0%;
-    }
-    
-    .nav-links .nav-link:nth-child(2) {
-      left: 145.64px;
-      top: 0;
-    }
-    
-    .nav-links .nav-link:nth-child(3) {
-      left: 180.45px;
-      top: 0;
-    }
+}
+
 #main-container {
     width: 100%;
     height: 1024px;
@@ -123,16 +33,11 @@ nav {
     border-radius: 50%;
     background-color: #d9d9d9;
     position: absolute;
-}
-
-.student-initials {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     color: black;
     font-size: 25px;
-    font-weight: normal;
 }
 
 .notification-bell{
@@ -151,12 +56,41 @@ nav {
     top: 29px;
 }
 
-.profile-dropdown{
+.dropdown {
+    position: absolute; 
+    display: inline-block;
+}
+
+.dropdown-arrow {
     width: 20px;
     height: 20px;
     left: 1399px ;
     top: 33px;
     position: absolute;
+    cursor: pointer; 
+}
+
+.dropdown-content {
+    display: none; 
+    position: absolute;
+    left: 1300px; 
+    top: 81px;
+    background-color: #f9f9f9;
+    min-width: 160px; 
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 4px;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none; 
+    display: block; 
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
 }
 
 .nav-item {
@@ -205,12 +139,10 @@ nav {
     line-height: 67.20px;
 }
 
-.search-bar{
-    width: 100%;
-    height: 100%;
-    
-}
 #search-section {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
     width: 706px;
     height: 40px;
     position: absolute;
@@ -222,11 +154,13 @@ nav {
     width: 663px;
     height: 39px;
     position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: white;
     border-radius: 8px;
     border: 0.5px #D9D9D9 solid;
-    display: flex;
-    align-items: center;
+    left: 0px;
 }
 
 .search-placeholder {
@@ -235,6 +169,19 @@ nav {
     color: #B3B3B3;
     font-size: 16px;
     font-weight: normal;
+}
+
+#search {
+    width: 100%; 
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+}
+
+#search:focus {
+    border-color: #7469B6;
 }
 
 .search-background {
