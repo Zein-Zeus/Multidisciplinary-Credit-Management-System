@@ -69,7 +69,7 @@ body {
 
 #student-name,
 #college-name,
-#pnr-number {
+#prn-number,#ABC-id {
     width: 434px;
     height: 47px;
     position: absolute;
@@ -90,13 +90,21 @@ body {
 #college-name {
     top: 207px;
     left: 25px;
-    width: 454px;
-    height: 67px;
+    /* width: 454px;
+    height: 67px; */
 }
 
-#pnr-number {
+#prn-number {
     top: 328px;
     left: 25px;
+}
+#ABC-id {
+    top: 451px;
+    left: 25px;
+}
+.registernew {
+    align-items: center;
+
 }
 
 .form-label[for="student-name"] {
@@ -109,8 +117,12 @@ body {
     left: 31px;
 }
 
-.form-label[for="pnr-number"] {
-    top: 290px;
+.form-label[for="prn-number"] {
+    top: 292px;
+    left: 31px;
+}
+.form-label[for="ABC-id"] {
+    top: 415px;;
     left: 31px;
 }
 
@@ -118,7 +130,7 @@ body {
     width: 313px;
     height: 74px;
     position: absolute;
-    top: 435px;
+    top: 560px;
     left: 94px;
     background: #163172;
     border-radius: 50px;
