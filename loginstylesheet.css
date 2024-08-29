@@ -67,9 +67,9 @@ body {
     font-weight: 400;
 }
 
-#student-name,
-#college-name,
-#pnr-number {
+#enterName,
+#enterCLG,
+#enterPNR {
     width: 434px;
     height: 47px;
     position: absolute;
@@ -82,39 +82,39 @@ body {
     opacity: 0.5;
 }
 
-#student-name {
+#enterName {
     top: 84px;
     left: 25px;
 }
 
-#college-name {
+#enterCLG {
     top: 207px;
     left: 25px;
     width: 454px;
     height: 67px;
 }
 
-#pnr-number {
+#enterPNR {
     top: 328px;
     left: 25px;
 }
 
-.form-label[for="student-name"] {
+.form-label[for="enterName"] {
     top: 46px;
     left: 31px;
 }
 
-.form-label[for="college-name"] {
+.form-label[for="enterCLG"] {
     top: 169px;
     left: 31px;
 }
 
-.form-label[for="pnr-number"] {
+.form-label[for="enterPNR"] {
     top: 290px;
     left: 31px;
 }
 
-.login-button {
+.loginBtn {
     width: 313px;
     height: 74px;
     position: absolute;
