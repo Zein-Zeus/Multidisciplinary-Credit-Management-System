@@ -8,15 +8,15 @@ document.addEventListener('DOMContentLoaded', function() {
     loginButton.addEventListener('click', function() {
         const studentName = document.getElementById('student-name').value;
         const collegeName = document.getElementById('college-name').value;
-        const pnrNumber = document.getElementById('pnr-number').value;
+        const prnNumber = document.getElementById('prn-number').value;
 
-        if (!studentName || !collegeName || !pnrNumber) {
+        if (!studentName || !collegeName || !prnNumber) {
             alert('Please fill in all fields.');
             return;
         }
 
-        if (pnrNumber.length !== 12 || !/^\d{12}$/.test(pnrNumber)) {
-            alert('PNR Number must contain exactly 12 digits.');
+        if (prnNumber.length !== 12 || !/^\d{12}$/.test(prnNumber)) {
+            alert('PRN Number must contain exactly 12 digits.');
             return;
         }
 
