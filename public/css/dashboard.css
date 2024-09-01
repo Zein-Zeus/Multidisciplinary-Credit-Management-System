@@ -155,6 +155,21 @@ table th {
     background-color: #004494;
 }
 
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.logout-button {
+    background-color: #d9534f; /* Change color for distinction */
+    margin-left: 10px; /* Space between buttons */
+}
+
+.logout-button:hover {
+    background-color: #c9302c; /* Darker shade on hover */
+}
+
 footer {
     background-color: #002366;
     color: #fff;

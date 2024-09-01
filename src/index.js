@@ -180,6 +180,16 @@ app.post("/login", async (req, res) => {
     }
 });
 
+app.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Error during logout:", err);
+            return res.status(500).send("Error during logout. Please try again.");
+        }
+        res.redirect('/login');
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

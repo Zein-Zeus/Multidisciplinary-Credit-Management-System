@@ -71,7 +71,12 @@
                     </tr>
                 </tbody>
             </table>
-            <button class="upload-button" onclick="window.location.href='/certificate'">Upload Certificate</button>
+            <div class="button-container">
+                <button class="upload-button" onclick="window.location.href='/certificate'">Upload Certificate</button>
+                <form action="/logout" method="POST">
+                    <button type="submit" class="upload-button logout-button">Logout</button>
+                </form>
+            </div>
         </div>
     </main>
     
