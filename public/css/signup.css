@@ -231,3 +231,35 @@ footer a {
     width: 280px;
     
 }
+
+.header-banner {
+    width: 100%;
+    max-height: 160px;
+    background: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.banner-img {
+    width: 100px;
+    height: auto;
+    margin-right: 20px;
+}
+
+.banner-text {
+    flex: 1;
+}
+
+.banner-title {
+    color: rgba(0, 0, 153, 0.89);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.banner-subtitle {
+    color: #494949;
+    font-size: 14px;
+    font-weight: 500;
+}
