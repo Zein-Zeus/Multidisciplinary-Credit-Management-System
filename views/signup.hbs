@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="css/signup.css">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <img src="images/logo.png" alt="Logo">
+        </div>
+    </nav>
+    <main>
+        <div class="upload-form">
+            <h2>New Registration</h2>
+            <form action="/signup" method="post">
+                <div class="form-group">
+                    <label for="student-name">Student Name:</label>
+                    <input type="text" id="student-name" name="studentName" placeholder="Student Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="student-prn">Student PRN:</label>
+                    <input type="number" id="student-prn" name="prnNumber" placeholder="PRN Number" required>
+                </div>
+                <div class="form-group">
+                    <label for="Email">Email id:</label>
+                    <input type="email" id="Email" name="Email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="Contact">Contact number:</label>
+                    <input type="number" id="Contact" name="Contact" placeholder="Contact" required>
+                </div>
+                <div class="form-group">
+                    <label for="college-name">College Name:</label>
+                    <select class="form-input" id="college-name" name="collegeName">
+                        <option value="">Select your college</option>
+                        <option value="Usha Mittal Institute of Technology">Usha Mittal Institute of Technology</option>
+                        <option value="Sir Vithaldas Thakersey College of Home Science">Sir Vithaldas Thakersey College of Home Science</option>
+                        <option value="Jankidevi Bajaj Institute of Management Studies">Jankidevi Bajaj Institute of Management Studies</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ABC">ABC id:</label>
+                    <input type="number" id="ABC" name="abcId" placeholder="ABC ID" required>
+                </div>
+                <button class="submit-button" type="submit">Sign Up</button>
+            </form>
+
+            <a href="/login" class="back-link">← Back</a>
+        </div>
+    </main>
+    <script src="js/signup.js"></script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+* {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    height: 1500px;
+    position: relative;
+    background: #F5F7FF;
+}
+
+#header {
+    width: 100%;
+    height: 81px;
+    position: absolute;
+    background: white;
+}
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 60px;
+    z-index: 1000;
+  }
+  
+  .logo img {
+    height: 50px; /* Adjust this size according to your logo */
+  }
+  
+  nav ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center; /* Center the navigation links */
+  }
+  
+  nav ul li {
+    margin: 0 15px;
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+  }
+  
+  nav ul li a:hover {
+    color: #007BFF;
+  }
+  
+  .user-profile {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-initials {
+    background-color: #333;
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+  }
+    
+    .profile-dropdown {
+      width: 14.55px;
+      height: 14.55px;
+      position: absolute;
+      left: 1412.37px;
+      top: 21.82px;
+    }
+    
+    
+    .nav-links .nav-link{
+      position: relative;
+      color: black;
+      font-size: 16px;
+      font-family: Inter;
+      font-weight: 600;
+      word-wrap: break-word;
+      text-decoration: none;
+    }
+    
+    .nav-links .nav-link:nth-child(1) {
+      left: 111.27px;
+      top: 0%;
+    }
+    
+    .nav-links .nav-link:nth-child(2) {
+      left: 145.64px;
+      top: 0;
+    }
+    
+    .nav-links .nav-link:nth-child(3) {
+      left: 180.45px;
+      top: 0;
+    }
+
+.header-background {
+    width: 100%;
+    height: 81px;
+    position: absolute;
+    background: white;
+}
+
+.student-initials-background {
+    width: 40px;
+    height: 40px;
+    left: 1351px;
+    top: 21px;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    font-size: 25px;
+}
+
+.notification-bell{
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    left: 1245px;
+    top: 29px;
+}
+
+.night-mode{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 1298px;
+    top: 29px;
+}
+
+.dropdown {
+    position: absolute; 
+    display: inline-block;
+}
+
+.dropdown-arrow {
+    width: 20px;
+    height: 20px;
+    left: 1399px ;
+    top: 33px;
+    position: absolute;
+    cursor: pointer; 
+}
+
+.dropdown-content {
+    display: none; 
+    position: absolute;
+    left: 1300px; 
+    top: 81px;
+    background-color: #f9f9f9;
+    min-width: 160px; 
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 4px;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none; 
+    display: block; 
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.nav-item {
+    position: absolute;
+    color: black;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+#courses {
+    left: 310px;
+    top: 27px;
+    font-weight: bold;
+}
+
+#home {
+    left: 144px;
+    top: 27px;
+}
+
+#dashboard {
+    left: 210px;
+    top: 28px;
+}
+
+.logo {
+    width: 89px;
+    height: 64px;
+    position: absolute;
+    left: 17px;
+    top: 8px;
+}
+
+.course-overview {
+    position: absolute;
+    top: 115px;
+    left: 62px;
+}
+
+.course-title {
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.course-details {
+    background: #EAEEFF;
+    border-radius: 10px;
+    padding: 20px;
+    width: 1308px;
+    margin-top: 20px;
+}
+
+.description {
+    font-size: 22px;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.info {
+    font-size: 20px;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.enroll-btn {
+    background: #163172;
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+    padding: 20px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+}
+
+.course-info {
+    position: absolute;
+    top: 651px;
+    left: 66px;
+    display: flex;
+    gap: 50px;
+}
+
+.tab {
+    background: rgba(217, 217, 217, 0.50);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.college-info {
+    position: absolute;
+    top: 746px;
+    left: 62px;
+    width: 1280px;
+}
+
+.college-title {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.college-description {
+    font-size: 22px;
+    line-height: 1.4;
+    margin-top: 10px;
+}
+
+/* .scroll-bar {
+    position: absolute;
+    top: 734px;
+    left: 1360px;
+    width: 21px;
+    height: 278px;
+    background: rgba(226, 225, 225, 0.50);
+}
+
+.scroll-track {
+    height: 100%;
+    background: rgba(226, 225, 225, 0.50);
+}
+
+.scroll-thumb {
+    height: 83px;
+    background: rgba(183, 182, 182, 0.50);
+} */
