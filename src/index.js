@@ -1,68 +1,142 @@
-const express=require("express")
-const app=express()
-const path=require("path")
-const hbs=require("hbs")
-const collection=require("./mongodb")
+const express = require("express");
+const app = express();
+const path = require("path");
+const hbs = require("hbs");
+const collection = require("./mongodb");
+const session = require('express-session');
+const crypto = require('crypto');
 
-// const templatePath=path.join(__dirname,'../templates')
+// Generate a random secret key for each session
+const secret = crypto.randomBytes(6).toString('hex');
 
-const publicPath = path.resolve(__dirname, "public");
+const TWO_HOURS = 1000 * 60 * 60 * 2;
 
-// app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static('public'))
+const {
+    PORT = 3000,
+    NODE_ENV = 'development',
+    SESS_NAME = 'sid',
+    SESS_LIFETIME = TWO_HOURS
+} = process.env;
 
-app.use(express.json())
-app.set("view engine", "hbs")
-// app.set("views",templatePath)
-app.use(express.urlencoded({extended:false}))
-// app.use(express.static(publicPath))
-// app.use("/images", express.static(path.join(__dirname, "/public/images")));
+const IN_PROD = NODE_ENV === 'production';
 
-// Route to display static src images
-// app.get("/static", (req, res) => {
-//     res.render("static");
-// });
+// Session middleware setup
+app.use(session({
+    name: SESS_NAME,
+    resave: false,
+    saveUninitialized: false,
+    secret: secret,
+    cookie: {
+        maxAge: SESS_LIFETIME,
+        sameSite: true,
+        secure: IN_PROD
+    }
+}));
 
-// Route to display dynamic src images
-// app.get("/dynamic", (req, res) => {
-//     imageList = [];
-//     imageList.push({ src: "icons/flask.png", name: "flask" });
-//     imageList.push({ src: "icons/javascript.png", name: "javascript" });
-//     imageList.push({ src: "icons/react.png", name: "react" });
-//     res.render("dynamic", { imageList: imageList });
-// });
+// Middleware for parsing and static files
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static('public'));
 
-app.get("/",(req,res)=>{
-    res.render("login")
-})
+app.set("view engine", "hbs");
 
-app.get("/login",(req,res)=>{
-    res.render("login")
-})
+// Routes
+app.get("/", (req, res) => {
+    res.render("login");
+});
 
-app.get("/signup",(req,res)=>{
-    res.render("signup")
-})
+app.get("/login", (req, res) => {
+    res.render("login");
+});
 
-app.get("/home",(req,res)=>{
-    res.render("home")
-})
+app.get("/signup", (req, res) => {
+    res.render("signup");
+});
 
-app.get("/dashboard",(req,res)=>{
-    res.render("dashboard")
-})
+app.get("/home", async(req, res) => {
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
 
-app.get("/course",(req,res)=>{
-    res.render("courses")
-})
+    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
 
-app.get("/AICoursePage",(req,res)=>{
-    res.render("AICoursePage")
-})
+    if (user) {
+        res.render('home', {
+            userName: user.studentName,
+            userInitials: user.studentName.split(' ').map(name => name[0]).join('')
+        });
+    } else {
+        res.status(404).send('User not found');
+    }
+});
 
-app.get("/certificate",(req,res)=>{
-    res.render("certificate")
-})
+app.get("/dashboard", async (req, res) => {
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+
+    if (user) {
+        res.render('dashboard', {
+            userName: user.studentName,
+            userInitials: user.studentName.split(' ').map(name => name[0]).join('')
+        });
+    } else {
+        res.status(404).send('User not found');
+    }
+});
+
+app.get("/course", async(req, res) => {
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+
+    if (user) {
+        res.render('courses', {
+            userName: user.studentName,
+            userInitials: user.studentName.split(' ').map(name => name[0]).join('')
+        });
+    } else {
+        res.status(404).send('User not found');
+    }
+});
+
+app.get("/certificate", async(req, res) => {
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+
+    if (user) {
+        res.render('certificate', {
+            userName: user.studentName,
+            userInitials: user.studentName.split(' ').map(name => name[0]).join('')
+        });
+    } else {
+        res.status(404).send('User not found');
+    }
+});
+
+app.get("/AICoursePage", async(req, res) => {
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+
+    if (user) {
+        res.render('AICoursePage', {
+            userName: user.studentName,
+            userInitials: user.studentName.split(' ').map(name => name[0]).join('')
+        });
+    } else {
+        res.status(404).send('User not found');
+    }
+});
 
 app.post("/signup", async (req, res) => {
     const data = {
@@ -78,35 +152,34 @@ app.post("/signup", async (req, res) => {
         await collection.insertMany([data]);
         res.render("login");
     } catch (error) {
-        if (error.name === 'ValidationError') {
-            for (let field in error.errors) {
-                console.error(`Validation error in ${field}: ${error.errors[field].message}`);
-            }
-        } else {
-            console.error("Unexpected error:", error);
-        }
+        console.error("Unexpected error:", error);
         res.status(400).send("Error: Validation failed. Please check your input.");
     }
 });
 
 app.post("/login", async (req, res) => {
-
     try {
-        const check=await collection.findOne({prnNumber: req.body.prnNumber})
+        const prnNumber = Number(req.body.prnNumber); // Convert to number
+        const abcId = Number(req.body.abcId); // Convert to number
         
-        if(check.abcId===req.body.abcId || check.studentName===req.body.studentName){
-            res.render("home");
-        }
-        else{
-            res.send("Wrong Details")
-        }
-
+        const check = await collection.findOne({ prnNumber: prnNumber });
         
-    } catch {
-        res.send("Wrong Details")
+        if (check && check.abcId === abcId && check.studentName === req.body.studentName) {
+            // Store user details in session
+            req.session.prnNumber = check.prnNumber;
+            req.session.studentName = check.studentName;
+            
+            // Redirect to the dashboard after login
+            res.redirect("/dashboard");
+        } else {
+            res.send("Wrong Details");
+        }
+    } catch (error) {
+        console.error("Error during login:", error);
+        res.send("Wrong Details");
     }
 });
 
-app.listen(3000, ()=>{
-    console.log("Port Connected")
-})
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

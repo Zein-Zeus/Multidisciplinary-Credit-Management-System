@@ -4,29 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
     <nav>
         <div class="logo">
-            <img src="images/logo.png" alt="Logo">
+            <img src="/images/logo.png" alt="Logo">
         </div>
         <ul>
             <li><a href="/home">Home</a></li>
-            <li><a href="/dashboard">Dashboard</a></a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
             <li><a href="/course">Courses</a></li>
         </ul>
         <div class="user-profile">
-            <div class="user-initials">ZN</div>
+            <div class="user-initials">{{userInitials}}</div> <!-- Dynamic initials -->
         </div>
     </nav>    
     
     <main>
         <div class="dashboard">
             <div class="profile-info">
-                <div class="user-initials-profile">ZN</div>
-                <h2>Zenia Nouphal</h2>
-                <div class="credits"> <h1>57</h1><br>Total Credits</div>
+                <div class="user-initials-profile">{{userInitials}}</div> <!-- Dynamic initials -->
+                <h2>{{userName}}</h2> <!-- Dynamic user name -->
+                <div class="credits"> 
+                    <h1>57</h1><br>Total Credits
+                </div>
             </div>
             <table>
                 <thead>
