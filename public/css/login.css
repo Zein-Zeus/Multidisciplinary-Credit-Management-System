@@ -59,7 +59,8 @@ body {
 #student-name,
 #college-name,
 #prn-number,
-#ABC-id {
+#ABC-id,
+#password {
     width: 100%;
     height: 47px;
     background: white;

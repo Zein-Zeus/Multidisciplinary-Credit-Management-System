@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const hbs = require("hbs");
-const collection = require("./mongodb");
+const Student = require("./mongodb");
 const session = require('express-session');
 const crypto = require('crypto');
 
@@ -58,7 +58,7 @@ app.get("/home", async(req, res) => {
         return res.redirect('/login');
     }
 
-    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+    const user = await Student.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
         res.render('home', {
@@ -75,7 +75,7 @@ app.get("/dashboard", async (req, res) => {
         return res.redirect('/login');
     }
 
-    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+    const user = await Student.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
         res.render('dashboard', {
@@ -92,7 +92,7 @@ app.get("/course", async(req, res) => {
         return res.redirect('/login');
     }
 
-    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+    const user = await Student.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
         res.render('courses', {
@@ -109,7 +109,7 @@ app.get("/certificate", async(req, res) => {
         return res.redirect('/login');
     }
 
-    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+    const user = await Student.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
         res.render('certificate', {
@@ -126,7 +126,7 @@ app.get("/AICoursePage", async(req, res) => {
         return res.redirect('/login');
     }
 
-    const user = await collection.findOne({ prnNumber: req.session.prnNumber });
+    const user = await Student.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
         res.render('AICoursePage', {
@@ -145,11 +145,13 @@ app.post("/signup", async (req, res) => {
         Email: req.body.Email,
         Contact: req.body.Contact,
         collegeName: req.body.collegeName,
-        abcId: req.body.abcId
+        abcId: req.body.abcId,
+        password: req.body.password
     };
 
     try {
-        await collection.insertMany([data]);
+        const newUser = new Student(data);
+        await newUser.save();
         res.render("login");
     } catch (error) {
         console.error("Unexpected error:", error);
@@ -160,17 +162,24 @@ app.post("/signup", async (req, res) => {
 app.post("/login", async (req, res) => {
     try {
         const prnNumber = Number(req.body.prnNumber); // Convert to number
-        const abcId = Number(req.body.abcId); // Convert to number
-        
-        const check = await collection.findOne({ prnNumber: prnNumber });
-        
-        if (check && check.abcId === abcId && check.studentName === req.body.studentName) {
-            // Store user details in session
-            req.session.prnNumber = check.prnNumber;
-            req.session.studentName = check.studentName;
+        const password = req.body.password; // Use plaintext password
+
+        const user = await Student.findOne({ prnNumber: prnNumber });
+
+        if (user) {
+            // const isMatch = await user.comparePassword(password);
+            // console.log("Password match:", isMatch);
             
-            // Redirect to the dashboard after login
-            res.redirect("/dashboard");
+            //if (isMatch) {
+                // Store user details in session
+                req.session.prnNumber = user.prnNumber;
+                req.session.studentName = user.studentName;
+
+                // Redirect to the dashboard after login
+                res.redirect("/dashboard");
+            //} else {
+            //    res.send("Wrong Details");
+            //}
         } else {
             res.send("Wrong Details");
         }
@@ -189,6 +198,14 @@ app.post('/logout', (req, res) => {
         res.redirect('/login');
     });
 });
+
+// const test = async (prnNumber, password) => {
+//     const user = await Student.findOne({prnNumber: prnNumber});
+//     const result = await user.comparePassword(password)
+//     console.log(result);
+// }
+
+// test('111122223333', 'abc123')
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

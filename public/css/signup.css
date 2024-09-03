@@ -93,6 +93,10 @@ header {
     border-bottom: 1px solid #ccc;
 }
 
+h2 {
+    text-align: center;
+}
+
 .logo img {
     height: 50px;
 }

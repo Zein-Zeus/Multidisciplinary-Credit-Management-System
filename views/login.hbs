@@ -27,19 +27,21 @@
                 <a href="/signup" class="registernew" >Don't have an account? Register here</a>
                 <form action="/login" method="post" id="login-form">
                     <div class="form-bg"></div>
-                    <label class="form-label" for="student-name">Student Name:</label>
-                    <input class="form-input" type="text" id="student-name" name="studentName" placeholder="Write your name here">
-                    <label class="form-label" for="college-name">College Name:</label>
+                    {{!-- <label class="form-label" for="student-name">Student Name:</label>
+                    <input class="form-input" type="text" id="student-name" name="studentName" placeholder="Write your name here"> --}}
+                    {{!-- <label class="form-label" for="college-name">College Name:</label>
                     <select class="form-input" id="college-name" name="collegeName">
                         <option value="">Select your college</option>
                         <option value="Usha Mittal Institute of Technology">Usha Mittal Institute of Technology</option>
                         <option value="Sir Vithaldas Thakersey College of Home Science">Sir Vithaldas Thakersey College of Home Science</option>
                         <option value="Jankidevi Bajaj Institute of Management Studies">Jankidevi Bajaj Institute of Management Studies</option>
-                    </select>
+                    </select> --}}
                     <label class="form-label" for="prn-number">PRN Number:</label>
                     <input class="form-input" type="text" id="prn-number" name="prnNumber" placeholder="111122223333">
-                    <label class="form-label" for="ABC-id">ABC Id:</label>
-                    <input class="form-input" type="text" id="ABC-id" name="abcId" placeholder="000000000000">
+                    {{!-- <label class="form-label" for="ABC-id">ABC Id:</label>
+                    <input class="form-input" type="text" id="ABC-id" name="abcId" placeholder="000000000000"> --}}
+                    <label class="form-label" for="ABC-id">Password:</label>
+                    <input class="form-input" type="text" id="password" name="password" placeholder="Enter Password">
                     <button class="login-button" type="submit" id="login-button">Login</button>
                 </form>
             </div>
