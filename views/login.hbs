@@ -6,7 +6,17 @@
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="css/login.css">
-
+    <style>
+        /* Style for the password visibility toggle button */
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body class="login">
     <div class="container">
@@ -24,30 +34,36 @@
                 <div class="header-text">Student Login</div>
             </div>
             <div class="form-container">
-                <a href="/signup" class="registernew" >Don't have an account? Register here</a>
+                <a href="/signup" class="registernew">Don't have an account? Register here</a>
                 <form action="/login" method="post" id="login-form">
                     <div class="form-bg"></div>
-                    {{!-- <label class="form-label" for="student-name">Student Name:</label>
-                    <input class="form-input" type="text" id="student-name" name="studentName" placeholder="Write your name here"> --}}
-                    {{!-- <label class="form-label" for="college-name">College Name:</label>
-                    <select class="form-input" id="college-name" name="collegeName">
-                        <option value="">Select your college</option>
-                        <option value="Usha Mittal Institute of Technology">Usha Mittal Institute of Technology</option>
-                        <option value="Sir Vithaldas Thakersey College of Home Science">Sir Vithaldas Thakersey College of Home Science</option>
-                        <option value="Jankidevi Bajaj Institute of Management Studies">Jankidevi Bajaj Institute of Management Studies</option>
-                    </select> --}}
                     <label class="form-label" for="prn-number">PRN Number:</label>
                     <input class="form-input" type="text" id="prn-number" name="prnNumber" placeholder="1111222233334444">
-                    {{!-- <label class="form-label" for="ABC-id">ABC Id:</label>
-                    <input class="form-input" type="text" id="ABC-id" name="abcId" placeholder="000000000000"> --}}
-                    <label class="form-label" for="ABC-id">Password:</label>
-                    <input class="form-input" type="text" id="password" name="password" placeholder="Enter Password">
+                    <label class="form-label" for="password">Password:</label>
+                    <div class="position-relative">
+                        <input class="form-input" type="password" id="password" name="password" placeholder="Enter Password">
+                        <span id="togglePassword" class="password-toggle">Show</span>
+                    </div>
                     <button class="login-button" type="submit" id="login-button">Login</button>
                 </form>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // JavaScript to toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordField = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
 
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                togglePassword.textContent = 'Hide';
+            } else {
+                passwordField.type = 'password';
+                togglePassword.textContent = 'Show';
+            }
+        });
+    </script>
 </body>
 </html>
