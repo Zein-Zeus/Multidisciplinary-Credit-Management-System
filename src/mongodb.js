@@ -18,11 +18,23 @@ mongoose.connect("mongodb://localhost:27017/studentData")
 
 const studentSchema = new mongoose.Schema({
     studentName: String,
-    prnNumber: Number,
-    Email: String,
+    prnNumber: {
+        type: Number,
+        unique: true, // Ensure PRN number is unique
+        required: true
+    },
+    Email: {
+        type: String,
+        unique: true, // Ensure Email is unique
+        required: true
+    },
     Contact: Number,
     collegeName: String,
-    abcId: Number,
+    abcId: {
+        type: Number,
+        unique: true, // Ensure ABC ID is unique
+        required: true
+    },
     password: String
 });
 

@@ -140,12 +140,21 @@ app.get("/AICoursePage", async(req, res) => {
 
 app.post("/signup", async (req, res) => {
     try {
-        const existingStudent = await Student.findOne({ prnNumber: req.body.prnNumber });
-        if (existingStudent) {
+        // Check for existing PRN number
+        const existingStudentByPrn = await Student.findOne({ prnNumber: req.body.prnNumber });
+        if (existingStudentByPrn) {
             console.log('Student with this PRN number already exists.');
             return res.redirect("login");
         }
 
+        // Check for existing ABC ID
+        const existingStudentByAbcId = await Student.findOne({ abcId: req.body.abcId });
+        if (existingStudentByAbcId) {
+            console.log('Student with this ABC ID already exists.');
+            return res.redirect("login");
+        }
+
+        // Create a new student document
         const studentData = new Student({
             studentName: req.body.studentName,
             prnNumber: req.body.prnNumber,
@@ -171,9 +180,11 @@ app.post("/signup", async (req, res) => {
 
         res.redirect('/login');
     } catch (err) {
+        console.error('Error adding student:', err.message);
         res.status(400).send('Error adding student: ' + err.message);
     }
 });
+
 
 app.post("/login", async (req, res) => {
     try {
