@@ -2,12 +2,12 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const hbs = require("hbs");
-const Student = require("./mongodb");
+const { Student, updateGoogleSheet, getGoogleSheetData } = require("./mongodb");
 const session = require('express-session');
 const crypto = require('crypto');
 
 // Generate a random secret key for each session
-const secret = crypto.randomBytes(6).toString('hex');
+const secret = crypto.randomBytes(16).toString('hex');
 
 const TWO_HOURS = 1000 * 60 * 60 * 2;
 
@@ -139,23 +139,39 @@ app.get("/AICoursePage", async(req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-    const data = {
-        studentName: req.body.studentName,
-        prnNumber: req.body.prnNumber,
-        Email: req.body.Email,
-        Contact: req.body.Contact,
-        collegeName: req.body.collegeName,
-        abcId: req.body.abcId,
-        password: req.body.password
-    };
-
     try {
-        const newUser = new Student(data);
-        await newUser.save();
-        res.render("login");
-    } catch (error) {
-        console.error("Unexpected error:", error);
-        res.status(400).send("Error: Validation failed. Please check your input.");
+        const existingStudent = await Student.findOne({ prnNumber: req.body.prnNumber });
+        if (existingStudent) {
+            console.log('Student with this PRN number already exists.');
+            return res.redirect("login");
+        }
+
+        const studentData = new Student({
+            studentName: req.body.studentName,
+            prnNumber: req.body.prnNumber,
+            Email: req.body.Email,
+            Contact: req.body.Contact,
+            collegeName: req.body.collegeName,
+            abcId: req.body.abcId,
+            password: req.body.password
+        });
+
+        await studentData.save();
+
+        // Update Google Sheet with masked password
+        await updateGoogleSheet({
+            studentName: req.body.studentName,
+            prnNumber: req.body.prnNumber,
+            Email: req.body.Email,
+            Contact: req.body.Contact,
+            collegeName: req.body.collegeName,
+            abcId: req.body.abcId,
+            password: '#######' // Masked password
+        });
+
+        res.redirect('/login');
+    } catch (err) {
+        res.status(400).send('Error adding student: ' + err.message);
     }
 });
 
@@ -166,20 +182,11 @@ app.post("/login", async (req, res) => {
 
         const user = await Student.findOne({ prnNumber: prnNumber });
 
-        if (user) {
-            // const isMatch = await user.comparePassword(password);
-            // console.log("Password match:", isMatch);
-            
-            //if (isMatch) {
-                // Store user details in session
-                req.session.prnNumber = user.prnNumber;
-                req.session.studentName = user.studentName;
+        if (user && user.password === password) {
+            req.session.prnNumber = user.prnNumber;
+            req.session.studentName = user.studentName;
 
-                // Redirect to the dashboard after login
-                res.redirect("/dashboard");
-            //} else {
-            //    res.send("Wrong Details");
-            //}
+            res.redirect("/dashboard");
         } else {
             res.send("Wrong Details");
         }
@@ -199,14 +206,8 @@ app.post('/logout', (req, res) => {
     });
 });
 
-// const test = async (prnNumber, password) => {
-//     const user = await Student.findOne({prnNumber: prnNumber});
-//     const result = await user.comparePassword(password)
-//     console.log(result);
-// }
-
-// test('111122223333', 'abc123')
-
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+       

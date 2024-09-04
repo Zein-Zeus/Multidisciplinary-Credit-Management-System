@@ -1,73 +1,93 @@
-const mongoose=require("mongoose")
-const bcrypt = require('bcrypt')
+const mongoose = require("mongoose");
+const { GoogleSpreadsheet } = require("google-spreadsheet");
+const fs = require("fs");
+const path = require("path");
 
+// Load Google Sheets credentials
+const CREDENTIALS_PATH = path.join(__dirname, 'credentials.json');
+const SHEET_ID = '1nylbEjFV-WUimEe6db_FVBV-leEJt0_B6dGr9L7AUBU'; // Your Google Sheet ID
+
+// MongoDB Connection
 mongoose.connect("mongodb://localhost:27017/studentData")
-.then(()=>{
+.then(() => {
     console.log("Mongodb Connected");
 })
-.catch(()=>{
-    console.log("Failed to Connect");
-})
+.catch((err) => {
+    console.log("Failed to Connect", err);
+});
 
-const studentSchema=new mongoose.Schema({
-    studentName:{
-        type:String,
-        required:true
-    },
-    prnNumber:{
-        type:Number,
-        required:true,
-        unique:true
-    },
-    Email:{
-        type:String,
-        required:true
-    },
-    Contact:{
-        type:Number,
-        required:true
-    },
-    collegeName:{
-        type:String,
-        required:true
-    },
-    abcId:{
-        type:Number,
-        required:true,
-        unique:true
-    },
-    password:{
-      type:String,
-      required:true,
-      
+const studentSchema = new mongoose.Schema({
+    studentName: String,
+    prnNumber: Number,
+    Email: String,
+    Contact: Number,
+    collegeName: String,
+    abcId: Number,
+    password: String
+});
+
+const Student = mongoose.model('StudentNew', studentSchema);
+
+async function updateGoogleSheet(data) {
+    try {
+        const doc = new GoogleSpreadsheet(SHEET_ID);
+        const creds = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
+
+        await doc.useServiceAccountAuth({
+            client_email: creds.client_email,
+            private_key: creds.private_key
+        });
+
+        await doc.loadInfo();
+        const sheet = doc.sheetsByTitle['studentInfo'];
+        
+        if (!sheet) {
+            throw new Error("Sheet not found!");
+        }
+
+        let headerValues = sheet.headerValues;
+        if (!headerValues || headerValues.length === 0) {
+            console.log("Headers not found. Setting default headers.");
+            await sheet.setHeaderRow(['studentName', 'prnNumber', 'Email', 'Contact', 'collegeName', 'abcId', 'password']);
+            headerValues = ['studentName', 'prnNumber', 'Email', 'Contact', 'collegeName', 'abcId', 'password'];
+        } else {
+            console.log("Headers in sheet:", headerValues);
+        }
+
+        // Mask password for Google Sheet
+        const dataWithMaskedPassword = { ...data, password: '#######' };
+
+        await sheet.addRows([dataWithMaskedPassword]);
+        console.log('Sheet updated successfully');
+    } catch (error) {
+        console.error('Error updating Google Sheet:', error);
     }
-})
+}
 
-// studentSchema.pre('save', function(next){
-//   if(this.isModified('password')){
-//     bcrypt.hash(this.password, 8, (err, hash) => {
-//       if(err) return next(err);
+async function getGoogleSheetData(prnNumber) {
+    try {
+        const doc = new GoogleSpreadsheet(SHEET_ID);
+        const creds = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
 
-//       this.password = hash;
-//       next();
-//     })
-//   }
-// })
+        await doc.useServiceAccountAuth({
+            client_email: creds.client_email,
+            private_key: creds.private_key
+        });
 
-// studentSchema.methods.comparePassword = async function(password) {
-//   if(!password) throw new Error('Password is missing');
+        await doc.loadInfo();
+        const sheet = doc.sheetsByTitle['studentInfo'];
+        
+        if (!sheet) {
+            throw new Error("Sheet not found!");
+        }
 
-//   try {
-//     const result = await bcrypt.compare(password, this.password)
-//     return result;
-//   } catch (error) {
-//     console.log('Error while comparing password', error.message)
-//   }
-// }
+        const rows = await sheet.getRows();
+        const userRow = rows.find(row => Number(row.prnNumber) === prnNumber);
+        return userRow ? userRow._rawData : null;
+    } catch (error) {
+        console.error('Error getting data from Google Sheet:', error);
+        return null;
+    }
+}
 
-studentSchema.index({
-    prnNumber: 1, abcId: 1
-}, { unique: true });
-
-const collection=new mongoose.model("studentNew",studentSchema)
-module.exports=collection
+module.exports = { Student, updateGoogleSheet, getGoogleSheetData };
