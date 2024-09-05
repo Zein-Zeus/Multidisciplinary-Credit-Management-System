@@ -22,23 +22,31 @@
             <h2>New Registration</h2>
             <form action="/signup" method="post">
                 <div class="form-group">
-                    <label for="student-name">Student Name:</label>
-                    <input type="text" id="student-name" name="studentName" placeholder="Student Name" required>
+                    <label for="student-name">First Name: <span style="color:red">*</span></label>
+                    <input type="text" id="student-name" name="studentName" placeholder="First Name" required>
                 </div>
                 <div class="form-group">
-                    <label for="student-prn">Student PRN:</label>
+                    <label for="student-name">Middle Name:</label>
+                    <input type="text" id="student-name" name="studentName" placeholder="Middle Name" >
+                </div>
+                <div class="form-group">
+                    <label for="student-name">Last Name: <span style="color:red">*</span></label>
+                    <input type="text" id="student-name" name="studentName" placeholder="Last Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="student-prn">Student PRN: <span style="color:red">*</span></label>
                     <input type="number" id="student-prn" name="prnNumber" placeholder="PRN Number (16 Digits)" required>
                 </div>
                 <div class="form-group">
-                    <label for="Email">Email id:</label>
+                    <label for="Email">Email id: <span style="color:red">*</span></label>
                     <input type="email" id="Email" name="Email" placeholder="Email" required>
                 </div>
                 <div class="form-group">
-                    <label for="Contact">Contact number:</label>
+                    <label for="Contact">Contact number: <span style="color:red">*</span></label>
                     <input type="number" id="Contact" name="Contact" placeholder="Contact" required>
                 </div>
                 <div class="form-group">
-                    <label for="college-name">College Name:</label>
+                    <label for="college-name">College Name: <span style="color:red">*</span></label>
                     <select class="form-input" id="college-name" name="collegeName">
                         <option value="">Select your college</option>
                         <option value="Usha Mittal Institute of Technology">Usha Mittal Institute of Technology</option>
@@ -47,11 +55,11 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="ABC">ABC id:</label>
+                    <label for="ABC">ABC id: <span style="color:red">*</span></label>
                     <input type="number" id="ABC" name="abcId" placeholder="ABC ID (12 Digits)" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password:</label>
+                    <label for="password">Password: <span style="color:red">*</span></label>
                     <input type="text" id="password" name="password" placeholder="Password" required>
                 </div>
                 <button class="submit-button" type="submit">Sign Up</button>

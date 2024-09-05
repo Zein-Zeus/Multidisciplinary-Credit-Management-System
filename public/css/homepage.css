@@ -1,0 +1,70 @@
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #F5F7FF;
+}
+
+.container {
+    width: 90%;
+    max-width: 1440px;
+    position: relative;
+    padding: 20px;
+}
+
+.header-banner {
+    width: 100%;
+    max-height: 160px;
+    background: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.banner-img {
+    width: 100px;
+    height: auto;
+    margin-right: 20px;
+}
+
+.banner-text {
+    flex: 1;
+}
+
+.banner-title {
+    color: rgba(0, 0, 153, 0.89);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.banner-subtitle {
+    color: #494949;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.login-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.college-login, .student-login {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+}
+
+.college-login {
+    background-color: #28a745;
+}
+
+.student-login {
+    background-color: #007bff;
+}

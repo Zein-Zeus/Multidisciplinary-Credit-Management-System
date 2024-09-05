@@ -41,16 +41,17 @@ app.use(express.static('public'));
 app.set("view engine", "hbs");
 
 // Routes
+//Student
 app.get("/", (req, res) => {
-    res.render("login");
+    res.render("homepage");
 });
 
 app.get("/login", (req, res) => {
-    res.render("login");
+    res.render("studentLogin");
 });
 
 app.get("/signup", (req, res) => {
-    res.render("signup");
+    res.render("studentSignup");
 });
 
 app.get("/home", async(req, res) => {
@@ -61,7 +62,7 @@ app.get("/home", async(req, res) => {
     const user = await Student.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
-        res.render('home', {
+        res.render('studentHome', {
             userName: user.studentName,
             userInitials: user.studentName.split(' ').map(name => name[0]).join('')
         });
@@ -215,6 +216,19 @@ app.post('/logout', (req, res) => {
         }
         res.redirect('/login');
     });
+});
+
+//College
+app.get("/clglogin", (req, res) => {
+    res.render("collegeLogin");
+});
+
+app.get("/clghome", (req, res) => {
+    res.render("collegeHome");
+});
+
+app.get("/clgstudentreg", (req, res) => {
+    res.render("collegeStudentRegistration");
 });
 
 app.listen(PORT, () => {
