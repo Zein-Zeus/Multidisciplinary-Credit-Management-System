@@ -3,9 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Registration</title>
+    <title>New Registration</title>
+    <link rel="stylesheet" href="css/collegeStudentRegistration.css">
 </head>
 <body>
-    Student Registration
+    <div class="container">
+        <div class="header">
+            <img class="logo" src="images/logo.png" alt="Logo">
+            <div class="banner-text">
+                <div class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University</div>
+                <sub class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</sub>
+            </div>
+        </div>
+
+        <div class="title">Register New Student</div>
+
+        <div class="form-container">
+            <div class="background-box1">
+                <form action="/register" method="POST">
+                    <div class="input-group">
+                        <div class="f_name">
+                            <div class="label">First Name:<span class="required">*</span></div>
+                            <input type="text" id="f_name" name="firstName" placeholder="Enter first name" required>
+                        </div>
+                        <div class="m_name">
+                            <div class="label">Middle Name:</div>
+                            <input type="text" id="m_name" name="middleName" placeholder="Enter middle name">
+                        </div>
+                        <div class="l_name">
+                            <div class="label">Last Name:<span class="required">*</span></div>
+                            <input type="text" id="l_name" name="lastName" placeholder="Enter last name" required>
+                        </div>
+                        <div class="college_name">
+                            <div class="label">College Name:<span class="required">*</span></div>
+                            <input type="text" id="college_name" name="collegeName" placeholder="Enter college name" required>
+                        </div>
+                        <div class="prn">
+                            <div class="label">PRN Number:<span class="required">*</span></div>
+                            <input type="text" id="prn" name="prnNumber" placeholder="Enter PRN" required>
+                        </div>
+                        <div class="abc">
+                            <div class="label">ABC ID:<span class="required">*</span></div>
+                            <input type="text" id="abc" name="abcId" placeholder="Enter ABC ID" required>
+                        </div>
+                        <div class="email">
+                            <div class="label">Email Id:<span class="required">*</span></div>
+                            <input type="email" id="email" name="email" placeholder="Enter email" required>
+                        </div>
+                        <button class="submit-button" type="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="or-text">OR</div>
+
+            <!-- Form for Excel import -->
+            <div class="background-box2">
+                <form id="import-form" enctype="multipart/form-data">
+                    <div class="import-container">
+                        <div class="import-label">Import Using Excel Sheet:<span class="required">*</span></div>
+                        <button id="import-button" class="import-button" type="button">Import</button>
+                        <input type="file" id="file-input" name="excelFile" style="display: none;" required>
+                    </div>
+                </form>
+            </div>
+
+            <div class="or-text"></div>
+        </div>
+    </div>
+
+    <script src="js/collegeStudentRegistration.js"></script>
 </body>
 </html>
