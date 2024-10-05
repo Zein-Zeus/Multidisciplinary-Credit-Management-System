@@ -25,29 +25,25 @@
     <main>
         <div class="upload-form">
             <h2>Upload Certificate</h2>
-            <form action="/submit-certificate" method="post" enctype="multipart/form-data">
+            <form action="/submit-course" method="POST" enctype="multipart/form-data">
+                <!-- Form fields for course details -->
                 <div class="form-group">
                     <label for="course-name">Course Name:</label>
-                    <input type="text" id="course-name" name="course-name" required>
+                    <input type="text" id="course-name" name="courseName" required>
                 </div>
                 <div class="form-group">
                     <label for="course-credits">Course Credits:</label>
-                    <input type="text" id="course-credits" name="course-credits" required>
+                    <input type="text" id="course-credits" name="courseCredits" required>
                 </div>
                 <div class="form-group">
                     <label for="course-college">Course College:</label>
-                    <input type="text" id="course-college" name="course-college" required>
+                    <input type="text" id="course-college" name="courseCollege" required>
                 </div>
                 <div class="form-group">
-                    <label for="certificate-upload">Upload certificate:</label>
+                    <label for="certificate-upload">Upload course file (PDF):</label>
                     <input type="file" id="certificate-upload" name="certificate-upload" required>
                 </div>
-                <button type="submit" class="submit-button" onclick="show('popup')">Submit</button>
-                <div class="popup" id="popup">
-                    <p>Certificate Uploaded</p>
-                    <a href="#" onclick="hide('popup')">Close</a>
-                </div>
-
+                <button type="submit" class="submit-button">Submit</button>
             </form>
             <a href="/dashboard" class="back-link">← Back</a>
         </div>

@@ -4,10 +4,12 @@ const path = require("path");
 const hbs = require("hbs");
 const multer = require('multer'); // Import multer
 const XLSX = require('xlsx'); // Import xlsx
-const { Student, RegisteredStudent, updateGoogleSheet, importExcelToMongoDB } = require("./mongodb");
+const { Student, RegisteredStudent, updateGoogleSheet, importExcelToMongoDB } = require("./mongodbstudent");
 const session = require('express-session');
 const crypto = require('crypto');
 const fs = require('fs');
+
+const { uploadCourse } = require("./mongodbcourses"); // Import course upload function
 
 // Set up Multer for file uploads
 const storage = multer.diskStorage({
@@ -94,7 +96,7 @@ app.get("/dashboard", async (req, res) => {
     const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
-        res.render('dashboard', {
+        res.render('studentDashboard', {
             userName: `${user.firstName} ${user.lastName}`,
             userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
         });
@@ -111,7 +113,7 @@ app.get("/course", async(req, res) => {
     const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
-        res.render('courses', {
+        res.render('studentCourses', {
             userName: `${user.firstName} ${user.lastName}`,
             userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
         });
@@ -128,7 +130,7 @@ app.get("/certificate", async(req, res) => {
     const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
 
     if (user) {
-        res.render('certificate', {
+        res.render('studentUploadCertificate', {
             userName: `${user.firstName} ${user.lastName}`,
             userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
         });
@@ -154,18 +156,72 @@ app.get("/AICoursePage", async(req, res) => {
     }
 });
 
+// Route to get PRNs by first and last name (Already present)
+app.get('/api/getPrn', async (req, res) => {
+    const { firstName, lastName } = req.query;
+    console.log('Received firstName:', firstName, 'lastName:', lastName); // Log incoming params
+
+    try {
+        const query = {};
+
+        if (firstName) {
+            query.firstName = new RegExp(firstName, 'i'); // Case-insensitive match for first name
+        }
+
+        if (lastName) {
+            query.lastName = new RegExp(lastName, 'i'); // Case-insensitive match for last name
+        }
+
+        console.log('Query:', query);  // Log the database query being used
+
+        const students = await Student.find(query);
+        console.log('Found students:', students); // Log the students returned by the query
+
+        res.json(students);
+    } catch (error) {
+        console.error('Error fetching students:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/get-student-info', async (req, res) => {
+    const { prnNumber } = req.query;
+
+    try {
+        // Fetch the full student details based on the selected PRN
+        const student = await Student.findOne({ prnNumber }).select('collegeName abcId email contact');
+        
+        if (student) {
+            res.json(student);
+        } else {
+            res.status(404).json({ message: 'Student not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching student details:', error);
+        res.status(500).json({ message: 'Error fetching student details' });
+    }
+});
+
 app.post("/signup", async (req, res) => {
+    const { password } = req.body;
+
+    const passwordValidation = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    if (!passwordValidation.test(password)) {
+        return res.status(400).send('Password does not meet the requirements');
+    }
+
     try {
         const existingStudent = await Student.findOne({ prnNumber: req.body.prnNumber });
 
         if (!existingStudent) {
-            return res.status(400).send('PRN number not found in the database. Registration failed.');
+            res.status(400).send('PRN number not found in the database. Registration failed.');
+            return res.redirect('/signup');
         }
 
         // Create a new registered student document
         const registeredStudentData = new RegisteredStudent({
             firstName: req.body.firstName,
-            middleName: req.body.middleName || '', // Default to empty string if not provided
+            middleName: req.body.middleName,
             lastName: req.body.lastName,
             prnNumber: req.body.prnNumber,
             Email: req.body.Email,
@@ -206,6 +262,9 @@ app.post("/login", async (req, res) => {
     }
 });
 
+// Add this route for handling course upload
+app.post("/submit-course", upload.single('certificate-upload'), uploadCourse);
+
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -223,6 +282,16 @@ app.get("/clglogin", (req, res) => {
 
 app.get("/clghome", (req, res) => {
     res.render("collegeHome");
+});
+
+app.get("/clgdashboard", async (req, res) => {
+    try {
+        const totalStudents = await RegisteredStudent.countDocuments(); // Count total students in the collection
+        res.render("collegeDashboard", { totalStudents }); // Pass the count to the view
+    } catch (err) {
+        console.error('Error fetching students:', err);
+        res.status(500).send('Error fetching student data.');
+    }
 });
 
 app.get("/clgstudentreg", (req, res) => {

@@ -56,7 +56,7 @@ main {
 }
 
 .upload-form {
-    background-color: #e6e6ff;
+    background-color: #CBD4F9;
     padding: 40px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -90,7 +90,7 @@ main {
 }
 
 .submit-button {
-    background-color: #0056b3;
+    background-color: #163172;
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -107,7 +107,7 @@ main {
 .back-link {
     display: block;
     margin-top: 20px;
-    color: #0056b3;
+    color: #163172;
     text-decoration: none;
     text-align: center;
     font-weight: bold;

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Dashboard</title>
+    <link rel="stylesheet" href="css/collegeDashboard.css">
+</head>
+<body>
+        <nav>
+            <div class="header-banner">
+                <div class="banner-bg"></div>
+                <a href="/" class="banner-img-container">
+                    <img class="banner-img" src="images/logo.png" alt="University Logo" />
+                </a>
+                <div class="banner-text">
+                    <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
+                    <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
+                </div>
+            </div>
+        </nav>
+    <div class="container">
+        <div class="collapsible-bar">
+            <button class="collapsible">Menu</button>
+            <div class="content">
+                <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
+                <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
+                <div class="menu-item"><a href="/upload-courses">Upload Courses</a></div>
+                <div class="menu-item"><a href="/verify-credits">Verify Credits</a></div>
+                <div class="menu-item"><a href="/student-records">Student Records</a></div>
+                <div class="menu-item"><a href="/issues">Issues</a></div>
+                <div class="menu-item"><a href="/">Logout</a></div>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="dashboard-item streams">
+                <a href="">Total Streams</a>
+                <div class="data">120</div>
+            </div>
+            <div class="dashboard-item courses">
+                <a href="">Total Courses</a>
+                <div class="data">289</div>
+            </div>
+            <div class="dashboard-item students">
+                <a href="">Students Enrolled</a>
+                <div class="data">{{totalStudents}}</div> <!-- Display the total number of students -->
+            </div>
+            <div class="dashboard-item verifications">
+                <a href="">Pending Verifications</a>
+                <div class="data">84</div>
+            </div>
+            <div class="dashboard-item notifications">
+                <a href="">Notifications</a>
+            </div>
+        </div>
+    </div>
+    <script src="js/collegeDashboard.js"></script>
+</body>
+</html>

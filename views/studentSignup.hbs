@@ -10,7 +10,9 @@
     <nav>
         <div class="header-banner">
             <div class="banner-bg"></div>
-            <img class="banner-img" src="images/logo.png" alt="University Logo" />
+            <a href="/" class="banner-img-container"> <!-- Wrap the logo in an anchor tag -->
+                <img class="banner-img" src="images/logo.png" alt="University Logo" />
+            </a>
             <div class="banner-text">
                 <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
                 <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
@@ -21,54 +23,87 @@
         <div class="upload-form">
             <h2>New Registration</h2>
             <form action="/signup" method="post">
+                <!-- First Name Field -->
                 <div class="form-group">
                     <label for="student-name">First Name: <span style="color:red">*</span></label>
                     <input type="text" id="student-name" name="firstName" placeholder="First Name" required>
                 </div>
+
+                <!-- Middle Name Field -->
                 <div class="form-group">
-                    <label for="student-name">Middle Name:</label>
-                    <input type="text" id="student-name" name="middlename" placeholder="Middle Name" >
+                    <label for="student-middle-name">Middle Name:</label>
+                    <input type="text" id="student-middle-name" name="middleName" placeholder="Middle Name">
                 </div>
+
+                <!-- Last Name Field -->
                 <div class="form-group">
                     <label for="student-lastname">Last Name: <span style="color:red">*</span></label>
                     <input type="text" id="student-lastname" name="lastName" placeholder="Last Name" required>
                 </div>
 
+                <!-- PRN Dropdown Field -->
                 <div class="form-group">
                     <label for="student-prn">Student PRN: <span style="color:red">*</span></label>
-                    <input type="number" id="student-prn" name="prnNumber" placeholder="PRN Number (16 Digits)" required>
+                    <select id="student-prn" name="prnNumber">
+                        <option value="">Select your PRN</option>
+                        <!-- Dynamic PRN options will be populated by JS -->
+                    </select>
                 </div>
+
+                <!-- Email Field -->
                 <div class="form-group">
-                    <label for="Email">Email id: <span style="color:red">*</span></label>
-                    <input type="email" id="Email" name="Email" placeholder="Email" required>
+                    <label for="Email">Email ID: <span style="color:red">*</span></label>
+                    <input type="email" id="Email" name="Email" placeholder="Email" required readonly>
                 </div>
+
+                <!-- Contact Number Field -->
                 <div class="form-group">
-                    <label for="Contact">Contact number: <span style="color:red">*</span></label>
+                    <label for="Contact">Contact Number: <span style="color:red">*</span></label>
                     <input type="number" id="Contact" name="Contact" placeholder="Contact" required>
                 </div>
+
+                <!-- College Name Dropdown -->
                 <div class="form-group">
                     <label for="college-name">College Name: <span style="color:red">*</span></label>
-                    <select class="form-input" id="college-name" name="collegeName">
+                    <select class="form-input" id="college-name" name="collegeName" readonly>
                         <option value="">Select your college</option>
                         <option value="Usha Mittal Institute of Technology">Usha Mittal Institute of Technology</option>
                         <option value="Sir Vithaldas Thakersey College of Home Science">Sir Vithaldas Thakersey College of Home Science</option>
                         <option value="Jankidevi Bajaj Institute of Management Studies">Jankidevi Bajaj Institute of Management Studies</option>
                     </select>
                 </div>
+
+                <!-- ABC ID Field -->
                 <div class="form-group">
-                    <label for="ABC">ABC id: <span style="color:red">*</span></label>
-                    <input type="number" id="ABC" name="abcId" placeholder="ABC ID (12 Digits)" required>
+                    <label for="ABC">ABC ID: <span style="color:red">*</span></label>
+                    <input type="number" id="ABC" name="abcId" placeholder="ABC ID (12 Digits)" required readonly>
                 </div>
+
+                <!-- Password Field -->
                 <div class="form-group">
                     <label for="password">Password: <span style="color:red">*</span></label>
                     <input type="text" id="password" name="password" placeholder="Password" required>
+                    <div class="password-requirements" id="password-requirements">
+                        <ul>
+                            <li><strong>Password Requirements:</strong></li>
+                            <li>Minimum 8 characters</li>
+                            <li>At least one uppercase letter</li>
+                            <li>At least one lowercase letter</li>
+                            <li>At least one number</li>
+                            <li>At least one special character (!@#$%^&*)</li>
+                        </ul>
+                    </div>
                 </div>
+
+
                 <button class="submit-button" type="submit">Sign Up</button>
             </form>
 
             <a href="/login" class="back-link">← Back</a>
         </div>
     </main>
+
+    <!-- Linking JavaScript -->
     <script src="js/signup.js"></script>
 </body>
 </html>
