@@ -298,6 +298,10 @@ app.get("/clgstudentreg", (req, res) => {
     res.render("collegeStudentRegistration");
 });
 
+app.get("/clgverifycredits", (req, res) => {
+    res.render("collegeVerifyCredits");
+});
+
 app.post("/register", async (req, res) => {
     try {
         // Check for existing PRN number

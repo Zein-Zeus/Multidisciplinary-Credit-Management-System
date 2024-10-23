@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>verify credits</title>
+    <link rel="stylesheet" href="css/collegeVerifyCredits.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="header-banner">
+                <div class="banner-bg"></div>
+                <a href="/" class="banner-img-container">
+                    <img class="banner-img" src="images/logo.png" alt="University Logo" />
+                </a>
+                <div class="banner-text">
+                    <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
+                    <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
+                </div>
+            </div>
+        </nav>
+        <div class="collapsible-bar">
+            <button class="collapsible">Menu</button>
+            <div class="content">
+                <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
+                <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
+                <div class="menu-item"><a href="/upload-courses">Upload Courses</a></div>
+                <div class="menu-item"><a href="/clgverifycredits">Verify Credits</a></div>
+                <div class="menu-item"><a href="/student-records">Student Records</a></div>
+                <div class="menu-item"><a href="/issues">Issues</a></div>
+                <div class="menu-item"><a href="/">Logout</a></div>
+            </div>
+        </div>
+        <div class="main">
+            <div class="box-container">
+                <div class="pending">
+                    Verification Pending
+                    <div id="data"><br><br><br>120</div>
+                </div>
+                <div class="verified">
+                    Verified
+                    <div id="data"><br><br><br>120</div>
+                </div>
+                <div class="rejected">
+                    Rejected
+                    <div id="data"><br><br><br>120</div>
+                </div>
+            </div>
+        </div>
+            <div class="filter">
+                <div class="stu-prn">
+                    <div class="label">Student PRN:</div>
+                    <input type="text" id="stu-prn" placeholder="Enter PRN">
+                </div>
+                <div class="stu-course">
+                    <div class="label">Course:<span class="required">*</span></div>
+                    <select class="form-input" id="stu-course">
+                        <option value="">Select course</option>
+                        <option value="AI">AI</option>
+                        <option value="DSA">DSA</option>
+                        <option value="OOPs">OOPs</option>
+                    </select>
+                </div>
+                <button class="search-button" id="search-button">Search</button>
+                <button class="clear-button" id="clear-button">Clear</button>
+            </div>
+
+    <script src="js/collegeVerifyCredits.js"></script>
+</body>
+</html>
