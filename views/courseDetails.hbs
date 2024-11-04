@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{courseName}}</title>
+    <link rel="stylesheet" href="/css/courseDetails.css"> <!-- Absolute path -->
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <img src="/images/logo.png" alt="Logo">
+            </div>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/course">Courses</a></li>
+            </ul>
+            <div class="user-profile">
+                <div class="user-initials">{{userInitials}}</div>
+            </div>
+        </nav>
+        <section class="course-overview">
+            <h1 class="course-title">{{courseName}}</h1>
+            <div class="course-details">
+                <p class="description">{{courseDescription}}</p>
+                <p class="info">
+                    Credits: {{credits}} points<br>
+                    Duration: {{duration}}<br>
+                    Mode: {{mode}}<br>
+                    College: {{collegeName}}<br>
+                    Faculty: {{facultyName}}<br><br>
+                    Modules:
+                    <ul>
+                        {{#each modules}}
+                            <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </p>
+                <p class="info">
+                    Outcomes:
+                    <ul>
+                        {{#each outcomes}}
+                            <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </p>
+                <button class="enroll-btn">Enroll Now</button>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

@@ -4,12 +4,12 @@ const path = require("path");
 const hbs = require("hbs");
 const multer = require('multer'); // Import multer
 const XLSX = require('xlsx'); // Import xlsx
-const { Student, RegisteredStudent, updateGoogleSheet, importExcelToMongoDB } = require("./mongodbstudent");
+const { Student, RegisteredStudent, Course, updateGoogleSheet, importExcelToMongoDB } = require("./mongodb");
 const session = require('express-session');
 const crypto = require('crypto');
 const fs = require('fs');
 
-const { uploadCourse } = require("./mongodbcourses"); // Import course upload function
+//const { uploadCourse } = require("./mongodbcourses"); // Import course upload function
 
 // Set up Multer for file uploads
 const storage = multer.diskStorage({
@@ -54,6 +54,7 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 
 app.set("view engine", "hbs");
 
@@ -72,19 +73,30 @@ app.get("/signup", (req, res) => {
 });
 
 app.get("/home", async (req, res) => {
+    // Check if user is logged in
     if (!req.session.prnNumber) {
         return res.redirect('/login');
     }
 
-    const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+    try {
+        // Find the user by PRN number
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
 
-    if (user) {
+        // Fetch all courses from the database
+        const courses = await Course.find();
+
+        // Render the student home page with user info and courses
         res.render('studentHome', {
             userName: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            courses // Pass the courses to the template
         });
-    } else {
-        res.status(404).send('User not found');
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error fetching data');
     }
 });
 
@@ -131,23 +143,6 @@ app.get("/certificate", async(req, res) => {
 
     if (user) {
         res.render('studentUploadCertificate', {
-            userName: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
-        });
-    } else {
-        res.status(404).send('User not found');
-    }
-});
-
-app.get("/AICoursePage", async(req, res) => {
-    if (!req.session.prnNumber) {
-        return res.redirect('/login');
-    }
-
-    const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
-
-    if (user) {
-        res.render('AICoursePage', {
             userName: `${user.firstName} ${user.lastName}`,
             userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
         });
@@ -262,8 +257,40 @@ app.post("/login", async (req, res) => {
     }
 });
 
+app.get("/course/:id", async (req, res) => {
+    try {
+        const courseId = req.params.id;
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return res.status(404).send('Course not found');
+        }
+
+        const modulesArray = course.courseModules.split(/\r?\n|,/).map(module => module.trim());
+        const outcomesArray = course.courseOutcomes.split(/\r?\n|,/).map(outcome => outcome.trim());
+
+        // Render the course detail page with the course data
+        res.render('courseDetails', {
+            courseName: course.courseName,
+            courseDescription: course.courseDescription,
+            credits: course.credits,
+            duration: course.duration,
+            mode: course.mode,
+            collegeName: course.collegeName,
+            facultyName: course.facultyName,
+            modules: modulesArray ,
+            outcomes: outcomesArray,
+            image: course.image
+            // Include any other fields you want to display
+        });
+    } catch (error) {
+        console.error('Error fetching course details:', error);
+        res.status(500).send('Error fetching course details');
+    }
+});
+
 // Add this route for handling course upload
-app.post("/submit-course", upload.single('certificate-upload'), uploadCourse);
+//app.post("/submit-course", upload.single('certificate-upload'), uploadCourse);
 
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
@@ -301,6 +328,11 @@ app.get("/clgstudentreg", (req, res) => {
 app.get("/clgverifycredits", (req, res) => {
     res.render("collegeVerifyCredits");
 });
+
+app.get("/clguploadcourse", (req, res) => {
+    res.render("collegeUploadCourse");
+});
+
 
 app.post("/register", async (req, res) => {
     try {
@@ -370,6 +402,35 @@ app.post('/import', upload.single('excelFile'), async (req, res) => {
     }
 });
 
+// Add this route for handling course upload
+app.post("/uploadcourse", upload.single('image'), async (req, res) => {
+    console.log(req.body);
+    
+    // Prepare the new course data
+    const newCourseData = {
+        courseName: req.body.courseName,
+        courseDescription: req.body.courseDescription,
+        credits: req.body.credits,
+        duration: req.body.duration,
+        mode: req.body.mode, // online or offline
+        collegeName: req.body.collegeName,
+        facultyName: req.body.facultyName,
+        courseModules: req.body.courseModules,
+        courseOutcomes: req.body.courseOutcomes,
+        image: req.file ? `/uploads/${req.file.filename}` : null // Path for the uploaded image
+    };
+
+    const newCourse = new Course(newCourseData);
+
+    try {
+        await newCourse.save(); // Save the course to the database
+        console.log('Course saved successfully:', newCourse);
+        return res.send('Course uploaded successfully.'); // Send a response back to the client
+    } catch (error) {
+        console.error('Error saving course:', error);
+        res.status(500).send('Error saving course: ' + error.message);
+    }
+});
 
 // Start the server
 app.listen(PORT, () => {

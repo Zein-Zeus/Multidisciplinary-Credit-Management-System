@@ -27,27 +27,18 @@
     <div class="section-title">Continue Learning <br></div>
     
     <div class="course-cards">
+      {{#each courses}}
       <div class="card">
-        <img src="https://via.placeholder.com/216x180" />
-        <div class="card-details">
-          <div class="course-name">Course 1</div>
-          <div class="course-type">Online</div>
-        </div>
+        <a href="/course/{{this._id}}"> <!-- Link to the individual course page -->
+          <img src="{{this.image}}" alt="{{this.courseName}}" />
+          <div class="card-details">
+            <div class="course-name">{{this.courseName}}</div>
+            <div class="course-type">{{this.mode}}</div>
+            <div class="course-credits">{{this.credits}}</div>
+          </div>
+        </a>
       </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/216x180" />
-        <div class="card-details">
-          <div class="course-name">Course 2</div>
-          <div class="course-type">Online</div>
-        </div>
-      </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/216x180" />
-        <div class="card-details">
-          <div class="course-name">Course 3</div>
-          <div class="course-type">Offline</div>
-        </div>
-      </div>
+      {{/each}}
     </div>
   </section>
 </div>

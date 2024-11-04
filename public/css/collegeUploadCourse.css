@@ -1,0 +1,195 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background-color: #f2f5fc;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    background: #F5F7FF;
+}
+
+.header-banner {
+    width: 100%;
+    max-height: 160px;
+    background: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.banner-img {
+    width: 100px;
+    height: auto;
+    margin-right: 20px;
+}
+
+.banner-text {
+    flex: 1;
+}
+
+.banner-title {
+    color: rgba(0, 0, 153, 0.89);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.banner-subtitle {
+    color: #494949;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.collapsible-bar {
+    width: 100%;
+    background-color: #163172;
+}
+
+.collapsible {
+    background-color: #163172;
+    color: white;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 18px;
+}
+
+.collapsible:after {
+    content: '\002B'; /* Add a '+' symbol to indicate expandable */
+    color: white;
+    font-weight: bold;
+    float: right;
+}
+
+.collapsible.active:after {
+    content: "\2212"; /* Change to '-' when expanded */
+}
+
+.content {
+    padding: 0 18px;
+    display: none;
+    background-color: #f1f1f1;
+}
+
+.menu-item {
+    padding: 15px 0;
+}
+
+.menu-item a {
+    color: #163172;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.menu-item a:hover {
+    color: #004494;
+    text-decoration: underline;
+}
+.main-content {
+    width: 80%;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.university-info h1 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.university-info p {
+    font-size: 14px;
+    color: gray;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    background-color: gray;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-left: 20px;
+}
+
+.bell-icon {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.form-section {
+    background-color: #e4ebfa;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.upload-btn {
+    background-color: #1c6bba;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    align-items: center;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group input[type="radio"] {
+    width: auto;
+}
+.form-group .radio-label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+button[type="submit"] {
+    background-color: #1c6bba;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
