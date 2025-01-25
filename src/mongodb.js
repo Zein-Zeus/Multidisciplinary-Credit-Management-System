@@ -118,9 +118,42 @@ const courseSchema = new mongoose.Schema({
     }
 });
 
+const UploadedCertificateSchema = new mongoose.Schema({
+    studentPRN: {
+        type: String,
+        required: true,
+    },
+    certificatePath: {
+        type: String,
+        required: true,
+    },
+    courseName: {
+        type: String,
+        required: true,
+    },
+    credits: {
+        type: Number,
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending',
+    },
+    uploadedAt: {
+        type: Date,
+        default: Date.now,
+    },
+    remarks: {
+        type: String,
+        default: '',
+    },
+});
+
 const RegisteredStudent = mongoose.model('RegisteredStudent', registeredStudentSchema);
 const Student = mongoose.model('StudentDetails', studentSchema);
 const Course = mongoose.model('Course', courseSchema); // Create the Course model
+const UploadedCertificate = mongoose.model('UploadedCertificate', UploadedCertificateSchema);
 
 async function updateGoogleSheet(data) {
     try {
@@ -237,4 +270,4 @@ async function importExcelToMongoDB(filePath) {
 //     }
 // }
 
-module.exports = { Student, RegisteredStudent, Course, updateGoogleSheet, importExcelToMongoDB };
+module.exports = { Student, RegisteredStudent, Course, updateGoogleSheet, importExcelToMongoDB, UploadedCertificate };

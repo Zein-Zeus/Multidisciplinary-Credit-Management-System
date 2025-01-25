@@ -335,3 +335,19 @@ input[type="email"] {
         font-size: 0.9rem;
     }
 }
+
+/* Styling for popup notification */
+.popup-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50; /* Default success color */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+}
+.popup-notification.error {
+    background-color: #f44336; /* Error color */
+}

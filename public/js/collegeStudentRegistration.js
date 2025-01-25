@@ -32,3 +32,36 @@ function toggleMenu() {
         button.innerHTML = "☰";  // Change back to "☰" when menu is closed
     }
 }
+
+document.getElementById("registerForm").addEventListener("submit", async (event) => {
+    event.preventDefault(); // Prevent default form submission
+    const formData = new FormData(event.target);
+
+    try {
+        const response = await fetch("/register", {
+            method: "POST",
+            body: formData,
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showPopup("success", result.message);
+        } else {
+            showPopup("error", result.message);
+        }
+    } catch (error) {
+        showPopup("error", "An unexpected error occurred.");
+    }
+});
+
+function showPopup(type, message) {
+    const popup = document.getElementById("popupNotification");
+    popup.textContent = message;
+    popup.className = `popup-notification ${type}`;
+    popup.style.display = "block";
+
+    // Hide the popup after 3 seconds
+    setTimeout(() => {
+        popup.style.display = "none";
+    }, 3000);
+}

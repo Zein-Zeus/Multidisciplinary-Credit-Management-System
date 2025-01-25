@@ -44,3 +44,39 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+document.getElementById('course-upload-form').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent the form from submitting normally
+
+    const formData = new FormData(this);
+
+    fetch('/uploadcourse', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())  // Ensure the response is parsed as JSON
+    .then(data => {
+        console.log('Response from server:', data);
+        // Show the popup with the message from the server
+        if (data.success) {
+            showPopup(data.message);
+        } else {
+            showPopup(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showPopup('An error occurred while uploading the course.');
+    });
+});
+
+function showPopup(message) {
+    const popup = document.getElementById('popup-notification');
+    const popupMessage = document.getElementById('popup-message');
+    popupMessage.textContent = message;  // Set the message
+    popup.style.display = 'block';  // Display the popup
+    
+    setTimeout(() => {
+        popup.style.display = 'none'; // Hide the popup after 5 seconds
+    }, 5000);
+}
+

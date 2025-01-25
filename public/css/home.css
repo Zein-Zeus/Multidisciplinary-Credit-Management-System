@@ -126,3 +126,13 @@ footer a {
     color: #fff;
     text-decoration: none;
 }
+
+/* CSS to adjust image dimensions */
+.course-image {
+    width: 100%;  /* or specify a fixed width, e.g., 200px */
+    height: 200px; /* Maintain aspect ratio */
+    max-width: 250px; /* Maximum width of the image */
+    object-fit: cover; /* Make sure image covers the space without distortion */
+    border-radius: 8px; /* Optional: Add rounded corners to the image */
+    text-align: center;
+}

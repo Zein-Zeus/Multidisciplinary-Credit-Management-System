@@ -4,24 +4,38 @@ const path = require("path");
 const hbs = require("hbs");
 const multer = require('multer'); // Import multer
 const XLSX = require('xlsx'); // Import xlsx
-const { Student, RegisteredStudent, Course, updateGoogleSheet, importExcelToMongoDB } = require("./mongodb");
+const { Student, RegisteredStudent, Course, updateGoogleSheet, importExcelToMongoDB, UploadedCertificate } = require("./mongodb");
 const session = require('express-session');
 const crypto = require('crypto');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const twilio = require('twilio');
 
-// Set up Multer for file uploads
+// Set up storage engine for Multer
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Folder where images will be saved
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Store with a timestamp to avoid name conflicts
+  }
+});
+
+// Create upload instance
+const upload = multer({ storage: storage });
+
+// Separate storage for certificate uploads
+const certificateStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = path.join(__dirname, 'uploads', 'uploadedCertificates');
+        cb(null, dir); // Certificates saved in the specified directory
     },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Add timestamp to avoid conflicts
     }
 });
 
-const upload = multer({ storage: storage }); // Create upload instance
+const uploadCertificate = multer({ storage: certificateStorage });
 
 // Generate a random secret key for each session
 const secret = crypto.randomBytes(16).toString('hex');
@@ -59,7 +73,7 @@ app.use('/uploads', express.static('uploads'));
 app.set("view engine", "hbs");
 
 // Routes
-// Student
+// -------------------------------------------------------------------- Student --------------------------------------------------------------------
 app.get("/", (req, res) => {
     res.render("homepage");
 });
@@ -294,6 +308,79 @@ app.get("/course/:id", async (req, res) => {
     }
 });
 
+app.delete('/course/:id', async (req, res) => {
+    try {
+        const courseId = req.params.id;
+
+        // Find the course by ID
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return res.status(404).send({ success: false, message: 'Course not found' });
+        }
+
+        // Check if the course has an associated image
+        if (course.image) {
+            const imagePath = path.join(__dirname, 'public', course.image); // Adjust 'public' to your static folder path
+
+            // Delete the image file
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error('Error deleting image:', err);
+                } else {
+                    console.log('Image deleted:', imagePath);
+                }
+            });
+        }
+
+        // Delete the course from the database
+        await course.deleteOne();
+        res.send({ success: true, message: 'Course and associated image deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting course:', error);
+        res.status(500).send({ success: false, message: 'Error deleting course' });
+    }
+});
+
+// Route for certificate upload
+// app.get('/certificate', (req, res) => {
+//     const user = req.session.user; // Assuming user data is stored in the session
+//     if (!user || !user.prnNumber) {
+//         return res.redirect('/login'); // Redirect if the user is not logged in or PRN is missing
+//     }
+
+//     res.render('studentUploadCertificate', { studentPRN: user.prnNumber }); // Pass prnNumber as studentPRN
+// });
+
+app.post('/upload-certificate', uploadCertificate.single('certificate-upload'), async (req, res) => {
+    const { courseName, credits, courseCollege, studentPRN } = req.body;
+
+    // if (!studentPRN) {
+    //     console.error('Student PRN missing from request.');
+    //     return res.status(400).send('Student PRN is required.');
+    // }
+
+    try {
+        const certificateData = {
+            studentPRN: req.session.prnNumber, // Ensure this maps correctly in your schema
+            certificatePath: req.file.path,
+            courseName,
+            credits: parseInt(credits, 10),
+            status: 'Pending',
+            uploadedAt: new Date(),
+        };
+
+        const newCertificate = new UploadedCertificate(certificateData);
+        await newCertificate.save();
+
+        console.log('Certificate successfully saved:', newCertificate);
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.error('Error saving certificate:', error);
+        res.status(500).send('An error occurred while uploading the certificate.');
+    }
+});
+
 app.post("/forget-password", async (req, res) => {
   const { prnNumber } = req.body;
 
@@ -416,7 +503,7 @@ app.post('/logout', (req, res) => {
     });
 });
 
-// College routes
+// -------------------------------------------------------------------- College routes --------------------------------------------------------------------
 app.get("/clglogin", (req, res) => {
     res.render("collegeLogin");
 });
@@ -428,7 +515,8 @@ app.get("/clghome", (req, res) => {
 app.get("/clgdashboard", async (req, res) => {
     try {
         const totalStudents = await RegisteredStudent.countDocuments(); // Count total students in the collection
-        res.render("collegeDashboard", { totalStudents }); // Pass the count to the view
+        const totalCourses = await Course.countDocuments();
+        res.render("collegeDashboard", { totalStudents, totalCourses }); // Pass the count to the view
     } catch (err) {
         console.error('Error fetching students:', err);
         res.status(500).send('Error fetching student data.');
@@ -454,14 +542,14 @@ app.post("/register", async (req, res) => {
         const existingStudentByPrn = await Student.findOne({ prnNumber: req.body.prnNumber });
         if (existingStudentByPrn) {
             console.log('Student with this PRN number already exists.');
-            return res.status(400).send('Student with this PRN number already exists.'); // Optionally display an error message
+            return res.status(400).json({ success: false, message: 'Student with this PRN number already exists.' });
         }
 
         // Check for existing ABC ID
         const existingStudentByAbcId = await Student.findOne({ abcId: req.body.abcId });
         if (existingStudentByAbcId) {
             console.log('Student with this ABC ID already exists.');
-            return res.status(400).send('Student with this ABC ID already exists.'); // Optionally display an error message
+            return res.status(400).json({ success: false, message: 'Student with this ABC ID already exists.' });
         }
 
         // Create a new student document
@@ -472,20 +560,18 @@ app.post("/register", async (req, res) => {
             collegeName: req.body.collegeName,
             prnNumber: req.body.prnNumber,
             abcId: req.body.abcId,
-            email: req.body.email, // Make sure this matches the form input
-            contact: req.body.contact // Assuming this is captured from the form
+            email: req.body.email,
+            contact: req.body.contact
         });
 
         await studentData.save();
-        // If you're updating a Google Sheet
-        // await updateGoogleSheet(studentData);
 
         console.log('Student registered successfully.');
-        return res.redirect('/clgstudentreg'); // Redirect after successful registration
+        return res.json({ success: true, message: 'Student registered successfully.' });
 
     } catch (err) {
         console.error('Error adding student:', err.message);
-        res.status(400).send('Error adding student: ' + err.message);
+        res.status(500).json({ success: false, message: 'Error adding student: ' + err.message });
     }
 });
 
@@ -520,29 +606,88 @@ app.post('/import', upload.single('excelFile'), async (req, res) => {
 app.post("/uploadcourse", upload.single('image'), async (req, res) => {
     console.log(req.body);
     
-    // Prepare the new course data
+    // Get the value of credits from the form
+    let credits = req.body.credits;
+
+    // If "others" is selected, use the value from customCredits
+    if (credits === "others" && req.body.customCredits) {
+        credits = req.body.customCredits;  // This is the custom value entered by the user
+    }
+
+    // Convert credits to a number if it's not a string (to ensure it's a valid number)
+    credits = Number(credits);
+    if (isNaN(credits)) {
+        return res.status(400).send('Please enter a valid number for credits.');
+    }
+
+    // Prepare the course data to save
     const newCourseData = {
         courseName: req.body.courseName,
         courseDescription: req.body.courseDescription,
-        credits: req.body.credits,
+        credits: credits,
         duration: req.body.duration,
-        mode: req.body.mode, // online or offline
+        mode: req.body.mode,
         collegeName: req.body.collegeName,
         facultyName: req.body.facultyName,
         courseModules: req.body.courseModules,
         courseOutcomes: req.body.courseOutcomes,
-        image: req.file ? `/uploads/${req.file.filename}` : null // Path for the uploaded image
+        image: req.file ? `/uploads/${req.file.filename}` : null  // Path for the uploaded image
     };
 
+    // Create a new course with the data
     const newCourse = new Course(newCourseData);
 
     try {
-        await newCourse.save(); // Save the course to the database
+        await newCourse.save();
         console.log('Course saved successfully:', newCourse);
-        return res.send('Course uploaded successfully.'); // Send a response back to the client
+        
+        // Send success response back
+        return res.json({
+            success: true,
+            message: 'Course uploaded successfully.'
+        });
     } catch (error) {
         console.error('Error saving course:', error);
-        res.status(500).send('Error saving course: ' + error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Error saving course: ' + error.message
+        });
+    }
+});
+
+app.get('/student-certificates', async (req, res) => {
+    if (!req.session.prnNumber) {
+        return res.status(401).send('Unauthorized. Please log in.');
+    }
+
+    try {
+        const certificates = await UploadedCertificate.find({ studentPRN: req.session.prnNumber });
+        res.status(200).json(certificates);
+    } catch (error) {
+        console.error('Error fetching certificates:', error);
+        res.status(500).send('Error fetching certificates');
+    }
+});
+
+
+app.post('/review-certificate/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, remarks } = req.body;
+
+        const certificate = await UploadedCertificate.findById(id);
+        if (!certificate) {
+            return res.status(404).send('Certificate not found');
+        }
+
+        certificate.status = status; // 'Approved' or 'Rejected'
+        certificate.remarks = remarks || '';
+        await certificate.save();
+
+        res.status(200).send('Certificate status updated');
+    } catch (error) {
+        console.error('Error reviewing certificate:', error);
+        res.status(500).send('Error updating certificate status');
     }
 });
 

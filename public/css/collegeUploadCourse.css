@@ -195,6 +195,21 @@ header {
     text-align: center;
 }
 
+.form-container {
+    width: 90%;
+    margin: 0 auto;
+    max-width: 832px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.background-box1,
+.background-box2 {
+    border-radius: 10px;
+    padding: 20px;
+}
+
 .form-group {
     margin-bottom: 20px;
 }
@@ -206,7 +221,8 @@ header {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -233,4 +249,35 @@ button[type="submit"] {
     border-radius: 5px;
     cursor: pointer;
     width: 100%;
+}
+
+/* Popup notification styles */
+.popup-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+    font-size: 16px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.popup-notification .popup-close {
+    background: none;
+    color: white;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+
+.popup-notification .popup-close:focus {
+    outline: none;
 }
