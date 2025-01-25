@@ -21,8 +21,9 @@
         </nav>
     <div class="container">
         <div class="collapsible-bar">
-            <button class="collapsible">Menu</button>
+            <button class="collapsible" onclick="toggleMenu()">☰</button>
             <div class="content">
+                <button class="close-btn" onclick="toggleMenu()">×</button> <!-- Close Button -->
                 <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
                 <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
                 <div class="menu-item"><a href="/clguploadcourse">Upload Courses</a></div>
@@ -32,6 +33,10 @@
                 <div class="menu-item"><a href="/">Logout</a></div>
             </div>
         </div>
+
+        {{!-- {{> menu}} --}}
+
+        <!-- Main Dashboard Content -->
         <div class="dashboard-content">
             <div class="dashboard-item streams">
                 <a href="">Total Streams</a>
@@ -45,10 +50,10 @@
                 <a href="">Students Enrolled</a>
                 <div class="data">{{totalStudents}}</div> <!-- Display the total number of students -->
             </div>
-            <div class="dashboard-item verifications">
+            {{!-- <div class="dashboard-item verifications">
                 <a href="">Pending Verifications</a>
                 <div class="data">84</div>
-            </div>
+            </div> --}}
             <div class="dashboard-item notifications">
                 <a href="">Notifications</a>
             </div>

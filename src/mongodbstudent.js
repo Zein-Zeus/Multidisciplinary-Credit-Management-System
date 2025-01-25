@@ -69,7 +69,9 @@ const registeredStudentSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true // Make sure this is required if needed
-    }
+    },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
 });
 
 const RegisteredStudent = mongoose.model('RegisteredStudent', registeredStudentSchema);

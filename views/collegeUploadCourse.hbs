@@ -21,8 +21,9 @@
             </div>
         </nav>
         <div class="collapsible-bar">
-            <button class="collapsible">Menu</button>
+            <button class="collapsible" onclick="toggleMenu()">☰</button>
             <div class="content">
+                <button class="close-btn" onclick="toggleMenu()">×</button> <!-- Close Button -->
                 <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
                 <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
                 <div class="menu-item"><a href="/clguploadcourse">Upload Courses</a></div>
@@ -32,8 +33,9 @@
                 <div class="menu-item"><a href="/">Logout</a></div>
             </div>
         </div>
+
+            <div class="title">Upload Course</div>
             <section class="form-section">
-                <div class="upload-btn">Upload Courses</div>
                     <form method="POST" action="/uploadcourse">
                         {{!-- <div class="form-group">
                             <label for="courseCode">Course Code:</label>

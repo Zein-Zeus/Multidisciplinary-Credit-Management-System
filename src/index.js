@@ -8,8 +8,8 @@ const { Student, RegisteredStudent, Course, updateGoogleSheet, importExcelToMong
 const session = require('express-session');
 const crypto = require('crypto');
 const fs = require('fs');
-
-//const { uploadCourse } = require("./mongodbcourses"); // Import course upload function
+const nodemailer = require('nodemailer');
+const twilio = require('twilio');
 
 // Set up Multer for file uploads
 const storage = multer.diskStorage({
@@ -151,6 +151,11 @@ app.get("/certificate", async(req, res) => {
     }
 });
 
+app.get('/forgot-password', (req, res) => {
+    res.render('studentForgotPassword');
+});
+
+
 // Route to get PRNs by first and last name (Already present)
 app.get('/api/getPrn', async (req, res) => {
     const { firstName, lastName } = req.query;
@@ -288,6 +293,115 @@ app.get("/course/:id", async (req, res) => {
         res.status(500).send('Error fetching course details');
     }
 });
+
+app.post("/forget-password", async (req, res) => {
+  const { prnNumber } = req.body;
+
+  try {
+    // Find the user by PRN number
+    const user = await RegisteredStudent.findOne({ prnNumber });
+
+    if (!user) {
+      return res.status(404).send("PRN Number not found.");
+    }
+
+    // Generate a unique token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // Save the reset token and expiration to the database
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // Token valid for 1 hour
+    await user.save();
+
+    // Create reset password URL
+    const resetUrl = `http://${req.headers.host}/reset-password/${resetToken}`;
+
+    // Configure nodemailer
+    const transporter = nodemailer.createTransport({
+      service: "Gmail", // Use your email provider
+      auth: {
+        user: process.env.EMAIL_USER, // Your email address
+        pass: process.env.EMAIL_PASS, // Your email password
+      },
+    });
+
+    // Send email
+    const mailOptions = {
+      to: user.email,
+      from: process.env.EMAIL_USER,
+      subject: "Password Reset Request",
+      text: `You are receiving this email because you (or someone else) requested a password reset for your account.\n\n
+      Please click on the following link, or paste it into your browser, to reset your password:\n\n
+      ${resetUrl}\n\n
+      If you did not request this, please ignore this email and your password will remain unchanged.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.send("Password reset email sent. Please check your email.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred while processing your request.");
+  }
+});
+
+app.get("/reset-password/:token", async (req, res) => {
+    const { token } = req.params;
+  
+    try {
+      // Find the user with the valid token and not expired
+      const user = await RegisteredStudent.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+  
+      if (!user) {
+        return res.status(400).send("Password reset token is invalid or has expired.");
+      }
+  
+      // Render reset password form
+      res.render("resetPassword", {
+        title: "Reset Password",
+        token,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("An error occurred.");
+    }
+  });
+  
+  app.post("/reset-password", async (req, res) => {
+    const { token, password, confirmPassword } = req.body;
+  
+    if (password !== confirmPassword) {
+      return res.status(400).send("Passwords do not match.");
+    }
+  
+    try {
+      // Find user by token and ensure token is not expired
+      const user = await RegisteredStudent.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+  
+      if (!user) {
+        return res.status(400).send("Password reset token is invalid or has expired.");
+      }
+  
+      // Update password and clear reset fields
+      user.password = password; // Ensure hashing if applicable
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+  
+      res.send("Password has been reset successfully.");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("An error occurred.");
+    }
+  });
+
+
 
 // Add this route for handling course upload
 //app.post("/submit-course", upload.single('certificate-upload'), uploadCourse);

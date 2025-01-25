@@ -1,4 +1,4 @@
-body {
+/* body {
     margin: 0;
     font-family: 'Inter', sans-serif;
     display: flex;
@@ -45,6 +45,62 @@ body {
     color: #494949;
     font-size: 14px;
     font-weight: 500;
+}*/
+
+
+* {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background: #F5F7FF;
+}
+
+.header-banner {
+    width: 100vw;
+    height: 140px;
+    background: white;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.banner-img {
+    width: 80px;
+    height: 60px;
+    margin-right: 20px;
+}
+
+.banner-text {
+    flex: 1;
+}
+
+.banner-title {
+    color: rgba(0, 0, 153, 0.89);
+    font-size: 1.5rem;
+    font-weight: 250;
+}
+
+.banner-subtitle {
+    color: #494949;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 .login-buttons {
@@ -67,4 +123,121 @@ body {
 
 .student-login {
     background-color: #007bff;
+}
+
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 153, 0.89);
+    text-align: center;
+}
+
+.project_name {
+    font-size: 2.5rem;
+    color: rgba(0, 0, 153, 0.89);
+}
+
+.names {
+    font-size: 1.25rem;
+    color: rgba(0, 0, 153, 0.89);
+    margin-top: 10px;
+}
+
+footer {
+    background-color: rgba(0, 0, 153, 0.89);
+    width: 100%;
+    color: #cfcfd6;
+    padding: 20px 10px;
+    text-align: center;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.address, .contact-info {
+    text-align: center;
+}
+
+.address h3, .contact-info h3 {
+    font-size: 1.125rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.address p, .contact-info p {
+    font-size: 1rem;
+    margin: 5px 0;
+    color: #cfcfd6;
+}
+
+.contact-info a {
+    color: #cfcfd6;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    border-top: 1px solid #494baf;
+    padding-top: 10px;
+}
+
+.footer-bottom p {
+    font-size: 0.875rem;
+}
+
+.visitors-count {
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Media Queries for Responsiveness */
+@media (min-width: 768px) {
+    .header-banner {
+        height: 140px;
+    }
+    
+    .banner-img {
+        width: 100px;
+        height: 70px;
+    }
+
+    .banner-title {
+        font-size: 2rem;
+    }
+
+    .banner-subtitle {
+        font-size: 1.125rem;
+    }
+
+    .footer-content {
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: flex-start;
+    }
+
+    .address, .contact-info {
+        text-align: left;
+    }
+}
+
+@media (min-width: 1024px) {
+    .project_name {
+        font-size: 3rem;
+    }
+
+    .names {
+        font-size: 1.5rem;
+    }
 }

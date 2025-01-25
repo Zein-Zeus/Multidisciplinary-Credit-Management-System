@@ -1,3 +1,4 @@
+/* General Body Styling */
 body {
     font-family: Arial, sans-serif;
     background-color: #f8f8f8;
@@ -9,10 +10,11 @@ body {
     width: 100%;
     height: 100vh; /* Full viewport height */
     background: #F5F7FF;
-    display: flex; /* Use flexbox for layout */
+    display: flex; /* Flexbox layout */
     flex-direction: column; /* Stack children vertically */
 }
 
+/* Header Styling */
 .header-banner {
     width: 100%;
     max-height: 160px;
@@ -20,6 +22,7 @@ body {
     display: flex;
     align-items: center;
     padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for header */
 }
 
 .banner-img {
@@ -43,57 +46,85 @@ body {
     font-size: 14px;
     font-weight: 500;
 }
+
+/* Collapsible Bar Styling */
 .collapsible-bar {
-    width: 100%;
-    background-color: #163172;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
 }
 
 .collapsible {
     background-color: #163172;
     color: white;
     cursor: pointer;
-    padding: 18px;
-    width: 100%;
+    padding: 10px;
     border: none;
-    text-align: left;
+    border-radius: 50%;
+    font-size: 20px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     outline: none;
-    font-size: 18px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.collapsible:after {
-    content: '\002B'; /* Add a '+' symbol to indicate expandable */
-    color: white;
-    font-weight: bold;
-    float: right;
-}
-
-.collapsible.active:after {
-    content: "\2212"; /* Change to '-' when expanded */
-}
-
+/* Collapsible Menu Content Styling */
 .content {
-    padding: 0 18px;
-    display: none;
-    background-color: #f1f1f1;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #163172;
+    color: white;
+    padding: 60px;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+/* Close Button Styling */
+.close-btn {
+    background: none;
+    color: white;
+    font-size: 30px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.close-btn:focus {
+    outline: none;
+}
+
+.content.active {
+    transform: translateX(0);
 }
 
 .menu-item {
-    padding: 15px 0;
+    margin-bottom: 15px;
 }
 
 .menu-item a {
-    color: #163172;
     text-decoration: none;
-    font-size: 16px;
+    color: white;
+    font-size: 18px;
 }
 
 .menu-item a:hover {
-    color: #004494;
-    text-decoration: underline;
+    color: #ffdd57;
 }
 
+/* Dashboard Styling */
 .dashboard-content {
-    flex: 1; /* Take the remaining space */
+    flex: 1; /* Take up remaining space */
     display: flex;
     flex-wrap: wrap; /* Allow items to wrap */
     justify-content: space-around; /* Space items evenly */
@@ -110,36 +141,68 @@ body {
     background-color: #CBD4F9;
     color: #163172;
     border-radius: 10px;
-    margin: 10px; /* Space between items */
+    margin: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Add shadow for card effect */
 }
 
 .dashboard-item a {
     color: inherit;
     text-decoration: none;
     font-size: 18px;
-    margin-bottom: 10px; /* Space between the link and data */
+    margin-bottom: 10px; /* Space between link and data */
 }
 
 .data {
     font-size: 24px;
     font-weight: bold;
+    color: #163172;
 }
 
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
+    /* Adjust Menu Bar for Smaller Screens */
     .menu-bar {
-        padding: 5px; /* Adjust padding for smaller screens */
+        padding: 5px; /* Reduced padding */
     }
 
+    /* Adjust Menu Items for Mobile */
     .menu-item {
-        font-size: 1rem; /* Smaller font size for mobile */
+        font-size: 1rem; /* Smaller font size */
     }
 
+    /* Adjust Dashboard Layout for Mobile */
     .dashboard-content {
-        flex-direction: column; /* Stack items on smaller screens */
+        flex-direction: column; /* Stack items vertically */
         align-items: center;
     }
 
     .dashboard-item {
-        width: 80%; /* Full width on mobile */
+        width: 80%; /* Full width on smaller screens */
+    }
+
+    /* Collapsible Bar and Content Adjustments for Mobile */
+    .collapsible-bar {
+        top: 5px; /* Adjust top positioning */
+        right: 5px; /* Adjust right positioning */
+    }
+
+    .content {
+        width: 200px; /* Adjust width for mobile */
+    }
+}
+
+/* Custom Styles for Small Devices */
+@media (max-width: 480px) {
+    .header-banner {
+        flex-direction: column; /* Stack the header content for small devices */
+        text-align: center;
+    }
+
+    .banner-title {
+        font-size: 18px;
+    }
+
+    .banner-subtitle {
+        font-size: 12px;
     }
 }
