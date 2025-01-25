@@ -221,6 +221,10 @@ header {
     margin-right: 10px;
 }
 
+.required {
+    color: #FF0000;
+}
+
 button[type="submit"] {
     background-color: #1c6bba;
     color: white;

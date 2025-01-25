@@ -136,3 +136,7 @@ footer a {
     width: 280px;
     
 }
+
+.required {
+    color: #FF0000;
+}
