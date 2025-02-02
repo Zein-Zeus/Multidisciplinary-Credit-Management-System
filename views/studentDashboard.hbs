@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/studentDashboard.css">
 </head>
 <body>
     <nav>
@@ -36,24 +36,28 @@
                     <th>Sr.no.</th>
                     <th>Course Name</th>
                     <th>Course Credit</th>
-                    <th>Course College</th>
-                    <th>Date of Completion</th>
-                    <th>Status</th> <!-- Added column for approval status -->
+                    <th>Issuing Organization</th>
+                    {{!-- <th>Certificate</th> --}}
+                    <th>Date of Submission</th>
+                    <th>Status</th> <!-- Status column -->
+                    <th>Remarks</th> <!-- Added column for remarks -->
                 </tr>
             </thead>
             <tbody>
                 {{#each certificates}}
                     <tr>
-                        <td>{{@index}}</td>
+                        <td>{{this.serialNumber}}</td>
                         <td>{{this.courseName}}</td>
                         <td>{{this.credits}}</td>
-                        <td>{{this.courseCollege}}</td>
+                        <td>{{this.courseOrganization}}</td>
                         <td>{{this.dateOfCompletion}}</td>
-                        <td>{{this.status}}</td> <!-- Display approval status -->
+                        <td>{{this.status}}</td> <!-- Status -->
+                        <td>{{this.remarks}}</td> <!-- Remarks -->
                     </tr>
                 {{/each}}
             </tbody>
         </table>
+
         <div class="button-container">
             <button class="upload-button" onclick="window.location.href='/certificate'">Upload Certificate</button>
             <form action="/logout" method="POST">

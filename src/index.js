@@ -24,6 +24,19 @@ const storage = multer.diskStorage({
 // Create upload instance
 const upload = multer({ storage: storage });
 
+//Seperate storage for course images
+const courseImage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = path.join(__dirname, 'uploads', 'courseImage');
+        cb(null, dir); // Images saved in the specified directory
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Add timestamp to avoid conflicts
+    }
+});
+
+const uploadCourseImage = multer({ storage: courseImage });
+
 // Separate storage for certificate uploads
 const certificateStorage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -68,7 +81,7 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.set("view engine", "hbs");
 
@@ -119,15 +132,42 @@ app.get("/dashboard", async (req, res) => {
         return res.redirect('/login');
     }
 
-    const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+    try {
+        // Fetch user details
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
 
-    if (user) {
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Fetch certificates for the logged-in student
+        const certificates = await UploadedCertificate.find({ studentPRN: req.session.prnNumber });
+
+        // Filter approved certificates and calculate total credits
+        const approvedCertificates = certificates.filter(cert => cert.status === 'Approved');
+        const totalCredits = approvedCertificates.reduce((sum, cert) => sum + cert.credits, 0);
+
+        // Add serial numbers to certificates
+        const certificatesWithSrNo = certificates.map((cert, index) => ({
+            serialNumber: index + 1, // Start from 1
+            courseName: cert.courseName,
+            credits: cert.credits,
+            courseOrganization: cert.courseOrganization,
+            dateOfCompletion: cert.uploadedAt.toLocaleDateString(),
+            status: cert.status || 'Pending',
+            remarks: cert.remarks || 'No Remark'
+        }));
+
+        // Render dashboard with user and certificate data
         res.render('studentDashboard', {
             userName: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            totalCredits,
+            certificates: certificatesWithSrNo,
         });
-    } else {
-        res.status(404).send('User not found');
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        res.status(500).send('An error occurred while loading the dashboard');
     }
 });
 
@@ -342,23 +382,8 @@ app.delete('/course/:id', async (req, res) => {
     }
 });
 
-// Route for certificate upload
-// app.get('/certificate', (req, res) => {
-//     const user = req.session.user; // Assuming user data is stored in the session
-//     if (!user || !user.prnNumber) {
-//         return res.redirect('/login'); // Redirect if the user is not logged in or PRN is missing
-//     }
-
-//     res.render('studentUploadCertificate', { studentPRN: user.prnNumber }); // Pass prnNumber as studentPRN
-// });
-
 app.post('/upload-certificate', uploadCertificate.single('certificate-upload'), async (req, res) => {
-    const { courseName, credits, courseCollege, studentPRN } = req.body;
-
-    // if (!studentPRN) {
-    //     console.error('Student PRN missing from request.');
-    //     return res.status(400).send('Student PRN is required.');
-    // }
+    const { courseName, credits, courseOrganization, studentPRN } = req.body;
 
     try {
         const certificateData = {
@@ -366,6 +391,7 @@ app.post('/upload-certificate', uploadCertificate.single('certificate-upload'), 
             certificatePath: req.file.path,
             courseName,
             credits: parseInt(credits, 10),
+            courseOrganization,
             status: 'Pending',
             uploadedAt: new Date(),
         };
@@ -603,7 +629,7 @@ app.post('/import', upload.single('excelFile'), async (req, res) => {
 });
 
 // Add this route for handling course upload
-app.post("/uploadcourse", upload.single('image'), async (req, res) => {
+app.post("/uploadcourse", uploadCourseImage.single('image'), async (req, res) => {
     console.log(req.body);
     
     // Get the value of credits from the form
@@ -631,7 +657,7 @@ app.post("/uploadcourse", upload.single('image'), async (req, res) => {
         facultyName: req.body.facultyName,
         courseModules: req.body.courseModules,
         courseOutcomes: req.body.courseOutcomes,
-        image: req.file ? `/uploads/${req.file.filename}` : null  // Path for the uploaded image
+        image: req.file ? `/uploads/courseImage/${req.file.filename}` : null  // Path for the uploaded image
     };
 
     // Create a new course with the data
@@ -656,19 +682,29 @@ app.post("/uploadcourse", upload.single('image'), async (req, res) => {
 });
 
 app.get('/student-certificates', async (req, res) => {
-    if (!req.session.prnNumber) {
-        return res.status(401).send('Unauthorized. Please log in.');
-    }
-
     try {
-        const certificates = await UploadedCertificate.find({ studentPRN: req.session.prnNumber });
-        res.status(200).json(certificates);
+        const certificates = await UploadedCertificate.find({});
+
+        const updatedCertificates = await Promise.all(certificates.map(async (certificate) => {
+            // Use PRN to find the student in RegisteredStudent
+            const student = await RegisteredStudent.findOne({ prn: certificate.studentPRN });
+
+            // Extract the student's name or use a default value if the student is not found
+            const fullName = student ? `${student.firstName} ${student.lastName}` : 'N/A';
+
+            return {
+                ...certificate.toObject(),
+                studentName: fullName, // Add the student's name
+                certificatePath: `/uploads/uploadedCertificates/${path.basename(certificate.certificatePath)}`
+            };
+        }));
+
+        res.status(200).json(updatedCertificates); // Send the updated certificates with names
     } catch (error) {
         console.error('Error fetching certificates:', error);
         res.status(500).send('Error fetching certificates');
     }
 });
-
 
 app.post('/review-certificate/:id', async (req, res) => {
     try {

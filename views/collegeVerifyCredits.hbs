@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>verify credits</title>
+    <title>Verify Credits</title>
     <link rel="stylesheet" href="css/collegeVerifyCredits.css">
 </head>
 <body>
     <div class="container">
         <nav>
             <div class="header-banner">
-                <div class="banner-bg"></div>
                 <a href="/" class="banner-img-container">
                     <img class="banner-img" src="images/logo.png" alt="University Logo" />
                 </a>
                 <div class="banner-text">
-                    <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
+                    <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University</span><br/>
                     <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
                 </div>
             </div>
         </nav>
+
         <div class="collapsible-bar">
-            <button class="collapsible" onclick="toggleMenu()">☰</button>
+            <button class="collapsible" onclick="toggleMenu()">&#9776;</button>
             <div class="content">
-                <button class="close-btn" onclick="toggleMenu()">×</button> <!-- Close Button -->
+                <button class="close-btn" onclick="toggleMenu()">&times;</button>
                 <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
                 <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
                 <div class="menu-item"><a href="/clguploadcourse">Upload Courses</a></div>
@@ -34,40 +34,42 @@
             </div>
         </div>
 
+        <h1>Credit Verification</h1>
+
         <div class="main">
-            <div class="box-container">
-                <div class="pending">
-                    Verification Pending
-                    <div id="data"><br><br><br>120</div>
-                </div>
-                <div class="verified">
-                    Verified
-                    <div id="data"><br><br><br>120</div>
-                </div>
-                <div class="rejected">
-                    Rejected
-                    <div id="data"><br><br><br>120</div>
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>PRN</th>
+                        {{!-- <th>Name</th> --}}
+                        <th>Course</th>
+                        <th>Credits</th>
+                        <th>Organization</th>
+                        <th>Details</th>
+                        <th>Actions</th>
+                        <th>Status</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <tbody id="student-data">
+                    <!-- Dynamic rows inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Student Certificate</h2>
+                <div id="certificate-details">
+                    <!-- Certificate details will load dynamically -->
                 </div>
             </div>
         </div>
-            <div class="filter">
-                <div class="stu-prn">
-                    <div class="label">Student PRN:</div>
-                    <input type="text" id="stu-prn" placeholder="Enter PRN">
-                </div>
-                <div class="stu-course">
-                    <div class="label">Course:<span class="required">*</span></div>
-                    <select class="form-input" id="stu-course">
-                        <option value="">Select course</option>
-                        <option value="AI">AI</option>
-                        <option value="DSA">DSA</option>
-                        <option value="OOPs">OOPs</option>
-                    </select>
-                </div>
-                <button class="search-button" id="search-button">Search</button>
-                <button class="clear-button" id="clear-button">Clear</button>
-            </div>
 
-    <script src="js/collegeVerifyCredits.js"></script>
+        <script src="js/collegeVerifyCredits.js"></script>
+
+    </div>
 </body>
 </html>

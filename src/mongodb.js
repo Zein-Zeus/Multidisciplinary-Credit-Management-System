@@ -135,6 +135,10 @@ const UploadedCertificateSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    courseOrganization: {
+        type: String,
+        required: true,
+    },
     status: {
         type: String,
         enum: ['Pending', 'Approved', 'Rejected'],

@@ -3,7 +3,20 @@ document.getElementById('import-button').addEventListener('click', function() {
 });
 
 document.getElementById('file-input').addEventListener('change', function() {
+    const file = this.files[0];
+
+    // Optional: Check file type before submitting
+    if (file && file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+        alert('Please upload a valid Excel file.');
+        return;
+    }
+
     const formData = new FormData(document.getElementById('import-form'));
+
+    // Disable the button and show a loading message
+    const importButton = document.getElementById('import-button');
+    importButton.disabled = true;
+    importButton.textContent = 'Uploading...';
 
     fetch('/import', {
         method: 'POST',
@@ -13,10 +26,14 @@ document.getElementById('file-input').addEventListener('change', function() {
     .then(data => {
         alert(data); // Display success message
         document.getElementById('file-input').value = ''; // Clear file input
+        importButton.disabled = false;
+        importButton.textContent = 'Import';
     })
     .catch(error => {
         console.error('Error during import:', error);
         alert('Error during import: ' + error.message);
+        importButton.disabled = false;
+        importButton.textContent = 'Import';
     });
 });
 
@@ -54,14 +71,13 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
     }
 });
 
-function showPopup(type, message) {
-    const popup = document.getElementById("popupNotification");
-    popup.textContent = message;
-    popup.className = `popup-notification ${type}`;
-    popup.style.display = "block";
-
-    // Hide the popup after 3 seconds
+function showPopup(message) {
+    const popup = document.getElementById('popup-notification');
+    const popupMessage = document.getElementById('popup-message');
+    popupMessage.textContent = message;  // Set the message
+    popup.style.display = 'block';  // Display the popup
+    
     setTimeout(() => {
-        popup.style.display = "none";
-    }, 3000);
+        popup.style.display = 'none'; // Hide the popup after 5 seconds
+    }, 5000);
 }
