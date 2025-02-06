@@ -128,63 +128,106 @@ nav ul li a:hover {
 /* Main Section */
 #welcome-section {
     position: absolute;
-    left: 62px;
-    top: 97px;
+    left: 50%;
+    top: 120px;
+    transform: translate(-50%, -50%);
     font-size: 48px;
     font-weight: 700;
     color: black;
-    line-height: 67.20px;
+    line-height: 67.2px;
+    text-align: center;
+    z-index: 999;
 }
 
 #search-section {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;      /* Center vertically */
     position: absolute;
-    left: 62px;
-    top: 179px;
-    width: 706px;
+    left: 50%;
+    top: 160px;                /* Adjust this for a fixed distance from top */
+    transform: translateX(-50%); /* Center horizontally */
+    width: 90%;                /* Responsive width */
+    max-width: 800px;          /* Max width for larger screens */
     height: 40px;
 }
 
 .search-box {
-    width: 663px;
-    height: 39px;
-    background: white;
-    border-radius: 8px;
-    border: 0.5px solid #D9D9D9;
+    width: 100%;               /* Full width of the search section */
+    height: 40px;
+    background: #fff;
+    border-radius: 25px;       /* Rounded corners */
+    border: 1px solid #D9D9D9;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 10px;
+    padding-left: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    transition: box-shadow 0.3s ease-in-out; /* Transition for hover effect */
 }
 
 #search {
-    width: 100%;
+    width: 100%;                /* Input field takes most space */
     padding: 10px;
     font-size: 16px;
     border: none;
     outline: none;
     color: #333;
+    border-radius: 25px;
+    background: #f5f7fa;
+    transition: background-color 0.3s ease;
 }
 
 #search:focus {
-    border-color: #7469B6;
+    background-color: #fff;    /* Change background on focus */
+    border-color: #7469B6;     /* Focus border color */
 }
 
 .search-background {
-    width: 54px;
+    width: 50px;
     height: 40px;
     background-color: #7469B6;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-background:hover {
+    background-color: #5A4FBF; /* Darker color on hover */
 }
 
 .search-icon {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
+    fill: white;
+    transition: transform 0.3s ease;
+}
+
+.search-background:hover .search-icon {
+    transform: scale(1.1);      /* Zoom effect on hover */
+}
+
+/* Media Query for Mobile Responsiveness */
+@media (max-width: 768px) {
+    #search-section {
+        top: 120px;  /* Adjust top for smaller screens */
+        width: 100%;  /* Take full width on smaller screens */
+    }
+
+    .search-box {
+        padding-left: 10px;  /* Reduce padding for mobile */
+    }
+
+    #search {
+        font-size: 14px;  /* Slightly smaller font size */
+    }
+
+    .search-background {
+        width: 40px;  /* Smaller icon button */
+    }
 }
 
 /* Filter Sidebar */
@@ -239,7 +282,7 @@ nav ul li a:hover {
 }
 
 /* Course Cards */
-.course-cards {
+/* .course-cards {
     position: absolute;
     left: 418px;
     top: 261px;
@@ -265,7 +308,7 @@ nav ul li a:hover {
     flex-direction: column;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+} */
 
 .card:hover {
     transform: translateY(-5px);
@@ -312,6 +355,69 @@ nav ul li a:hover {
 .card-details p {
     margin: 2px 0;
     font-size: 14px;
+}
+
+/* Container for course cards (default centered layout) */
+.course-cards {
+    position: absolute;
+    width: 1001px;
+    height: 790px;
+    left: 418px;
+    top: 261px;
+    background-color: #EAEEFF;
+    border: 1px #D9D9D9 solid;
+    border-radius: 5%;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping by default */
+    justify-content: center; /* Center the cards horizontally */
+    align-items: flex-start; /* Align items at the top */
+    gap: 20px; /* Space between cards */
+    padding: 20px; /* Space around the cards */
+    overflow: hidden; /* Hide overflow */
+    transition: all 0.3s ease;
+}
+
+/* Card Style */
+.card {
+    width: 291px;
+    height: 295px;
+    background-color: #c5cffc;
+    border-radius: 8px;
+    border: 1px #D9D9D9 solid;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden; 
+}
+
+/* Hover Effect */
+.card:hover {
+    transform: translateY(-5px); /* Lift effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Fixed Layout during filtering (left-aligned, no wrapping) */
+.course-cards.fixed-layout {
+    flex-wrap: nowrap; /* Disable wrapping */
+    justify-content: flex-start; /* Align to the left */
+    align-items: flex-start; /* Align at the top */
+    padding: 0; /* Remove extra padding during filter */
+}
+
+/* Allow horizontal scrolling for overflow (only when needed) */
+.course-cards::-webkit-scrollbar {
+    height: 8px; /* Horizontal scrollbar height */
+}
+
+.course-cards::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
+.course-cards::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
 }
 
 footer {
