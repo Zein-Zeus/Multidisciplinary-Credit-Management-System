@@ -10,6 +10,8 @@ const crypto = require('crypto');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const twilio = require('twilio');
+const router = express.Router();
+require('dotenv').config();
 
 // Set up storage engine for Multer
 const storage = multer.diskStorage({
@@ -63,6 +65,7 @@ const {
 } = process.env;
 
 const IN_PROD = NODE_ENV === 'production';
+
 
 // Session middleware setup
 app.use(session({
@@ -155,7 +158,7 @@ app.get("/dashboard", async (req, res) => {
             courseOrganization: cert.courseOrganization,
             dateOfCompletion: cert.uploadedAt.toLocaleDateString(),
             status: cert.status || 'Pending',
-            remarks: cert.remarks || 'No Remark'
+            remarks: cert.remarks || '-'
         }));
 
         // Render dashboard with user and certificate data
@@ -176,15 +179,25 @@ app.get("/course", async(req, res) => {
         return res.redirect('/login');
     }
 
-    const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+    try {
+        // Find the user by PRN number
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
 
-    if (user) {
+        // Fetch all courses from the database
+        const courses = await Course.find();
+
+        // Render the student home page with user info and courses
         res.render('studentCourses', {
             userName: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            courses // Pass the courses to the template
         });
-    } else {
-        res.status(404).send('User not found');
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error fetching data');
     }
 });
 
@@ -325,8 +338,8 @@ app.get("/course/:id", async (req, res) => {
             return res.status(404).send('Course not found');
         }
 
-        const modulesArray = course.courseModules.split(/\r?\n|,/).map(module => module.trim());
-        const outcomesArray = course.courseOutcomes.split(/\r?\n|,/).map(outcome => outcome.trim());
+        const modulesArray = course.courseModules.split(/\n/).map(module => module.trim());
+        const outcomesArray = course.courseOutcomes.split(/\n/).map(outcome => outcome.trim());
 
         // Render the course detail page with the course data
         res.render('courseDetails', {
@@ -407,6 +420,7 @@ app.post('/upload-certificate', uploadCertificate.single('certificate-upload'), 
     }
 });
 
+// Forget Password Route (PRN Lookup and Email Sending)
 app.post("/forget-password", async (req, res) => {
   const { prnNumber } = req.body;
 
@@ -429,19 +443,19 @@ app.post("/forget-password", async (req, res) => {
     // Create reset password URL
     const resetUrl = `http://${req.headers.host}/reset-password/${resetToken}`;
 
-    // Configure nodemailer
+    // Configure nodemailer transporter
     const transporter = nodemailer.createTransport({
-      service: "Gmail", // Use your email provider
+      service: "Gmail", // Or use another email provider
       auth: {
-        user: process.env.EMAIL_USER, // Your email address
-        pass: process.env.EMAIL_PASS, // Your email password
+        user: process.env.EMAIL_USER, // Your email address from .env file
+        pass: process.env.EMAIL_PASS, // Your app password or email password
       },
     });
 
-    // Send email
+    // Send password reset email
     const mailOptions = {
-      to: user.email,
-      from: process.env.EMAIL_USER,
+      to: user.email, // The user's email from the database
+      from: process.env.EMAIL_USER, // Your email address
       subject: "Password Reset Request",
       text: `You are receiving this email because you (or someone else) requested a password reset for your account.\n\n
       Please click on the following link, or paste it into your browser, to reset your password:\n\n
@@ -458,63 +472,69 @@ app.post("/forget-password", async (req, res) => {
   }
 });
 
+// Reset Password Route (Render form with token)
 app.get("/reset-password/:token", async (req, res) => {
-    const { token } = req.params;
-  
-    try {
-      // Find the user with the valid token and not expired
-      const user = await RegisteredStudent.findOne({
-        resetPasswordToken: token,
-        resetPasswordExpires: { $gt: Date.now() },
-      });
-  
-      if (!user) {
-        return res.status(400).send("Password reset token is invalid or has expired.");
-      }
-  
-      // Render reset password form
-      res.render("resetPassword", {
-        title: "Reset Password",
-        token,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("An error occurred.");
-    }
-  });
-  
-  app.post("/reset-password", async (req, res) => {
-    const { token, password, confirmPassword } = req.body;
-  
-    if (password !== confirmPassword) {
-      return res.status(400).send("Passwords do not match.");
-    }
-  
-    try {
-      // Find user by token and ensure token is not expired
-      const user = await RegisteredStudent.findOne({
-        resetPasswordToken: token,
-        resetPasswordExpires: { $gt: Date.now() },
-      });
-  
-      if (!user) {
-        return res.status(400).send("Password reset token is invalid or has expired.");
-      }
-  
-      // Update password and clear reset fields
-      user.password = password; // Ensure hashing if applicable
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpires = undefined;
-      await user.save();
-  
-      res.send("Password has been reset successfully.");
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("An error occurred.");
-    }
-  });
+  const { token } = req.params;
 
+  try {
+    // Find the user with the valid token and ensure it's not expired
+    const user = await RegisteredStudent.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
 
+    if (!user) {
+      return res.status(400).send("Password reset token is invalid or has expired.");
+    }
+
+    // Render reset password form (You can render this dynamically on the frontend)
+    res.send(`
+      <form action="/reset-password" method="POST">
+        <input type="hidden" name="token" value="${token}" />
+        <label for="password">New Password:</label>
+        <input type="password" name="password" required />
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" name="confirmPassword" required />
+        <button type="submit">Reset Password</button>
+      </form>
+    `);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred.");
+  }
+});
+
+// Handle Reset Password Form Submission
+app.post("/reset-password", async (req, res) => {
+  const { token, password, confirmPassword } = req.body;
+
+  if (password !== confirmPassword) {
+    return res.status(400).send("Passwords do not match.");
+  }
+
+  try {
+    // Find the user with the valid token and ensure it's not expired
+    const user = await RegisteredStudent.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).send("Password reset token is invalid or has expired.");
+    }
+
+    // Update password and clear reset fields
+    user.password = password; // Ensure hashing if needed
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.send("Password has been reset successfully.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred.");
+  }
+});
 
 // Add this route for handling course upload
 //app.post("/submit-course", upload.single('certificate-upload'), uploadCourse);

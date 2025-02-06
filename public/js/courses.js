@@ -1,29 +1,47 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const filters = document.querySelectorAll(".filter-checkbox");
-    const courses = document.querySelectorAll(".card");
+    const checkboxes = document.querySelectorAll(".filter-checkbox");
+    const courseCards = document.querySelectorAll(".course-card");
 
-    filters.forEach(filter => {
-        filter.addEventListener("change", function () {
-            applyFilters();
-        });
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", filterCourses);
     });
 
-    function applyFilters() {
-        let activeFilters = [];
+    function filterCourses() {
+        const selectedColleges = [...document.querySelectorAll("input[data-filter='college']:checked")].map(cb => cb.value);
+        const selectedModes = [...document.querySelectorAll("input[data-filter='mode']:checked")].map(cb => cb.value);
 
-        filters.forEach(filter => {
-            if (filter.checked) {
-                activeFilters.push(filter.id.replace('filter-', ''));
-            }
-        });
+        courseCards.forEach(course => {
+            const college = course.getAttribute("data-college");
+            const mode = course.getAttribute("data-mode");
 
-        courses.forEach(course => {
-            let courseLabel = course.querySelector(".card-label").textContent.toLowerCase();
-            if (activeFilters.length === 0 || activeFilters.includes(courseLabel)) {
-                course.style.display = "block";
+            const matchesCollege = selectedColleges.length === 0 || selectedColleges.includes(college);
+            const matchesMode = selectedModes.length === 0 || selectedModes.includes(mode);
+
+            if (matchesCollege && matchesMode) {
+                course.style.display = "block"; // Show matching courses
             } else {
-                course.style.display = "none";
+                course.style.display = "none"; // Hide non-matching courses
             }
         });
     }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search");
+    const courseCards = document.querySelectorAll(".course-card");
+
+    searchInput.addEventListener("input", function () {
+        const searchText = searchInput.value.toLowerCase();
+
+        courseCards.forEach(course => {
+            const courseName = course.querySelector(".course-name").textContent.toLowerCase();
+            const matchesSearch = courseName.includes(searchText);
+
+            if (matchesSearch) {
+                course.style.display = "block"; // Show matching courses
+            } else {
+                course.style.display = "none"; // Hide non-matching courses
+            }
+        });
+    });
 });
