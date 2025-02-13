@@ -5,9 +5,9 @@ const path = require('path');
 const xlsx = require('xlsx');
 
 // MongoDB Connection
-mongoose.connect("mongodb://localhost:27017/ABCWebsite", { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect("mongodb://localhost:27017/MultidisciplinaryCreditManagementSystem", { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
-        console.log("Connected to the ABCWebsite Database");
+        console.log("Connected to the MultidisciplinaryCreditManagementSystem Database");
     })
     .catch((err) => {
         console.log("Failed to connect to MongoDB", err);
