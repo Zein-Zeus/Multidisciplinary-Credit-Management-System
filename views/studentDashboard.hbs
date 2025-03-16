@@ -9,7 +9,9 @@
 <body>
     <nav>
         <div class="logo">
-            <img src="/images/logo.png" alt="Logo">
+            <a href="/">
+                <img src="/images/logo.png" alt="Logo">
+            </a>
         </div>
         <ul>
             <li><a href="/home">Home</a></li>
@@ -22,51 +24,82 @@
     </nav>    
     
     <main>
-    <div class="dashboard">
-        <div class="profile-info">
-            <div class="user-initials-profile">{{userInitials}}</div> <!-- Dynamic initials -->
-            <h2>{{userName}}</h2> <!-- Dynamic user name -->
-            <div class="credits"> 
-                <h1>{{totalCredits}}</h1><br>Total Credits
+        <div class="dashboard">
+            <div class="profile-info">
+                <div class="user-initials-profile">{{userInitials}}</div>
+                <h2>{{userName}}</h2>
+            </div>
+    
+            <h3>Ongoing Courses</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>College</th>
+                        <th>Enrollment Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each ongoingCourses}}
+                        <tr>
+                            <td>{{this.courseName}}</td>
+                            <td>{{this.collegeName}}</td>
+                            <td>{{this.enrollmentDate}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+    
+            <h3>Completed Courses</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>College</th>
+                        <th>Completion Date</th>
+                        <th>Certificate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each completedCourses}}
+                        <tr>
+                            <td>{{this.courseName}}</td>
+                            <td>{{this.collegeName}}</td>
+                            <td>{{this.completionDate}}</td>
+                            <td>
+                                {{#if this.certificateUrl}}
+                                    <a href="{{this.certificateUrl}}" download>Download</a>
+                                {{else}}
+                                    Not Available
+                                {{/if}}
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            <div class="logout-container">
+                <button class="logout-button" onclick="logout()">Log Out</button>
             </div>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Sr.no.</th>
-                    <th>Course Name</th>
-                    <th>Course Credit</th>
-                    <th>Issuing Organization</th>
-                    {{!-- <th>Certificate</th> --}}
-                    <th>Date of Submission</th>
-                    <th>Status</th> <!-- Status column -->
-                    <th>Remarks</th> <!-- Added column for remarks -->
-                </tr>
-            </thead>
-            <tbody>
-                {{#each certificates}}
-                    <tr>
-                        <td>{{this.serialNumber}}</td>
-                        <td>{{this.courseName}}</td>
-                        <td>{{this.credits}}</td>
-                        <td>{{this.courseOrganization}}</td>
-                        <td>{{this.dateOfCompletion}}</td>
-                        <td>{{this.status}}</td> <!-- Status -->
-                        <td>{{this.remarks}}</td> <!-- Remarks -->
-                    </tr>
-                {{/each}}
-            </tbody>
-        </table>
-
-        <div class="button-container">
-            <button class="upload-button" onclick="window.location.href='/certificate'">Upload Certificate</button>
-            <form action="/logout" method="POST">
-                <button type="submit" class="upload-button logout-button">Logout</button>
-            </form>
-        </div>
-    </div>
     </main>
     
+    <script>
+        function completeCourse(courseID) {
+            fetch("/complete-course", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ studentID: "{{userId}}", courseID })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error("Error:", error));
+        }
+
+        function logout() {
+            window.location.href = "/login";  // Redirects to login page
+        }
+    </script>
+
     <footer>
         <div class="footer-info">
             <p>Address: 1, Nathibai Thackersey Road, Mumbai 400020</p>

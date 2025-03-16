@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Upload</title>
+    <link rel="stylesheet" href="/css/courseUpload.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="/course-dashboard">Home</a></li>
+                <li><a href="/course-upload">Upload Course</a></li>
+            </ul>
+            <div class="user-profile">
+                <div class="user-initials">{{userInitials}}</div>
+            </div>
+        </nav>
+
+        <div class="title">Upload Course</div>
+        <div class="form-container">
+            <div class="background-box1">
+                <section class="form-section">
+                    <form id="course-upload-form" method="POST" action="/uploadcourse" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="courseName">Course Name:<span class="required">*</span></label>
+                            <input type="text" name="courseName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseDescription">Course Description:<span class="required">*</span></label>
+                            <textarea type="text" name="courseDescription" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="credits">Credits:<span class="required">*</span></label>
+                            <select name="credits" id="credits" required>
+                                <option value="">Select Credits</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="other-credits-input" style="display: none;">
+                            <label for="customCredits">Enter Credits:<span class="required">*</span></label>
+                            <input type="text" name="customCredits" id="custom-credits" placeholder="Enter Credits">
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duration (in hours):<span class="required">*</span></label>
+                            <input type="number" name="duration" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mode">Mode:<span class="required">*</span></label>
+                            <div>
+                                <label class="radio-label">
+                                    <input type="radio" id="online" name="mode" value="online" required> Online
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" id="offline" name="mode" value="offline" required> Offline
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="facultyName">Faculty Name:<span class="required">*</span></label>
+                            <input type="text" name="facultyName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseModules">Course Modules:<span class="required">*</span></label>
+                            <textarea type="text" name="courseModules" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="image">Course Image:<span class="required">*</span></label>
+                            <input type="file" name="image" accept="image/*" required>
+                        </div>
+                        
+                        {{!-- Hidden fields for auto-filled data --}}
+                        <input type="hidden" name="collegeID" value="{{collegeID}}">
+                        <input type="hidden" name="collegeName" value="{{collegeName}}">
+
+                        <button type="submit">Submit</button>
+                        <a href="/course-dashboard" class="back-link">← Back</a>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup Notification -->
+    <div id="popup-notification" class="popup">
+        <div class="popup-content">
+            <p id="popup-message"></p>
+        </div>
+    </div>
+
+
+    <script>
+        // Toggle custom credits input
+        document.getElementById("credits").addEventListener("change", function() {
+            document.getElementById("other-credits-input").style.display = this.value === "others" ? "block" : "none";
+        });
+
+    </script>
+    <script src="js/courseUpload.js"></script>
+
+</body>
+</html>

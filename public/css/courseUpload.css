@@ -1,0 +1,197 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background-color: #f2f5fc;
+}
+
+/* Navbar Styling */
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 60px;
+    z-index: 1000;
+}
+
+.logo img {
+    height: 50px; /* Adjust this size according to your logo */
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center; /* Center the navigation links */
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+nav ul li a:hover {
+    color: #007BFF;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.user-initials {
+    background-color: #333;
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* Adjust content positioning to prevent it from being hidden under the fixed navbar */
+.container {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    background: #F5F7FF;
+    padding-top: 80px; /* Added padding to prevent overlap with navbar */
+}
+
+/* Title */
+.title {
+    position: relative;
+    width: 200px;
+    height: 50px;
+    background-color: #163172;
+    margin: 20px auto;
+    color: #ffffff;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: large;
+    border-radius: 10px;
+}
+
+/* Form Section */
+.form-section {
+    background-color: #e4ebfa;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Form Container */
+.form-container {
+    width: 90%;
+    margin: 0 auto;
+    max-width: 832px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Form Fields */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group input[type="radio"] {
+    width: auto;
+}
+
+.form-group .radio-label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* Required Field Indicator */
+.required {
+    color: #FF0000;
+}
+
+/* Submit Button */
+button[type="submit"] {
+    background-color: #1c6bba;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Back Link */
+.back-link {
+    display: block;
+    margin-top: 20px;
+    color: #163172;
+    text-decoration: none;
+    text-align: center;
+    font-weight: bold;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Popup Notification */
+.popup {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    z-index: 1000;
+    text-align: center;
+    min-width: 250px;
+}
+
+.popup-content {
+    padding: 10px;
+}

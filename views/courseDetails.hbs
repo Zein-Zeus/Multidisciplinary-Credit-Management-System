@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{courseName}}</title>
-    <link rel="stylesheet" href="/css/courseDetails.css"> <!-- Absolute path -->
+    <link rel="stylesheet" href="/css/courseDetails.css"> <!-- Ensure path is correct -->
 </head>
 <body>
     <div class="container">
@@ -23,30 +23,30 @@
         </nav>
         <section class="course-overview">
             <h1 class="course-title">{{courseName}}</h1>
+            {{!-- <img src="{{image}}" alt="{{courseName}}" class="course-image"> --}}
             <div class="course-details">
                 <p class="description">{{courseDescription}}</p>
                 <p class="info">
-                    Credits: {{credits}} points<br>
-                    Duration: {{duration}} hours<br>
-                    Mode: {{mode}}<br>
-                    College: {{collegeName}}<br>
-                    Faculty: {{facultyName}}<br><br>
-                    Modules:
+                    <strong>Credits:</strong> {{credits}} points<br>
+                    <strong>Duration:</strong> {{duration}} hours<br>
+                    <strong>Mode:</strong> {{mode}}<br>
+                    <strong>College:</strong> {{collegeName}}<br>
+                    <strong>Faculty:</strong> {{facultyName}}<br>
+                </p>
+                <p class="info">
+                    <strong>Modules:</strong>
                     <ul>
                         {{#each modules}}
                             <li>{{this}}</li>
                         {{/each}}
                     </ul>
                 </p>
-                <p class="info">
-                    Outcomes:
-                    <ul>
-                        {{#each outcomes}}
-                            <li>{{this}}</li>
-                        {{/each}}
-                    </ul>
-                </p>
-                <button class="enroll-btn">Register Now</button>
+                <form action="/enroll" method="POST">
+                    <input type="hidden" name="courseId" value="{{_id}}"> <!-- Ensure this exists -->
+                    <input type="hidden" name="courseName" value="{{courseName}}">
+                    <input type="hidden" name="collegeName" value="{{collegeName}}">
+                    <button type="submit" class="enroll-btn">Register Now</button>
+                </form>
             </div>
         </section>
     </div>

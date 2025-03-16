@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Dashboard</title>
+  <link rel="stylesheet" href="/css/courseDashboard.css"> <!-- Ensure correct path -->
+</head>
+<body>
+  
+<div class="container">
+  <nav>
+    <div class="logo">
+        <a href="/">
+          <img src="images/logo.png" alt="Logo">
+        </a>
+    </div>
+    <ul>
+        <li><a href="/course-dashboard">Home</a></li>
+        <li><a href="/course-upload">Upload Course</a></li>
+    </ul>
+    <div class="user-profile">
+        <div class="user-initials">{{userInitials}}</div>
+    </div>
+  </nav>
+
+  <section class="courses">
+    <div class="section-title">Your Uploaded Courses <br></div>
+    
+    <div class="course-cards">
+      {{#each courses}}
+      <div class="card">
+        <!-- Clickable course details -->
+        {{!-- <a href="/course/{{this._id}}" class="course-link"> --}}
+          <img src="{{this.image}}" alt="{{this.courseName}}" class="course-image"/>
+          <div class="card-details">
+            <div class="course-name">{{this.courseName}}</div>
+            <div class="course-type">Mode: {{this.mode}}</div>
+            <div class="course-credits">Credits: {{this.credits}}</div>
+          </div>
+        {{!-- </a> --}}
+
+        <!-- Buttons for modification (outside the course link) -->
+        <div class="card-buttons">
+          <button class="modify-button" data-id="{{this._id}}">Modify</button> <!-- Added Modify Button -->
+          <button class="delete-button" data-id="{{this._id}}">Delete</button>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </section>
+</div>
+
+<script>
+  // Delete course functionality
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".delete-button").forEach(button => {
+      button.addEventListener("click", function() {
+        const courseId = this.getAttribute("data-id");
+        if (confirm("Are you sure you want to delete this course?")) {
+          fetch(`/delete-course/${courseId}`, { method: "DELETE" })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert("Course deleted successfully!");
+                location.reload();
+              } else {
+                alert("Error deleting course.");
+              }
+            })
+            .catch(err => console.error(err));
+        }
+      });
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".modify-button").forEach(button => {
+          button.addEventListener("click", function () {
+              const courseId = this.getAttribute("data-id");
+              window.location.href = `/edit-course/${courseId}`;
+          });
+      });
+  });
+</script>
+
+</body>
+</html>

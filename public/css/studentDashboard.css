@@ -161,14 +161,27 @@ table th {
     margin-bottom: 20px;
 }
 
+.logout-container {
+    display: flex;
+    justify-content: flex-end; /* Aligns button to the right */
+    margin-top: 20px; /* Adds space above */
+}
+
 .logout-button {
-    background-color: #d9534f; /* Change color for distinction */
-    margin-left: 10px; /* Space between buttons */
+    background-color: red; /* Red background */
+    color: white; /* White text */
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s ease;
 }
 
 .logout-button:hover {
-    background-color: #c9302c; /* Darker shade on hover */
+    background-color: darkred; /* Darker red on hover */
 }
+
 
 footer {
     background-color: #002366;

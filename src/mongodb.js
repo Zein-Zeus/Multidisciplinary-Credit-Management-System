@@ -3,6 +3,7 @@ const { GoogleSpreadsheet } = require('google-spreadsheet');
 const fs = require('fs');
 const path = require('path');
 const xlsx = require('xlsx');
+const { stringify } = require('querystring');
 
 // MongoDB Connection
 mongoose.connect("mongodb://localhost:27017/MultidisciplinaryCreditManagementSystem", { useNewUrlParser: true, useUnifiedTopology: true })
@@ -68,11 +69,10 @@ const registeredStudentSchema = new mongoose.Schema({
     }
 });
 
-// Define the course schema
 const courseSchema = new mongoose.Schema({
     courseName: {
         type: String,
-        required: true // Remove the unique constraint
+        required: true
     },
     courseDescription: {
         type: String,
@@ -83,13 +83,17 @@ const courseSchema = new mongoose.Schema({
         required: true
     },
     duration: {
-        type: String, // Adjust type as needed
+        type: String,
         required: true
     },
     mode: {
         type: String,
         required: true,
-        enum: ['online', 'offline'] // Restrict values to 'online' or 'offline'
+        enum: ['online', 'offline']
+    },
+    collegeID: {  // Added collegeID for better navigation
+        type: String,
+        required: true
     },
     collegeName: {
         type: String,
@@ -100,57 +104,36 @@ const courseSchema = new mongoose.Schema({
         required: true
     },
     courseModules: {
-        type: String // Adjust type as needed
-    },
-    courseOutcomes: {
-        type: String // Adjust type as needed
+        type: String
     },
     image: {
         type: String
     }
 });
 
-const UploadedCertificateSchema = new mongoose.Schema({
-    studentPRN: {
-        type: String,
-        required: true,
-    },
-    certificatePath: {
-        type: String,
-        required: true,
-    },
-    courseName: {
-        type: String,
-        required: true,
-    },
-    credits: {
-        type: Number,
-        required: true,
-    },
-    courseOrganization: {
-        type: String,
-        required: true,
-    },
-    status: {
-        type: String,
-        enum: ['Pending', 'Approved', 'Rejected'],
-        default: 'Pending',
-    },
-    uploadedAt: {
-        type: Date,
-        default: Date.now,
-    },
-    remarks: {
-        type: String,
-        default: '',
-    },
+const collegeSchema = new mongoose.Schema({
+    collegeID: String,
+    collegeName: String,
+    password: String
+})
+
+const EnrolledStudentSchema = new mongoose.Schema({
+    prnNumber: { type: String, required: true },
+    studentName: { type: String, required: true },
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
+    courseName: { type: String, required: true },
+    collegeName: { type: String, required: true },
+    status: { type: String, enum: ["Ongoing", "Completed"], default: "Ongoing" },
+    enrollmentDate: { type: Date, default: Date.now },
+    completionDate: { type: Date },
+    certificateUrl: { type: String } // Store certificate link when completed
 });
 
 const RegisteredStudent = mongoose.model('RegisteredStudent', registeredStudentSchema);
 const Student = mongoose.model('StudentDetails', studentSchema);
 const Course = mongoose.model('Course', courseSchema); // Create the Course model
-const UploadedCertificate = mongoose.model('UploadedCertificate', UploadedCertificateSchema);
-
+const College = mongoose.model('CollegeDetails', collegeSchema)
+const EnrolledStudent = mongoose.model("EnrolledStudent", EnrolledStudentSchema);
 
 async function importExcelToMongoDB(filePath) {
     try {
@@ -194,4 +177,5 @@ async function importExcelToMongoDB(filePath) {
 }
 
 
-module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, UploadedCertificate };
+// module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, UploadedCertificate };
+module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent};

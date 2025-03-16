@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records</title>
+    <link rel="stylesheet" href="css/collegeStudentRecords.css">
+</head>
+<body>
+    <nav>
+        <div class="header-banner">
+            <div class="banner-bg"></div>
+            <a href="/" class="banner-img-container">
+                <img class="banner-img" src="images/logo.png" alt="University Logo" />
+            </a>
+            <div class="banner-text">
+                <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
+                <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
+            </div>
+        </div>
+    </nav>
+    <div class="collapsible-bar">
+        <button class="collapsible" onclick="toggleMenu()">☰</button>
+        <div class="content">
+            <button class="close-btn" onclick="toggleMenu()">×</button> <!-- Close Button -->
+            <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
+            <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
+            <div class="menu-item"><a href="/clgstudentrecords">Student Records</a></div>
+            {{!-- <div class="menu-item"><a href="/issues">Issues</a></div> --}}
+            <div class="menu-item"><a href="/">Logout</a></div>
+        </div>
+    </div>
+
+    <main>
+        <div class="dashboard">
+            <h2>Student Records</h2>
+            <!-- Filter Dropdowns -->
+            <div>
+                <label for="course-select">Course:</label>
+                <select id="course-select" onchange="applyFilters()">
+                    <option value="all">All Courses</option>
+                    {{#each courses}}
+                        <option value="{{this}}" {{#if (eq this ../selectedCourse)}}selected{{/if}}>{{this}}</option>
+                    {{/each}}
+                </select>
+
+                <label for="status-select">Completion Status:</label>
+                <select id="status-select" onchange="applyFilters()">
+                    <option value="all">All Statuses</option>
+                    {{#each statuses}}
+                        <option value="{{this}}" {{#if (eq this ../selectedStatus)}}selected{{/if}}>{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+    
+            <!-- Export Button -->
+            <button class="export-button" onclick="exportToExcel()">Export to Excel</button>
+    
+            <!-- Extended Student Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>PRN</th>
+                        <th>Student Name</th>
+                        <th>Course Name</th>
+                        <th>College</th>
+                        {{!-- <th>Credits</th>
+                        <th>Assessment Type</th> --}}
+                        <th>Completion Status</th>
+                        <th>Enrollment Date</th>
+                        <th>Certificate</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each students}}
+                    <tr>
+                        <td>{{this.prnNumber}}</td>
+                        <td>{{this.studentName}}</td>
+                        <td>{{this.courseName}}</td>
+                        <td>{{this.collegeName}}</td>
+                        <td>{{this.status}}</td>
+                        <td>{{this.enrollmentDate}}</td>
+                        <td>{{#if this.completionDate}}{{this.completionDate}}{{else}}N/A{{/if}}</td>
+                        <td>
+                            {{#if this.certificateUrl}}
+                                <a href="{{this.certificateUrl}}" target="_blank">Download</a>
+                            {{else}}
+                                N/A
+                            {{/if}}
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr>
+                        <td colspan="8" style="text-align:center;">No student records found</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const students = {{{students}}}; // Parse the JSON data
+            const tableBody = document.getElementById("student-table-body");
+
+            if (students.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No records found</td></tr>";
+                return;
+            }
+
+            students.forEach(student => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${student.prnNumber}</td>
+                    <td>${student.studentName}</td>
+                    <td>${student.courseName}</td>
+                    <td>${student.collegeName}</td>
+                    <td>${student.credits || "N/A"}</td>
+                    <td>${student.assessmentType || "N/A"}</td>
+                    <td>${student.status}</td>
+                    <td>${student.marks || "N/A"}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        });
+    </script>
+    
+    <script src="/js/collegeStudentRecords.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+</body>
+</html>

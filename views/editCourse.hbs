@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Course</title>
+    <link rel="stylesheet" href="/css/editCourse.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-banner">
+            <img src="/images/logo.png" class="banner-img" alt="Logo">
+            <div class="banner-text">
+                <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
+                <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
+            </div>
+        </div>
+
+        <div class="edit-course">
+            <div class="edit-course-container">
+                <h2 class="section-title">Update Course Information</h2>
+                
+                <form id="edit-course-form" method="POST" action="/update-course/{{course._id}}" enctype="multipart/form-data">
+                    
+                    <div class="form-group">
+                        <label for="courseName">Course Name:</label>
+                        <input type="text" name="courseName" value="{{course.courseName}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseDescription">Description:</label>
+                        <textarea name="courseDescription" required>{{course.courseDescription}}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="credits">Credits:</label>
+                        <select name="credits" id="credits" required>
+                            <option value="1" {{#eq course.credits 1}}selected{{/eq}}>1</option>
+                            <option value="2" {{#eq course.credits 2}}selected{{/eq}}>2</option>
+                            <option value="3" {{#eq course.credits 3}}selected{{/eq}}>3</option>
+                            <option value="4" {{#eq course.credits 4}}selected{{/eq}}>4</option>
+                            <option value="others">Others</option>
+                        </select>
+                    </div>
+
+                    <!-- Custom Credits Input -->
+                    <div class="form-group" id="other-credits-input" style="display: none;">
+                        <label for="customCredits">Enter Custom Credits:</label>
+                        <input type="text" name="customCredits" id="custom-credits" placeholder="Enter Credits">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duration">Duration (hours):</label>
+                        <input type="number" name="duration" value="{{course.duration}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mode">Mode:</label>
+                        <select name="mode" required>
+                            <option value="online" {{#eq course.mode "online"}}selected{{/eq}}>Online</option>
+                            <option value="offline" {{#eq course.mode "offline"}}selected{{/eq}}>Offline</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="facultyName">Faculty Name:</label>
+                        <input type="text" name="facultyName" value="{{course.facultyName}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseModules">Modules:</label>
+                        <textarea name="courseModules" required>{{course.courseModules}}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Course Image:</label>
+                        <input type="file" name="image" id="image-input" accept="image/*">
+                        <div class="image-preview">
+                            <img src="{{course.image}}" id="preview-image" alt="Current Course Image" class="preview-image">
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="submit">Update Course</button>
+                        <a href="/course-dashboard" class="btn-cancel">Cancel</a>
+                    </div>
+                    <a href="/course-dashboard" class="back-link">← Back</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup Notification -->
+    <div id="popup-notification" class="popup">
+        <div class="popup-content">
+            <p id="popup-message"></p>
+        </div>
+    </div>
+
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const creditsDropdown = document.getElementById("credits");
+            const customCreditsInput = document.getElementById("other-credits-input");
+            const imageInput = document.getElementById("image-input");
+            const previewImage = document.getElementById("preview-image");
+
+            // Show custom credits input if "others" is selected
+            creditsDropdown.addEventListener("change", function () {
+                customCreditsInput.style.display = this.value === "others" ? "block" : "none";
+            });
+
+            // Show image preview on file select
+            imageInput.addEventListener("change", function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Form submission with pop-up notification
+            document.getElementById('edit-course-form').addEventListener('submit', async function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                const formData = new FormData(this);
+
+                try {
+                    const response = await fetch(this.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json(); // Parse JSON response
+
+                    // Show pop-up message
+                    if (response.ok) {
+                        showPopup("Course updated successfully!");
+                        setTimeout(() => {
+                            window.location.href = "/course-dashboard"; // Redirect after success
+                        }, 3000);
+                    } else {
+                        showPopup("Error: " + data.message);
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    showPopup("⚠ An unexpected error occurred.");
+                }
+            });
+
+            // Function to show pop-up notification
+            function showPopup(message) {
+                const popup = document.getElementById("popup-notification");
+                const popupMessage = document.getElementById("popup-message");
+
+                popupMessage.textContent = message;
+                popup.style.display = "block";
+
+                setTimeout(() => {
+                    popup.style.display = "none"; // Hide after 2s
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
