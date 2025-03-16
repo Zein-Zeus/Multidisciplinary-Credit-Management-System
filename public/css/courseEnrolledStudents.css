@@ -1,0 +1,233 @@
+/* General Page Styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+/* Navigation Bar */
+nav {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    height: 60px;
+}
+
+.header-banner {
+    width: 100%;
+    max-height: 160px;
+    background: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.banner-img {
+    width: 100px;
+    height: auto;
+    margin-right: 20px;
+}
+
+.banner-text {
+    flex: 1;
+}
+
+.banner-title {
+    color: rgba(0, 0, 153, 0.89);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+/* Sidebar Menu */
+.collapsible-bar {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.collapsible {
+    background-color: #163172;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar Content */
+.content {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #163172;
+    color: white;
+    padding: 60px;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+.close-btn {
+    background: none;
+    color: white;
+    font-size: 30px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.content.active {
+    transform: translateX(0);
+}
+
+.menu-item {
+    margin-bottom: 15px;
+}
+
+.menu-item a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+}
+
+.menu-item a:hover {
+    color: #ffdd57;
+}
+
+/* Main Content */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #002147;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    background-color: white;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f9f9f9;
+    color: #002147;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+table tr:hover {
+    background-color: #eaf2ff;
+}
+
+/* Buttons */
+.declare-button,
+.export-button {
+    background-color: #007BFF;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    display: block;
+    margin: 15px auto;
+    text-align: center;
+}
+
+.declare-button:hover,
+.export-button:hover {
+    background-color: #0056b3;
+}
+
+/* Back Link */
+.back-link {
+    display: block;
+    text-align: center;
+    margin: 20px auto;
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    background-color: #002366;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: #ffcc00;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    main {
+        padding: 15px;
+    }
+
+    table {
+        font-size: 0.85rem;
+    }
+
+    nav .banner-title {
+        font-size: 1.2rem;
+    }
+
+    .export-button {
+        width: 100%;
+    }
+}

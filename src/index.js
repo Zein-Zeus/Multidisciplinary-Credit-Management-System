@@ -212,19 +212,21 @@ app.get('/api/getPrn', async (req, res) => {
 
 app.get('/get-student-info', async (req, res) => {
     const { prnNumber } = req.query;
+    console.log(`Fetching details for PRN: ${prnNumber}`); // Debugging log
 
     try {
-        // Fetch the full student details based on the selected PRN
-        const student = await Student.findOne({ prnNumber }).select('collegeName abcId email contact');
-        
+        const student = await Student.findOne({ prnNumber }).select('firstName middleName lastName collegeName abcId email contact');
+        console.log("Found student data:", student); // Log the full response
+
         if (student) {
             res.json(student);
         } else {
+            console.warn("No student found for PRN:", prnNumber);
             res.status(404).json({ message: 'Student not found' });
         }
     } catch (error) {
         console.error('Error fetching student details:', error);
-        res.status(500).json({ message: 'Error fetching student details' });
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
@@ -834,7 +836,6 @@ app.post("/update-course/:id", uploadCourseImage.single("image"), async (req, re
     }
 });
 
-
 app.get("/edit-course/:id", async (req, res) => {
     try {
         const course = await Course.findById(req.params.id);
@@ -842,6 +843,44 @@ app.get("/edit-course/:id", async (req, res) => {
     } catch (error) {
         console.error("Error fetching course for edit:", error);
         res.status(500).send("Error loading course.");
+    }
+});
+
+app.get("/view-enrolled-students/:courseId", async (req, res) => {
+    try {
+        const courseId = req.params.courseId;
+
+        // Fetch course details
+        const course = await Course.findById(courseId);
+
+        // Fetch students enrolled in this course
+        const students = await EnrolledStudent.find({ courseId });
+
+        res.render("courseEnrolledStudents", { course, students });
+    } catch (error) {
+        console.error("Error fetching course details:", error);
+        res.status(500).send("Server Error");
+    }
+});
+
+app.put("/declare-course/:courseId", async (req, res) => {
+    try {
+        const courseId = req.params.courseId;
+        const completionDate = new Date(); // Capture current timestamp
+
+        const updatedStudents = await EnrolledStudent.updateMany(
+            { courseId, status: "Ongoing" }, // Update only ongoing courses
+            { $set: { status: "Completed", completionDate: completionDate } }
+        );
+
+        if (updatedStudents.modifiedCount > 0) {
+            res.json({ success: true, message: "Course marked as completed!" });
+        } else {
+            res.json({ success: false, message: "No students found or already completed." });
+        }
+    } catch (error) {
+        console.error("Error updating course status:", error);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 });
 

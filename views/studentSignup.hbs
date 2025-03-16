@@ -23,6 +23,12 @@
         <div class="upload-form">
             <h2>New Registration</h2>
             <form action="/signup" method="post">
+                <!-- PRN Dropdown Field -->
+                <div class="form-group">
+                    <label for="student-prn">Student PRN: <span style="color:red">*</span></label>
+                    <input type="text" id="student-prn" name="prnNumber" placeholder="PRN Number" required>
+                </div>
+
                 <!-- First Name Field -->
                 <div class="form-group">
                     <label for="student-name">First Name: <span style="color:red">*</span></label>
@@ -39,15 +45,6 @@
                 <div class="form-group">
                     <label for="student-lastname">Last Name: <span style="color:red">*</span></label>
                     <input type="text" id="student-lastname" name="lastName" placeholder="Last Name" required>
-                </div>
-
-                <!-- PRN Dropdown Field -->
-                <div class="form-group">
-                    <label for="student-prn">Student PRN: <span style="color:red">*</span></label>
-                    <select id="student-prn" name="prnNumber">
-                        <option value="">Select your PRN</option>
-                        <!-- Dynamic PRN options will be populated by JS -->
-                    </select>
                 </div>
 
                 <!-- Email Field -->

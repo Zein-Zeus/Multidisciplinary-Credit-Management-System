@@ -23,75 +23,48 @@ passwordInput.addEventListener('input', () => {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    const firstNameInput = document.getElementById('student-name');
-    const lastNameInput = document.getElementById('student-lastname');
-    const prnDropdown = document.getElementById('student-prn');
+    const prnInput = document.getElementById('student-prn'); 
+    const firstNameField = document.getElementById('student-name'); 
+    const middleNameField = document.getElementById('student-middle-name'); 
+    const lastNameField = document.getElementById('student-lastname'); 
     const emailField = document.getElementById('Email');
     const collegeField = document.getElementById('college-name');
     const abcIdField = document.getElementById('ABC');
-    const contactField = document.getElementById('Contact'); // Added contact field
+    const contactField = document.getElementById('Contact');
 
-    let prnData = [];
+    // Fetch student details when user stops typing (debounce)
+    let timeout = null;
+    prnInput.addEventListener('input', function () {
+        clearTimeout(timeout); // Clear previous timeout to avoid multiple requests
 
-    async function updatePRNDropdown() {
-        const firstName = firstNameInput.value.trim();
-        const lastName = lastNameInput.value.trim();
+        timeout = setTimeout(async function () {
+            const enteredPrn = prnInput.value.trim();
+            if (enteredPrn) {
+                try {
+                    const response = await fetch(`/get-student-info?prnNumber=${enteredPrn}`);
+                    const studentData = await response.json();
 
-        // Clear existing PRN dropdown options
-        prnDropdown.innerHTML = '<option value="">Select your PRN</option>';
-
-        if (firstName || lastName) {
-            try {
-                console.log('Fetching PRNs with:', firstName, lastName);  // Logging first and last name
-                const response = await fetch(`/api/getPrn?firstName=${firstName}&lastName=${lastName}`);
-                prnData = await response.json();
-                console.log('Received PRN data:', prnData);  // Log the fetched PRN data
-
-                if (prnData.length > 0) {
-                    prnData.forEach(student => {
-                        const prn = student.prnNumber || '';
-                        const displayName = `${student.firstName || ''} ${student.lastName || ''}`.trim();
-
-                        if (prn && displayName) {
-                            // prnDropdown.innerHTML += `<option value="${prn}">${prn} - ${displayName}</option>`;
-                            prnDropdown.innerHTML += `<option value="${prn}">${prn}</option>`;
-                        }
-                    });
-                } else {
-                    prnDropdown.innerHTML = '<option value="">No matching PRNs found</option>';
+                    if (studentData) {
+                        firstNameField.value = studentData.firstName || '';
+                        middleNameField.value = studentData.middleName || '';
+                        lastNameField.value = studentData.lastName || '';
+                        emailField.value = studentData.email || '';
+                        collegeField.value = studentData.collegeName || '';
+                        abcIdField.value = studentData.abcId || '';
+                        contactField.value = studentData.contact || '';
+                    } else {
+                        firstNameField.value = '';
+                        middleNameField.value = '';
+                        lastNameField.value = '';
+                        emailField.value = '';
+                        collegeField.value = '';
+                        abcIdField.value = '';
+                        contactField.value = '';
+                    }
+                } catch (error) {
+                    console.error('Error fetching student info:', error);
                 }
-            } catch (error) {
-                console.error('Error fetching PRNs:', error);
             }
-        }
-    }
-
-    prnDropdown.addEventListener('change', async function () {
-        const selectedPrn = prnDropdown.value;
-
-        if (selectedPrn) {
-            try {
-                const response = await fetch(`/get-student-info?prnNumber=${selectedPrn}`);
-                const selectedStudent = await response.json();
-
-                if (selectedStudent) {
-                    emailField.value = selectedStudent.email || '';
-                    collegeField.value = selectedStudent.collegeName || '';
-                    abcIdField.value = selectedStudent.abcId || '';
-                    contactField.value = selectedStudent.contact || ''; // Autofill contact number
-                } else {
-                    emailField.value = '';
-                    collegeField.value = '';
-                    abcIdField.value = '';
-                    contactField.value = ''; // Clear contact number if no student found
-                }
-            } catch (error) {
-                console.error('Error fetching student info:', error);
-            }
-        }
+        }, 500); // Delay the request to avoid excessive API calls
     });
-
-    firstNameInput.addEventListener('input', updatePRNDropdown);
-    lastNameInput.addEventListener('input', updatePRNDropdown);
 });
-

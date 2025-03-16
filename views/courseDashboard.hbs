@@ -42,8 +42,11 @@
 
         <!-- Buttons for modification (outside the course link) -->
         <div class="card-buttons">
-          <button class="modify-button" data-id="{{this._id}}">Modify</button> <!-- Added Modify Button -->
-          <button class="delete-button" data-id="{{this._id}}">Delete</button>
+          <div class="button-row">
+            <button class="modify-button" data-id="{{this._id}}">Modify</button> <!-- Added Modify Button -->
+            <button class="delete-button" data-id="{{this._id}}">Delete</button>
+          </div>
+          <button class="view-students-button" onclick="viewEnrolledStudents('{{this._id}}')">View Enrolled Students</button>
         </div>
       </div>
       {{/each}}
@@ -82,6 +85,11 @@
           });
       });
   });
+
+  function viewEnrolledStudents(courseId) {
+    window.location.href = `/view-enrolled-students/${courseId}`;
+  }
+
 </script>
 
 </body>

@@ -147,6 +147,71 @@ body {
     font-size: 12px;
 }
 
+.card-buttons {
+    display: flex;
+    flex-direction: column; /* Stack buttons */
+    align-items: center; /* Center align */
+    gap: 6px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+/* First row: Modify & Delete */
+.button-row {
+    display: flex;
+    justify-content: center; /* Center the buttons */
+    gap: 6px;
+    width: 100%;
+}
+
+.card-buttons button {
+    height: 21.2px; /* Fixed height */
+    padding: 2px 8px; /* Adjusted padding */
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+/* Modify Button - Soft Gold */
+.modify-button {
+    background: #f4c542;
+    color: #333;
+    border-color: #e0b534;
+    width: 90px; /* Same width for consistency */
+}
+
+.modify-button:hover {
+    background: #e0b534;
+}
+
+/* Delete Button - Muted Red */
+.delete-button {
+    background: #e57373;
+    color: white;
+    border-color: #d32f2f;
+    width: 90px;
+}
+
+.delete-button:hover {
+    background: #d32f2f;
+}
+
+/* View Students Button - Centered Below */
+.view-students-button {
+    background: #64b5f6;
+    color: white;
+    border-color: #1976d2;
+    width: 80%; /* Make it wider */
+    text-align: center;
+}
+
+.view-students-button:hover {
+    background: #1976d2;
+}
+
 /* Footer */
 footer {
     background-color: #002366;
