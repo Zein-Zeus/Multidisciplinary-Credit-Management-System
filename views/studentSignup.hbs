@@ -10,7 +10,7 @@
     <nav>
         <div class="header-banner">
             <div class="banner-bg"></div>
-            <a href="/" class="banner-img-container"> <!-- Wrap the logo in an anchor tag -->
+            <a href="/" class="banner-img-container">
                 <img class="banner-img" src="images/logo.png" alt="University Logo" />
             </a>
             <div class="banner-text">
@@ -19,47 +19,48 @@
             </div>
         </div>
     </nav>
+    
     <main>
         <div class="upload-form">
             <h2>New Registration</h2>
             <form action="/signup" method="post">
-                <!-- PRN Dropdown Field -->
+                <!-- PRN Number -->
                 <div class="form-group">
                     <label for="student-prn">Student PRN: <span style="color:red">*</span></label>
                     <input type="text" id="student-prn" name="prnNumber" placeholder="PRN Number" required>
                 </div>
 
-                <!-- First Name Field -->
+                <!-- First Name -->
                 <div class="form-group">
                     <label for="student-name">First Name: <span style="color:red">*</span></label>
-                    <input type="text" id="student-name" name="firstName" placeholder="First Name" required>
+                    <input type="text" id="student-name" name="firstName" placeholder="First Name" required readonly>
                 </div>
 
-                <!-- Middle Name Field -->
+                <!-- Middle Name -->
                 <div class="form-group">
                     <label for="student-middle-name">Middle Name:</label>
-                    <input type="text" id="student-middle-name" name="middleName" placeholder="Middle Name">
+                    <input type="text" id="student-middle-name" name="middleName" placeholder="Middle Name" readonly>
                 </div>
 
-                <!-- Last Name Field -->
+                <!-- Last Name -->
                 <div class="form-group">
                     <label for="student-lastname">Last Name: <span style="color:red">*</span></label>
-                    <input type="text" id="student-lastname" name="lastName" placeholder="Last Name" required>
+                    <input type="text" id="student-lastname" name="lastName" placeholder="Last Name" required readonly>
                 </div>
 
-                <!-- Email Field -->
+                <!-- Email -->
                 <div class="form-group">
                     <label for="Email">Email ID: <span style="color:red">*</span></label>
-                    <input type="email" id="Email" name="Email" placeholder="Email" required readonly>
+                    <input type="email" id="Email" name="email" placeholder="Email" required readonly>
                 </div>
 
-                <!-- Contact Number Field -->
+                <!-- Contact Number -->
                 <div class="form-group">
                     <label for="Contact">Contact Number: <span style="color:red">*</span></label>
-                    <input type="number" id="Contact" name="Contact" placeholder="Contact" required>
+                    <input type="number" id="Contact" name="contact" placeholder="Contact" required>
                 </div>
 
-                <!-- College Name Dropdown -->
+                <!-- College Name -->
                 <div class="form-group">
                     <label for="college-name">College Name: <span style="color:red">*</span></label>
                     <select class="form-input" id="college-name" name="collegeName" readonly>
@@ -70,17 +71,35 @@
                     </select>
                 </div>
 
-                <!-- ABC ID Field -->
+                <!-- Degree -->
+                <div class="form-group">
+                    <label for="degree">Degree: <span style="color:red">*</span></label>
+                    <input type="text" id="degree" name="degree" placeholder="Degree (e.g., B.Tech, M.Sc)" required readonly>
+                </div>
+
+                <!-- Branch -->
+                <div class="form-group">
+                    <label for="branch">Branch: <span style="color:red">*</span></label>
+                    <input type="text" id="branch" name="branch" placeholder="Branch (e.g., Computer Science)" required readonly>
+                </div>
+
+                <!-- Passout Year -->
+                <div class="form-group">
+                    <label for="passoutYear">Passout Year: <span style="color:red">*</span></label>
+                    <input type="number" id="passoutYear" name="passoutYear" placeholder="Passout Year" required readonly>
+                </div>
+
+                <!-- ABC ID -->
                 <div class="form-group">
                     <label for="ABC">ABC ID: <span style="color:red">*</span></label>
                     <input type="number" id="ABC" name="abcId" placeholder="ABC ID (12 Digits)" required readonly>
                 </div>
 
-                <!-- Password Field -->
+                <!-- Password -->
                 <div class="form-group">
                     <label for="password">Password: <span style="color:red">*</span></label>
-                    <input type="text" id="password" name="password" placeholder="Password" required>
-                    <div class="password-requirements" id="password-requirements">
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <div class="password-requirements">
                         <ul>
                             <li><strong>Password Requirements:</strong></li>
                             <li>Minimum 8 characters</li>
@@ -92,7 +111,6 @@
                     </div>
                 </div>
 
-
                 <button class="submit-button" type="submit">Sign Up</button>
             </form>
 
@@ -100,7 +118,7 @@
         </div>
     </main>
 
-    <!-- Linking JavaScript -->
+    <!-- JavaScript -->
     <script src="js/signup.js"></script>
 </body>
 </html>

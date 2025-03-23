@@ -20,34 +20,25 @@ const studentSchema = new mongoose.Schema({
     middleName: String,
     lastName: String,
     collegeName: String,
-    prnNumber: {
-        type: Number,
-        unique: true, // Ensure PRN number is unique
-        required: true
-    },
-    abcId: {
-        type: Number,
-        unique: true, // Ensure ABC ID is unique
-        required: true
-    },
-    email: {
-        type: String,
-        unique: true, // Ensure Email is unique
-        required: true
-    },
-    contact: Number
+    prnNumber: { type: Number, unique: true, required: true },
+    abcId: { type: Number, unique: true, required: true },
+    email: { type: String, unique: true, required: true },
+    contact: Number,
+    passoutYear: { type: Number, required: true }, // New Field
+    degree: { type: String, required: true }, // New Field
+    branch: { type: String, required: true } // New Field
 });
 
 // Create a new model for registered students
 const registeredStudentSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: true // Make sure this is required if needed
+        required: true
     },
     middleName: String,
     lastName: {
         type: String,
-        required: true // Make sure this is required if needed
+        required: true
     },
     prnNumber: {
         type: Number,
@@ -59,14 +50,17 @@ const registeredStudentSchema = new mongoose.Schema({
     },
     Contact: Number,
     collegeName: String,
+    passoutYear: { type: Number, required: true }, // New Field
+    degree: { type: String, required: true }, // New Field
+    branch: { type: String, required: true }, // New Field
     abcId: {
         type: Number,
         required: true
     },
     password: {
         type: String,
-        required: true // Make sure this is required if needed
-    }
+        required: true
+    } 
 });
 
 const courseSchema = new mongoose.Schema({
@@ -126,7 +120,8 @@ const EnrolledStudentSchema = new mongoose.Schema({
     status: { type: String, enum: ["Ongoing", "Completed"], default: "Ongoing" },
     enrollmentDate: { type: Date, default: Date.now },
     completionDate: { type: Date },
-    certificateUrl: { type: String } // Store certificate link when completed
+    certificateUrl: { type: String },
+    abcId: { type: String } // New field for ABC ID
 });
 
 const RegisteredStudent = mongoose.model('RegisteredStudent', registeredStudentSchema);
@@ -140,7 +135,7 @@ async function importExcelToMongoDB(filePath) {
         const workbook = xlsx.readFile(filePath);
         const sheetName = workbook.SheetNames[0]; // Get the first sheet
         const sheet = workbook.Sheets[sheetName];
-        
+
         // Convert Excel sheet to JSON
         const jsonData = xlsx.utils.sheet_to_json(sheet);
 
@@ -148,34 +143,36 @@ async function importExcelToMongoDB(filePath) {
         for (let data of jsonData) {
             try {
                 const newStudent = new Student({
-                    firstName: data['First Name'],
-                    middleName: data['Middle Name'],
-                    lastName: data['Last Name'],
-                    collegeName: data['College Name'],
-                    prnNumber: data['PRN number'],
-                    abcId: data['ABC ID'],
-                    email: data['Email Id'],
-                    contact: data['Contact'] // Ensure column names match your Excel file
+                    firstName: data["First Name"],
+                    middleName: data["Middle Name"] || "",
+                    lastName: data["Last Name"],
+                    collegeName: data["College Name"],
+                    degree: data["Degree"],
+                    branch: data["Branch"],
+                    prnNumber: data["PRN Number"],
+                    abcId: data["ABC ID"],
+                    email: data["Email"],
+                    contact: data["Contact"],
+                    passoutYear: data["Passout Year"]
                 });
 
                 // Save student data to MongoDB
                 await newStudent.save();
-                console.log(`Inserted student with PRN ${data['PRN number']} and ABC ID ${data['ABC ID']}`);
+                console.log(`Inserted student: PRN ${data["PRN Number"]}, ABC ID ${data["ABC ID"]}`);
             } catch (err) {
                 if (err.code === 11000) {
-                    console.log(`Duplicate entry skipped for PRN ${data['PRN number']} and ABC ID ${data['ABC ID']}`);
+                    console.log(`Duplicate entry skipped: PRN ${data["PRN Number"]}, ABC ID ${data["ABC ID"]}`);
                 } else {
-                    console.error('Error saving student data:', err);
+                    console.error("Error saving student data:", err);
                 }
             }
         }
 
-        console.log('Data imported to MongoDB successfully!');
+        console.log("Data imported to MongoDB successfully!");
     } catch (error) {
-        console.error('Error importing data to MongoDB:', error);
+        console.error("Error importing data to MongoDB:", error);
     }
 }
-
 
 // module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, UploadedCertificate };
 module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent};

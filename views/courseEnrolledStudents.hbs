@@ -32,22 +32,36 @@
                 <thead>
                     <tr>
                         <th>PRN</th>
+                        <th>ABC ID</th>
                         <th>Name</th>
                         <th>College</th>
                         <th>Status</th>
                         <th>Enrollment Date</th>
                         <th>Completion Date</th>
+                        <th>Action</th> <!-- New column for individual completion -->
                     </tr>
                 </thead>
                 <tbody>
                     {{#each students}}
                     <tr>
                         <td>{{this.prnNumber}}</td>
+                        <td>{{this.abcId}}</td>
                         <td>{{this.studentName}}</td>
                         <td>{{this.collegeName}}</td>
-                        <td>{{this.status}}</td>
+                        <td id="status-{{this._id}}">{{this.status}}</td>
                         <td>{{this.enrollmentDate}}</td>
-                        <td>{{#if this.completionDate}}{{this.completionDate}}{{else}}-{{/if}}</td>
+                        <td id="completionDate-{{this._id}}">
+                            {{#if this.completionDate}}{{this.completionDate}}{{else}}-{{/if}}
+                        </td>
+                        <td>
+                            {{#if (eq this.status "Ongoing")}}
+                            <button onclick="markStudentCompleted('{{this._id}}')" class="complete-button">
+                                Mark as Completed
+                            </button>
+                            {{else}}
+                            Completed
+                            {{/if}}
+                        </td>
                     </tr>
                     {{/each}}
                 </tbody>

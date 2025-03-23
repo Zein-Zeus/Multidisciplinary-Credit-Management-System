@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Records</title>
     <link rel="stylesheet" href="css/collegeStudentRecords.css">
+    <style>
+        .filter-icon {
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+
+        .filter-container {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 5px;
+            z-index: 10;
+        }
+
+        .filter-select {
+            width: 120px;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
     <nav>
@@ -19,63 +41,34 @@
             </div>
         </div>
     </nav>
-    <div class="collapsible-bar">
-        <button class="collapsible" onclick="toggleMenu()">☰</button>
-        <div class="content">
-            <button class="close-btn" onclick="toggleMenu()">×</button> <!-- Close Button -->
-            <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
-            <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
-            <div class="menu-item"><a href="/clgstudentrecords">Student Records</a></div>
-            {{!-- <div class="menu-item"><a href="/issues">Issues</a></div> --}}
-            <div class="menu-item"><a href="/">Logout</a></div>
-        </div>
-    </div>
 
     <main>
         <div class="dashboard">
             <h2>Student Records</h2>
-            <!-- Filter Dropdowns -->
-            <div>
-                <label for="course-select">Course:</label>
-                <select id="course-select" onchange="applyFilters()">
-                    <option value="all">All Courses</option>
-                    {{#each courses}}
-                        <option value="{{this}}" {{#if (eq this ../selectedCourse)}}selected{{/if}}>{{this}}</option>
-                    {{/each}}
-                </select>
 
-                <label for="status-select">Completion Status:</label>
-                <select id="status-select" onchange="applyFilters()">
-                    <option value="all">All Statuses</option>
-                    {{#each statuses}}
-                        <option value="{{this}}" {{#if (eq this ../selectedStatus)}}selected{{/if}}>{{this}}</option>
-                    {{/each}}
-                </select>
-            </div>
-    
             <!-- Export Button -->
-            <button class="export-button" onclick="exportToExcel()">Export to Excel</button>
-    
-            <!-- Extended Student Table -->
-            <table>
+            <button onclick="exportToExcel()" class="export-button">Export to Excel</button>
+
+            <!-- Student Table -->
+            <table id="student-table">
                 <thead>
                     <tr>
-                        <th>PRN</th>
-                        <th>Student Name</th>
-                        <th>Course Name</th>
-                        <th>College</th>
-                        {{!-- <th>Credits</th>
-                        <th>Assessment Type</th> --}}
-                        <th>Completion Status</th>
-                        <th>Enrollment Date</th>
+                        <th>PRN <span class="filter-icon" onclick="toggleFilter(0)">▼</span></th>
+                        <th>ABC Id <span class="filter-icon" onclick="toggleFilter(1)">▼</span></th>
+                        <th>Student Name <span class="filter-icon" onclick="toggleFilter(2)">▼</span></th>
+                        <th>Course Name <span class="filter-icon" onclick="toggleFilter(3)">▼</span></th>
+                        <th>College <span class="filter-icon" onclick="toggleFilter(4)">▼</span></th>
+                        <th>Completion Status <span class="filter-icon" onclick="toggleFilter(5)">▼</span></th>
+                        <th>Enrollment Date <span class="filter-icon" onclick="toggleFilter(6)">▼</span></th>
+                        <th>Completion Date <span class="filter-icon" onclick="toggleFilter(7)">▼</span></th>
                         <th>Certificate</th>
-                        <th>Download</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{#each students}}
                     <tr>
                         <td>{{this.prnNumber}}</td>
+                        <td>{{this.abcId}}</td>
                         <td>{{this.studentName}}</td>
                         <td>{{this.courseName}}</td>
                         <td>{{this.collegeName}}</td>
@@ -92,44 +85,102 @@
                     </tr>
                     {{else}}
                     <tr>
-                        <td colspan="8" style="text-align:center;">No student records found</td>
+                        <td colspan="9" style="text-align:center;">No student records found</td>
                     </tr>
                     {{/each}}
                 </tbody>
             </table>
-            
+
+            <!-- Filter Dropdown (Initially Hidden) -->
+            <div id="filter-box" class="filter-container">
+                <select id="filter-select" class="filter-select" onchange="applyFilter()">
+                    <option value="all">All</option>
+                </select>
+            </div>
         </div>
     </main>
-    
+
+    <script src="js/collegeStudentRecords.js"></script>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const students = {{{students}}}; // Parse the JSON data
-            const tableBody = document.getElementById("student-table-body");
+        let activeFilterIndex = null;
 
-            if (students.length === 0) {
-                tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No records found</td></tr>";
-                return;
+        function toggleFilter(index) {
+            const filterBox = document.getElementById("filter-box");
+            const filterSelect = document.getElementById("filter-select");
+            const filterIcon = document.querySelectorAll(".filter-icon")[index];
+
+            if (activeFilterIndex === index) {
+                // Close filter if already open
+                filterBox.style.display = "none";
+                filterIcon.textContent = "▼";
+                activeFilterIndex = null;
+            } else {
+                // Open filter dropdown and move it near the selected column
+                activeFilterIndex = index;
+                const thElements = document.querySelectorAll("th");
+                const rect = thElements[index].getBoundingClientRect();
+
+                filterBox.style.display = "block";
+                filterBox.style.top = `${rect.bottom + window.scrollY}px`;
+                filterBox.style.left = `${rect.left + window.scrollX}px`;
+
+                // Change icon
+                document.querySelectorAll(".filter-icon").forEach(icon => icon.textContent = "▼");
+                filterIcon.textContent = "▲";
+
+                // Populate dropdown with unique values from the selected column
+                populateFilterOptions(index);
             }
+        }
 
-            students.forEach(student => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${student.prnNumber}</td>
-                    <td>${student.studentName}</td>
-                    <td>${student.courseName}</td>
-                    <td>${student.collegeName}</td>
-                    <td>${student.credits || "N/A"}</td>
-                    <td>${student.assessmentType || "N/A"}</td>
-                    <td>${student.status}</td>
-                    <td>${student.marks || "N/A"}</td>
-                `;
-                tableBody.appendChild(row);
+        function populateFilterOptions(columnIndex) {
+            const filterSelect = document.getElementById("filter-select");
+            const tableRows = document.querySelectorAll("tbody tr");
+            const uniqueValues = new Set();
+
+            tableRows.forEach(row => {
+                const cell = row.children[columnIndex];
+                if (cell) {
+                    uniqueValues.add(cell.textContent.trim());
+                }
             });
+
+            // Clear existing options
+            filterSelect.innerHTML = '<option value="all">All</option>';
+            uniqueValues.forEach(value => {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = value;
+                filterSelect.appendChild(option);
+            });
+        }
+
+        function applyFilter() {
+            if (activeFilterIndex === null) return;
+
+            const filterValue = document.getElementById("filter-select").value.toLowerCase();
+            const tableRows = document.querySelectorAll("tbody tr");
+
+            tableRows.forEach(row => {
+                const cell = row.children[activeFilterIndex];
+                if (cell) {
+                    const cellText = cell.textContent.toLowerCase();
+                    row.style.display = (filterValue === "all" || cellText === filterValue) ? "" : "none";
+                }
+            });
+        }
+
+        // Hide filter box when clicking outside
+        document.addEventListener("click", function (event) {
+            const filterBox = document.getElementById("filter-box");
+            if (!filterBox.contains(event.target) && !event.target.classList.contains("filter-icon")) {
+                filterBox.style.display = "none";
+                activeFilterIndex = null;
+                document.querySelectorAll(".filter-icon").forEach(icon => icon.textContent = "▼");
+            }
         });
     </script>
-    
-    <script src="/js/collegeStudentRecords.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 </body>
 </html>

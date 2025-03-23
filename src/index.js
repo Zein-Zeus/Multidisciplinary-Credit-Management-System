@@ -212,11 +212,11 @@ app.get('/api/getPrn', async (req, res) => {
 
 app.get('/get-student-info', async (req, res) => {
     const { prnNumber } = req.query;
-    console.log(`Fetching details for PRN: ${prnNumber}`); // Debugging log
+    console.log(`Fetching details for PRN: ${prnNumber}`);
 
     try {
-        const student = await Student.findOne({ prnNumber }).select('firstName middleName lastName collegeName abcId email contact');
-        console.log("Found student data:", student); // Log the full response
+        const student = await Student.findOne({ prnNumber }).select('firstName middleName lastName collegeName degree branch abcId email contact passoutYear');
+        console.log("Found student data:", student);
 
         if (student) {
             res.json(student);
@@ -231,32 +231,41 @@ app.get('/get-student-info', async (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-    const { password } = req.body;
+    const { prnNumber, password } = req.body;
 
+    // Validate password format
     const passwordValidation = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
     if (!passwordValidation.test(password)) {
         return res.status(400).send('Password does not meet the requirements');
     }
 
     try {
-        const existingStudent = await Student.findOne({ prnNumber: req.body.prnNumber });
+        // Find student details in the database
+        const existingStudent = await Student.findOne({ prnNumber });
 
         if (!existingStudent) {
-            res.status(400).send('PRN number not found in the database. Registration failed.');
-            return res.redirect('/signup');
+            return res.status(400).send('PRN number not found in the database. Registration failed.');
+        }
+
+        // Ensure email exists
+        if (!existingStudent.email) {
+            return res.status(400).send('Error: Email not found for this PRN.');
         }
 
         // Create a new registered student document
         const registeredStudentData = new RegisteredStudent({
-            firstName: req.body.firstName,
-            middleName: req.body.middleName,
-            lastName: req.body.lastName,
-            prnNumber: req.body.prnNumber,
-            Email: req.body.Email,
-            Contact: req.body.Contact,
-            collegeName: req.body.collegeName,
-            abcId: req.body.abcId,
-            password: req.body.password
+            firstName: existingStudent.firstName,
+            middleName: existingStudent.middleName,
+            lastName: existingStudent.lastName,
+            prnNumber: existingStudent.prnNumber,
+            Email: existingStudent.email,
+            Contact: existingStudent.contact,
+            collegeName: existingStudent.collegeName,
+            abcId: existingStudent.abcId,
+            degree: existingStudent.degree,  
+            branch: existingStudent.branch,  
+            passoutYear: existingStudent.passoutYear, 
+            password: password
         });
 
         await registeredStudentData.save();
@@ -279,6 +288,9 @@ app.post("/login", async (req, res) => {
         if (user && user.password === password) {
             req.session.prnNumber = user.prnNumber;
             req.session.studentName = `${user.firstName} ${user.lastName}`; // Full name
+            req.session.abcId = user.abcId; // Store abcId in session
+
+            console.log("Logged in user abcId:", req.session.abcId); // Debugging log
 
             res.redirect("/dashboard"); // Redirect to the dashboard
         } else {
@@ -364,7 +376,6 @@ app.post("/enroll", async (req, res) => {
     try {
         let { courseId, courseName, collegeName } = req.body;
 
-        // Validate courseId
         if (!courseId || courseId.length !== 24) {
             console.error("Invalid Course ID:", courseId);
             return res.status(400).send("Invalid Course ID.");
@@ -385,13 +396,16 @@ app.post("/enroll", async (req, res) => {
             return res.status(400).send("You are already enrolled in this course.");
         }
 
+        console.log("Session abcId:", req.session.abcId); // Debugging Log
+
         const enrollment = new EnrolledStudent({
             prnNumber: req.session.prnNumber,
             studentName: `${student.firstName} ${student.lastName}`,
-            courseId: new mongoose.Types.ObjectId(courseId), // Convert to ObjectId
+            courseId: new mongoose.Types.ObjectId(courseId),
             courseName,
             collegeName,
             status: "Ongoing",
+            abcId: req.session.abcId || student.abcId // Fallback if session abcId is missing
         });
 
         await enrollment.save();
@@ -401,7 +415,6 @@ app.post("/enroll", async (req, res) => {
         res.status(500).send("An error occurred while enrolling.");
     }
 });
-
 
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
@@ -425,9 +438,13 @@ app.get("/clglogin", (req, res) => {
 
 app.get("/clgstudentrecords", async (req, res) => {
     try {
+        if (!req.session.collegeName) {
+            return res.status(401).send("Unauthorized access.");
+        }
+
         const { course, status } = req.query; // Get filter values from query params
 
-        let filter = {}; // Empty filter object
+        let filter = { collegeName: req.session.collegeName }; // Filter by logged-in college
 
         if (course && course !== "all") {
             filter.courseName = course;
@@ -439,8 +456,8 @@ app.get("/clgstudentrecords", async (req, res) => {
         // Fetch filtered student records
         const students = await EnrolledStudent.find(filter).lean();
 
-        // Get unique course names
-        const courses = await EnrolledStudent.distinct("courseName");
+        // Get unique course names only from the logged-in college
+        const courses = await EnrolledStudent.distinct("courseName", { collegeName: req.session.collegeName });
 
         // Set available statuses
         const statuses = ["Ongoing", "Completed"];
@@ -454,26 +471,19 @@ app.get("/clgstudentrecords", async (req, res) => {
 
 app.get("/export-student-records", async (req, res) => {
     try {
-        const { course, status } = req.query;
+        console.log("Export route hit!"); // Debugging
 
-        let filter = {};
+        // Fetch student data from the database
+        const students = await EnrolledStudent.find({}).lean();
 
-        if (course && course !== "all") {
-            filter.courseName = course;
-        }
-        if (status && status !== "all") {
-            filter.status = status;
-        }
-
-        const students = await EnrolledStudent.find(filter).lean();
-
-        // Create a new workbook and add a worksheet
+        // Create a new Excel Workbook
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Student Records");
 
-        // Define columns
+        // Define Table Headers
         worksheet.columns = [
             { header: "PRN", key: "prnNumber", width: 15 },
+            { header: "ABC ID", key: "abcId", width: 20 },
             { header: "Student Name", key: "studentName", width: 25 },
             { header: "Course Name", key: "courseName", width: 30 },
             { header: "College Name", key: "collegeName", width: 30 },
@@ -483,10 +493,11 @@ app.get("/export-student-records", async (req, res) => {
             { header: "Certificate URL", key: "certificateUrl", width: 40 }
         ];
 
-        // Add student data to worksheet
+        // Add student data to Excel
         students.forEach(student => {
             worksheet.addRow({
                 prnNumber: student.prnNumber,
+                abcId: student.abcId || "N/A",
                 studentName: student.studentName,
                 courseName: student.courseName,
                 collegeName: student.collegeName,
@@ -497,12 +508,17 @@ app.get("/export-student-records", async (req, res) => {
             });
         });
 
-        // Write to buffer and send response
-        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        // Set Headers for Download
+        res.setHeader(
+            "Content-Type",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
         res.setHeader("Content-Disposition", "attachment; filename=student_records.xlsx");
 
+        // Write file and send response
         await workbook.xlsx.write(res);
         res.end();
+        console.log("Excel file sent!"); // Debugging
     } catch (error) {
         console.error("Error generating Excel file:", error);
         res.status(500).send("Error generating file.");
@@ -581,30 +597,41 @@ app.post("/clglogin", async (req, res) => {
 
 app.post("/register", async (req, res) => {
     try {
+        const { firstName, middleName, lastName, collegeName, degree, branch, prnNumber, abcId, email, contact, passoutYear } = req.body;
+
+        // Validate Passout Year (ensure it is within a reasonable range)
+        const currentYear = new Date().getFullYear();
+        if (passoutYear < 1900 || passoutYear > currentYear + 5) {
+            return res.status(400).json({ success: false, message: 'Invalid Passout Year' });
+        }
+
         // Check for existing PRN number
-        const existingStudentByPrn = await Student.findOne({ prnNumber: req.body.prnNumber });
+        const existingStudentByPrn = await Student.findOne({ prnNumber });
         if (existingStudentByPrn) {
             console.log('Student with this PRN number already exists.');
             return res.status(400).json({ success: false, message: 'Student with this PRN number already exists.' });
         }
 
         // Check for existing ABC ID
-        const existingStudentByAbcId = await Student.findOne({ abcId: req.body.abcId });
+        const existingStudentByAbcId = await Student.findOne({ abcId });
         if (existingStudentByAbcId) {
             console.log('Student with this ABC ID already exists.');
             return res.status(400).json({ success: false, message: 'Student with this ABC ID already exists.' });
         }
 
-        // Create a new student document
+        // Create and save student
         const studentData = new Student({
-            firstName: req.body.firstName,
-            middleName: req.body.middleName,
-            lastName: req.body.lastName,
-            collegeName: req.body.collegeName,
-            prnNumber: req.body.prnNumber,
-            abcId: req.body.abcId,
-            email: req.body.email,
-            contact: req.body.contact
+            firstName,
+            middleName,
+            lastName,
+            collegeName,
+            degree,
+            branch,
+            prnNumber,
+            abcId,
+            email,
+            contact,
+            passoutYear
         });
 
         await studentData.save();
@@ -866,10 +893,10 @@ app.get("/view-enrolled-students/:courseId", async (req, res) => {
 app.put("/declare-course/:courseId", async (req, res) => {
     try {
         const courseId = req.params.courseId;
-        const completionDate = new Date(); // Capture current timestamp
+        const completionDate = new Date(); // Current timestamp
 
         const updatedStudents = await EnrolledStudent.updateMany(
-            { courseId, status: "Ongoing" }, // Update only ongoing courses
+            { courseId, status: "Ongoing" }, // Only update ongoing students
             { $set: { status: "Completed", completionDate: completionDate } }
         );
 
@@ -880,6 +907,28 @@ app.put("/declare-course/:courseId", async (req, res) => {
         }
     } catch (error) {
         console.error("Error updating course status:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+app.put("/declare-student/:studentId", async (req, res) => {
+    try {
+        const studentId = req.params.studentId;
+        const completionDate = new Date();
+
+        const updatedStudent = await EnrolledStudent.findOneAndUpdate(
+            { _id: studentId, status: "Ongoing" }, // Only update ongoing students
+            { $set: { status: "Completed", completionDate: completionDate } },
+            { new: true } // Return the updated document
+        );
+
+        if (updatedStudent) {
+            res.json({ success: true, message: "Student marked as completed!", completionDate });
+        } else {
+            res.json({ success: false, message: "Student already completed or not found." });
+        }
+    } catch (error) {
+        console.error("Error updating student status:", error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 });

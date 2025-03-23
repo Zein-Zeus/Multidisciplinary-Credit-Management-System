@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const collegeField = document.getElementById('college-name');
     const abcIdField = document.getElementById('ABC');
     const contactField = document.getElementById('Contact');
+    const degreeField = document.getElementById('degree');
+    const branchField = document.getElementById('branch');
+    const passoutYearField = document.getElementById('passoutYear');
 
     // Fetch student details when user stops typing (debounce)
     let timeout = null;
@@ -52,7 +55,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         collegeField.value = studentData.collegeName || '';
                         abcIdField.value = studentData.abcId || '';
                         contactField.value = studentData.contact || '';
+                        degreeField.value = studentData.degree || '';
+                        branchField.value = studentData.branch || '';
+                        passoutYearField.value = studentData.passoutYear || '';
                     } else {
+                        // Clear all fields if no data is found
                         firstNameField.value = '';
                         middleNameField.value = '';
                         lastNameField.value = '';
@@ -60,6 +67,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         collegeField.value = '';
                         abcIdField.value = '';
                         contactField.value = '';
+                        degreeField.value = '';
+                        branchField.value = '';
+                        passoutYearField.value = '';
                     }
                 } catch (error) {
                     console.error('Error fetching student info:', error);
