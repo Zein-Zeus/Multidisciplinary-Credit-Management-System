@@ -25,7 +25,7 @@
 
             <!-- Buttons -->
             <button onclick="declareCourseCompleted('{{course._id}}')" class="declare-button">Declare Course as Complete</button>
-            <button onclick="exportToExcel()" class="export-button">Export to Excel</button>
+            <button onclick="exportToExcel()" class="export-button" data-courseid="{{course._id}}">Export to Excel</button>
 
             {{#if students.length}}
             <table>
@@ -38,7 +38,7 @@
                         <th>Status</th>
                         <th>Enrollment Date</th>
                         <th>Completion Date</th>
-                        <th>Action</th> <!-- New column for individual completion -->
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>

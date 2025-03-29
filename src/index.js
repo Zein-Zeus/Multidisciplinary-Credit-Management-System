@@ -314,7 +314,7 @@ app.get("/course/:id", async (req, res) => {
         const modulesArray = course.courseModules.split(/\n/).map(module => module.trim());
 
         // Render the course detail page with the course data
-        res.render('courseDetails', {
+        res.render('studentCourseDetails', {
             _id: course._id.toString(),  // Ensure this is sent correctly
             courseName: course.courseName,
             courseDescription: course.courseDescription,
@@ -331,40 +331,6 @@ app.get("/course/:id", async (req, res) => {
     } catch (error) {
         console.error('Error fetching course details:', error);
         res.status(500).send('Error fetching course details');
-    }
-});
-
-app.delete('/course/:id', async (req, res) => {
-    try {
-        const courseId = req.params.id;
-
-        // Find the course by ID
-        const course = await Course.findById(courseId);
-
-        if (!course) {
-            return res.status(404).send({ success: false, message: 'Course not found' });
-        }
-
-        // Check if the course has an associated image
-        if (course.image) {
-            const imagePath = path.join(__dirname, 'public', course.image); // Adjust 'public' to your static folder path
-
-            // Delete the image file
-            fs.unlink(imagePath, (err) => {
-                if (err) {
-                    console.error('Error deleting image:', err);
-                } else {
-                    console.log('Image deleted:', imagePath);
-                }
-            });
-        }
-
-        // Delete the course from the database
-        await course.deleteOne();
-        res.send({ success: true, message: 'Course and associated image deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting course:', error);
-        res.status(500).send({ success: false, message: 'Error deleting course' });
     }
 });
 
@@ -439,12 +405,17 @@ app.get("/clglogin", (req, res) => {
 app.get("/clgstudentrecords", async (req, res) => {
     try {
         if (!req.session.collegeName) {
-            return res.status(401).send("Unauthorized access.");
+            res.redirect('/clglogin');
+            return;
         }
 
         const { course, status } = req.query; // Get filter values from query params
 
-        let filter = { collegeName: req.session.collegeName }; // Filter by logged-in college
+        // Find students whose `prnNumber` exists in `RegisteredStudent` with the same collegeName as logged-in college
+        const registeredStudents = await RegisteredStudent.find({ collegeName: req.session.collegeName }).select("prnNumber").lean();
+        const studentPRNs = registeredStudents.map(student => student.prnNumber);
+
+        let filter = { prnNumber: { $in: studentPRNs } }; // Filter students who belong to the logged-in college
 
         if (course && course !== "all") {
             filter.courseName = course;
@@ -456,8 +427,8 @@ app.get("/clgstudentrecords", async (req, res) => {
         // Fetch filtered student records
         const students = await EnrolledStudent.find(filter).lean();
 
-        // Get unique course names only from the logged-in college
-        const courses = await EnrolledStudent.distinct("courseName", { collegeName: req.session.collegeName });
+        // Get unique course names based on students from the logged-in college
+        const courses = await EnrolledStudent.distinct("courseName", filter);
 
         // Set available statuses
         const statuses = ["Ongoing", "Completed"];
@@ -507,13 +478,15 @@ app.get("/export-student-records", async (req, res) => {
                 certificateUrl: student.certificateUrl || "N/A"
             });
         });
+        
+        const currentDate = new Date().toISOString().split("T")[0];
 
         // Set Headers for Download
         res.setHeader(
             "Content-Type",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         );
-        res.setHeader("Content-Disposition", "attachment; filename=student_records.xlsx");
+        res.setHeader("Content-Disposition", `attachment; filename=student_records_${currentDate}.xlsx`);
 
         // Write file and send response
         await workbook.xlsx.write(res);
@@ -527,6 +500,9 @@ app.get("/export-student-records", async (req, res) => {
 
 app.get("/clgdashboard", async (req, res) => {
     try {
+        if (!req.session.collegeName) {
+            res.redirect('/clglogin');
+        }
         const totalStudents = await RegisteredStudent.countDocuments(); // Count total students in the collection
         const totalCourses = await Course.countDocuments();
         res.render("collegeDashboard", { totalStudents, totalCourses }); // Pass the count to the view
@@ -537,7 +513,10 @@ app.get("/clgdashboard", async (req, res) => {
 });
 
 app.get("/clgstudentreg", (req, res) => {
-    res.render("collegeStudentRegistration");
+    if (!req.session.collegeName) {
+        res.redirect('/clglogin');
+    }
+    res.render("collegeStudentRegistration", { collegeName: req.session.collegeName });
 });
 
 app.post("/clgsignup", async (req, res) => {
@@ -597,26 +576,31 @@ app.post("/clglogin", async (req, res) => {
 
 app.post("/register", async (req, res) => {
     try {
-        const { firstName, middleName, lastName, collegeName, degree, branch, prnNumber, abcId, email, contact, passoutYear } = req.body;
+        if (!req.session.collegeName) {
+            return res.status(403).json({ success: false, message: "Unauthorized: College not logged in" });
+        }
+
+        const { firstName, middleName, lastName, degree, branch, prnNumber, abcId, email, contact, passoutYear } = req.body;
+        const collegeName = req.session.collegeName; // Autofill from session
 
         // Validate Passout Year (ensure it is within a reasonable range)
         const currentYear = new Date().getFullYear();
         if (passoutYear < 1900 || passoutYear > currentYear + 5) {
-            return res.status(400).json({ success: false, message: 'Invalid Passout Year' });
+            return res.status(400).json({ success: false, message: "Invalid Passout Year" });
         }
 
         // Check for existing PRN number
         const existingStudentByPrn = await Student.findOne({ prnNumber });
         if (existingStudentByPrn) {
-            console.log('Student with this PRN number already exists.');
-            return res.status(400).json({ success: false, message: 'Student with this PRN number already exists.' });
+            console.log("Student with this PRN number already exists.");
+            return res.status(400).json({ success: false, message: "Student with this PRN number already exists." });
         }
 
         // Check for existing ABC ID
         const existingStudentByAbcId = await Student.findOne({ abcId });
         if (existingStudentByAbcId) {
-            console.log('Student with this ABC ID already exists.');
-            return res.status(400).json({ success: false, message: 'Student with this ABC ID already exists.' });
+            console.log("Student with this ABC ID already exists.");
+            return res.status(400).json({ success: false, message: "Student with this ABC ID already exists." });
         }
 
         // Create and save student
@@ -636,12 +620,12 @@ app.post("/register", async (req, res) => {
 
         await studentData.save();
 
-        console.log('Student registered successfully.');
-        return res.json({ success: true, message: 'Student registered successfully.' });
+        console.log("Student registered successfully.");
+        return res.json({ success: true, message: "Student registered successfully." });
 
     } catch (err) {
-        console.error('Error adding student:', err.message);
-        res.status(500).json({ success: false, message: 'Error adding student: ' + err.message });
+        console.error("Error adding student:", err.message);
+        res.status(500).json({ success: false, message: "Error adding student: " + err.message });
     }
 });
 
@@ -760,7 +744,7 @@ app.post("/course-login", async (req, res) => {
 // Add this route for handling course upload
 app.post("/uploadcourse", uploadCourseImage.single('image'), async (req, res) => {
     if (!req.session.collegeID) {
-        return res.status(401).send("Unauthorized. Please login.");
+        res.redirect('/course-login');
     }
 
     console.log(req.body);
@@ -797,6 +781,38 @@ app.post("/uploadcourse", uploadCourseImage.single('image'), async (req, res) =>
     }
 });
 
+app.get("/view-course/:id", async (req, res) => {
+    try {
+        const courseId = req.params.id;
+        const course = await Course.findById(courseId);
+
+        if (!course) {
+            return res.status(404).send('Course not found');
+        }
+
+        const modulesArray = course.courseModules.split(/\n/).map(module => module.trim());
+
+        // Render the course detail page with the course data
+        res.render('courseDetails', {
+            _id: course._id.toString(),  // Ensure this is sent correctly
+            courseName: course.courseName,
+            courseDescription: course.courseDescription,
+            credits: course.credits,
+            duration: course.duration,
+            mode: course.mode,
+            collegeID: course.collegeID,
+            collegeName: course.collegeName,
+            facultyName: course.facultyName,
+            modules: modulesArray ,
+            image: course.image
+            // Include any other fields you want to display
+        });
+    } catch (error) {
+        console.error('Error fetching course details:', error);
+        res.status(500).send('Error fetching course details');
+    }
+});
+
 app.delete("/delete-course/:id", async (req, res) => {
     try {
         await Course.findByIdAndDelete(req.params.id);
@@ -809,7 +825,7 @@ app.delete("/delete-course/:id", async (req, res) => {
 
 app.post("/update-course/:id", uploadCourseImage.single("image"), async (req, res) => {
     if (!req.session.collegeID) {
-        return res.status(401).send("Unauthorized. Please login.");
+        res.redirect('/course-login');
     }
 
     try {
@@ -930,6 +946,79 @@ app.put("/declare-student/:studentId", async (req, res) => {
     } catch (error) {
         console.error("Error updating student status:", error);
         res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+app.get("/export-enrolled-students", async (req, res) => {
+    try {
+        console.log("Export route hit!"); // Debugging
+
+        const courseId = req.query.courseId;
+        if (!courseId) {
+            return res.status(400).send("Course ID is required.");
+        }
+
+        // Fetch the course details to get the course name
+        const course = await Course.findById(courseId).lean();
+        if (!course) {
+            return res.status(404).send("Course not found.");
+        }
+
+        // Format course name to avoid invalid filename characters
+        const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9_-]/g, "_"); // Replace special characters with "_"
+
+        // Fetch student data from the database
+        const students = await EnrolledStudent.find({ courseId }).lean();
+
+        if (!students.length) {
+            return res.status(404).send("No enrolled students found.");
+        }
+
+        // Create a new Excel Workbook
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Enrolled Students");
+
+        // Define Table Headers
+        worksheet.columns = [
+            { header: "PRN", key: "prnNumber", width: 15 },
+            { header: "ABC ID", key: "abcId", width: 20 },
+            { header: "Student Name", key: "studentName", width: 25 },
+            { header: "Course Name", key: "courseName", width: 30 },
+            { header: "College Name", key: "collegeName", width: 30 },
+            { header: "Completion Status", key: "status", width: 15 },
+            { header: "Enrollment Date", key: "enrollmentDate", width: 20 },
+            { header: "Completion Date", key: "completionDate", width: 20 },
+            { header: "Certificate URL", key: "certificateUrl", width: 40 }
+        ];
+
+        // Add student data to Excel
+        students.forEach(student => {
+            worksheet.addRow({
+                prnNumber: student.prnNumber,
+                abcId: student.abcId || "N/A",
+                studentName: student.studentName,
+                courseName: student.courseName,
+                collegeName: student.collegeName,
+                status: student.status,
+                enrollmentDate: student.enrollmentDate ? new Date(student.enrollmentDate).toLocaleDateString() : "",
+                completionDate: student.completionDate ? new Date(student.completionDate).toLocaleDateString() : "",
+                certificateUrl: student.certificateUrl || "N/A"
+            });
+        });
+
+        // Set the Dynamic File Name
+        const fileName = `enrolled_students_${formattedCourseName}.xlsx`;
+
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+
+        // Write file and send response
+        await workbook.xlsx.write(res);
+        res.end();
+        console.log("Excel file sent!"); // Debugging
+    } catch (error) {
+        console.error("Error generating Excel file:", error);
+        res.status(500).send("Error generating file.");
     }
 });
 

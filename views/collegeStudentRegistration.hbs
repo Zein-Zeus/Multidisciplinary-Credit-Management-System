@@ -28,7 +28,6 @@
                 <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
                 <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
                 <div class="menu-item"><a href="/clgstudentrecords">Student Records</a></div>
-                {{!-- <div class="menu-item"><a href="/issues">Issues</a></div> --}}
                 <div class="menu-item"><a href="/">Logout</a></div>
             </div>
         </div>
@@ -70,7 +69,7 @@
                         </div>
                         <div class="contact">
                             <div class="label">Contact:<span class="required">*</span></div>
-                            <input type="number" id="contact" name="contact" placeholder="Enter contact no." required>
+                            <input type="text" id="contact" name="contact" placeholder="Enter contact no." required>
                         </div>
                         <div class="degree">
                             <div class="label">Degree:<span class="required">*</span></div>
@@ -82,11 +81,13 @@
                         </div>
                         <div class="college_name">
                             <div class="label">College Name:<span class="required">*</span></div>
-                            <input type="text" id="college_name" name="collegeName" placeholder="Enter college name" required>
+                            <input type="text" id="college_name" name="collegeName" value="{{collegeName}}" readonly>
                         </div>
                         <div class="passout-year">
                             <div class="label">Passout Year:<span class="required">*</span></div>
-                            <input type="number" id="passoutYear" name="passoutYear" placeholder="Enter passout year" required min="1900" max="2099">
+                            <select id="passoutYear" name="passoutYear" required>
+                                <option value="" disabled selected>Select Passout Year</option>
+                            </select>
                         </div>
                         <button class="submit-button" type="submit">Submit</button>
                     </div>
@@ -112,5 +113,20 @@
 
 
     <script src="js/collegeStudentRegistration.js"></script>
+    <script>
+        // Get the dropdown element
+        const passoutYearDropdown = document.getElementById("passoutYear");
+
+        // Get the current year
+        const currentYear = new Date().getFullYear();
+
+        // Generate options from 1900 to (currentYear + 5)
+        for (let year = 2000; year <= currentYear + 5; year++) {
+            let option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            passoutYearDropdown.appendChild(option);
+        }
+    </script>
 </body>
 </html>

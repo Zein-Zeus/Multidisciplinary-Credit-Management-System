@@ -91,7 +91,6 @@
                 </tbody>
             </table>
 
-            <!-- Filter Dropdown (Initially Hidden) -->
             <div id="filter-box" class="filter-container">
                 <select id="filter-select" class="filter-select" onchange="applyFilter()">
                     <option value="all">All</option>
@@ -101,86 +100,5 @@
     </main>
 
     <script src="js/collegeStudentRecords.js"></script>
-
-    <script>
-        let activeFilterIndex = null;
-
-        function toggleFilter(index) {
-            const filterBox = document.getElementById("filter-box");
-            const filterSelect = document.getElementById("filter-select");
-            const filterIcon = document.querySelectorAll(".filter-icon")[index];
-
-            if (activeFilterIndex === index) {
-                // Close filter if already open
-                filterBox.style.display = "none";
-                filterIcon.textContent = "▼";
-                activeFilterIndex = null;
-            } else {
-                // Open filter dropdown and move it near the selected column
-                activeFilterIndex = index;
-                const thElements = document.querySelectorAll("th");
-                const rect = thElements[index].getBoundingClientRect();
-
-                filterBox.style.display = "block";
-                filterBox.style.top = `${rect.bottom + window.scrollY}px`;
-                filterBox.style.left = `${rect.left + window.scrollX}px`;
-
-                // Change icon
-                document.querySelectorAll(".filter-icon").forEach(icon => icon.textContent = "▼");
-                filterIcon.textContent = "▲";
-
-                // Populate dropdown with unique values from the selected column
-                populateFilterOptions(index);
-            }
-        }
-
-        function populateFilterOptions(columnIndex) {
-            const filterSelect = document.getElementById("filter-select");
-            const tableRows = document.querySelectorAll("tbody tr");
-            const uniqueValues = new Set();
-
-            tableRows.forEach(row => {
-                const cell = row.children[columnIndex];
-                if (cell) {
-                    uniqueValues.add(cell.textContent.trim());
-                }
-            });
-
-            // Clear existing options
-            filterSelect.innerHTML = '<option value="all">All</option>';
-            uniqueValues.forEach(value => {
-                const option = document.createElement("option");
-                option.value = value;
-                option.textContent = value;
-                filterSelect.appendChild(option);
-            });
-        }
-
-        function applyFilter() {
-            if (activeFilterIndex === null) return;
-
-            const filterValue = document.getElementById("filter-select").value.toLowerCase();
-            const tableRows = document.querySelectorAll("tbody tr");
-
-            tableRows.forEach(row => {
-                const cell = row.children[activeFilterIndex];
-                if (cell) {
-                    const cellText = cell.textContent.toLowerCase();
-                    row.style.display = (filterValue === "all" || cellText === filterValue) ? "" : "none";
-                }
-            });
-        }
-
-        // Hide filter box when clicking outside
-        document.addEventListener("click", function (event) {
-            const filterBox = document.getElementById("filter-box");
-            if (!filterBox.contains(event.target) && !event.target.classList.contains("filter-icon")) {
-                filterBox.style.display = "none";
-                activeFilterIndex = null;
-                document.querySelectorAll(".filter-icon").forEach(icon => icon.textContent = "▼");
-            }
-        });
-    </script>
-
 </body>
 </html>

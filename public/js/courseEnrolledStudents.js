@@ -40,9 +40,13 @@ async function markStudentCompleted(studentId) {
     }
 }
 
-// Export to Excel
 function exportToExcel() {
-    let table = document.querySelector("table");
-    let wb = XLSX.utils.table_to_book(table, { sheet: "Enrolled Students" });
-    XLSX.writeFile(wb, "enrolled_students.xlsx");
+    const courseId = document.querySelector(".export-button").getAttribute("data-courseid");
+    
+    if (!courseId) {
+        console.error("Course ID not found.");
+        return;
+    }
+
+    window.location.href = `/export-enrolled-students?courseId=${courseId}`;
 }

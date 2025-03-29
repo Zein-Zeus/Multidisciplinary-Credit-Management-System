@@ -41,7 +41,12 @@
                         {{/each}}
                     </ul>
                 </p>
-                <button type="submit" class="enroll-btn">Register Now</button>
+                <form action="/enroll" method="POST">
+                    <input type="hidden" name="courseId" value="{{_id}}"> <!-- Ensure this exists -->
+                    <input type="hidden" name="courseName" value="{{courseName}}">
+                    <input type="hidden" name="collegeName" value="{{collegeName}}">
+                    <button type="submit" class="enroll-btn">Register Now</button>
+                </form>
             </div>
         </section>
     </div>

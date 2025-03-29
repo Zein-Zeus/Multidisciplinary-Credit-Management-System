@@ -31,14 +31,14 @@
       {{#each courses}}
       <div class="card">
         <!-- Clickable course details -->
-        {{!-- <a href="/course/{{this._id}}" class="course-link"> --}}
+        <a href="/view-course/{{this._id}}" class="course-link">
           <img src="{{this.image}}" alt="{{this.courseName}}" class="course-image"/>
           <div class="card-details">
             <div class="course-name">{{this.courseName}}</div>
             <div class="course-type">Mode: {{this.mode}}</div>
             <div class="course-credits">Credits: {{this.credits}}</div>
           </div>
-        {{!-- </a> --}}
+        </a>
 
         <!-- Buttons for modification (outside the course link) -->
         <div class="card-buttons">
