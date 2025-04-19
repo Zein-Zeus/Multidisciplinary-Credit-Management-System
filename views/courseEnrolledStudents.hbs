@@ -15,7 +15,7 @@
         </div>
         <ul>
             <li><a href="#" onclick="viewCourse('{{course._id}}')">Stream</a></li>
-            <li><a href="#">Classwork</a></li>
+            <li><a href="#" onclick="viewClasswork('{{course._id}}')">Classwork</a></li>
             <li><a href="#" onclick="viewEnrolledStudents('{{this._id}}')" class="active-tab">People</a></li>
             <li><a href="#">Grades</a></li>
         </ul>
@@ -83,6 +83,9 @@
         }
         function viewCourse(courseId) {
             window.location.href = `/view-course/${courseId}`;
+        }
+        function viewClasswork(courseId) {
+            window.location.href = `/view-classwork/${courseId}`;
         }
     </script>
 </body>

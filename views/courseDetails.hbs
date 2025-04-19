@@ -14,9 +14,9 @@
             </a>
         </div>
         <ul>
-            <li><a href="#" onclick="viewCourse('{{course._id}}')" class="active-tab">Stream</a></li>
-            <li><a href="#">Classwork</a></li>
-            <li><a href="#" onclick="viewEnrolledStudents('{{this._id}}')">People</a></li>
+            <li><a href="#" onclick="viewCourse('{{_id}}')" class="active-tab">Stream</a></li>
+            <li><a href="#" onclick="viewClasswork('{{_id}}')">Classwork</a></li>
+            <li><a href="#" onclick="viewEnrolledStudents('{{_id}}')">People</a></li>
             <li><a href="#">Grades</a></li>
         </ul>
     </nav>
@@ -41,6 +41,7 @@
                 </ul>
             </p>
             <button type="submit" class="enroll-btn">Register Now</button>
+            <a href="/course-dashboard" class="back-link">Back to Dashboard</a>
         </div>
     </section>
     <script>
@@ -49,6 +50,9 @@
         }
         function viewCourse(courseId) {
             window.location.href = `/view-course/${courseId}`;
+        }
+        function viewClasswork(courseId) {
+            window.location.href = `/view-classwork/${courseId}`;
         }
     </script>
 </body>

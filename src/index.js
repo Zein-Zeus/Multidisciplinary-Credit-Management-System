@@ -1165,29 +1165,40 @@ app.get("/export-enrolled-students", async (req, res) => {
     }
 });
 
-app.get('/classwork/:courseId', async (req, res) => {
+app.get('/view-classwork/:courseId', async (req, res) => {
     try {
         const courseId = req.params.courseId;
-
-        // Fetch course details
         const course = await Course.findById(courseId);
 
-        if (!course) {
-            return res.status(404).send('Course not found');
-        }
+        if (!course) return res.status(404).send('Course not found');
 
-        // Fetch assignments related to this course
         const assignments = await Assignment.find({ courseId });
 
-        // Render classwork page and pass course and assignments data
         res.render('courseClasswork', {
-            course: course,
-            assignments: assignments
+            courseId: course._id.toString(),
+            courseName: course.courseName,
+            assignments: assignments 
         });
-
     } catch (error) {
-        console.error("Error fetching classwork:", error);
-        res.status(500).send('Error fetching classwork');
+        console.error("Error loading classwork view:", error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+app.get("/create-assignment/:courseId", (req, res) => {
+    const { courseId } = req.params;
+    res.render("createAssignment", { courseId }); // you'll need to make this view
+});
+
+app.post("/create-assignment", async (req, res) => {
+    const { courseId, title, topic, dueDate, marks } = req.body;
+
+    try {
+        await Assignment.create({ courseId, title, topic, dueDate, marks });
+        res.redirect(`/classwork/${courseId}`);
+    } catch (err) {
+        console.error("Error creating assignment:", err);
+        res.status(500).send("Error creating assignment");
     }
 });
 

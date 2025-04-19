@@ -159,3 +159,17 @@ input:focus, select:focus, textarea:focus {
     border-color: #007BFF;
 }
 
+/* Back Link */
+.back-link {
+    display: block;
+    text-align: center;
+    margin: 20px auto;
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}

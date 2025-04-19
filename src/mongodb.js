@@ -78,7 +78,7 @@ const enrolledStudentSchema = new mongoose.Schema({
     enrollmentDate: { type: Date, default: Date.now },
     completionDate: { type: Date },
     certificateUrl: { type: String },
-    abcId: { type: String } // New field for ABC ID
+    abcId: { type: String }
 });
 
 const assignmentSchema = new mongoose.Schema({
