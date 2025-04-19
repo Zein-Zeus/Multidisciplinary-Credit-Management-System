@@ -7,43 +7,54 @@
     <link rel="stylesheet" href="/css/courseDetails.css"> 
 </head>
 <body>
-    <div class="container">
-        <nav>
-            <div class="logo">
+    <nav>
+        <div class="logo">
+            <a href="/">
                 <img src="/images/logo.png" alt="Logo">
-            </div>
-            <ul>
-                <li><a href="/home">Home</a></li>
-                <li><a href="/dashboard">Dashboard</a></li>
-                <li><a href="/course">Courses</a></li>
-            </ul>
-            <div class="user-profile">
-                <div class="user-initials">{{userInitials}}</div>
-            </div>
-        </nav>
-        <section class="course-overview">
-            <h1 class="course-title">{{courseName}}</h1>
-            {{!-- <img src="{{image}}" alt="{{courseName}}" class="course-image"> --}}
-            <div class="course-details">
-                <p class="description">{{courseDescription}}</p>
-                <p class="info">
-                    <strong>Credits:</strong> {{credits}} points<br>
-                    <strong>Duration:</strong> {{duration}} hours<br>
-                    <strong>Mode:</strong> {{mode}}<br>
-                    <strong>College:</strong> {{collegeName}}<br>
-                    <strong>Faculty:</strong> {{facultyName}}<br>
-                </p>
-                <p class="info">
-                    <strong>Modules:</strong>
-                    <ul>
-                        {{#each modules}}
-                            <li>{{this}}</li>
-                        {{/each}}
-                    </ul>
-                </p>
-                <button type="submit" class="enroll-btn">Register Now</button>
-            </div>
-        </section>
+            </a>
+        </div>
+        <ul>
+            <li><a href="#" onclick="viewCourse('{{course._id}}')" class="active-tab">Stream</a></li>
+            <li><a href="#">Classwork</a></li>
+            <li><a href="#" onclick="viewEnrolledStudents('{{this._id}}')">People</a></li>
+            <li><a href="#">Grades</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sub Navigation Tabs -->
+    <div class="sub-nav">
+        
     </div>
+
+    <section class="course-overview">
+        <h1 class="course-title">{{courseName}}</h1>
+        <div class="course-details">
+            <p class="description">{{courseDescription}}</p>
+            <p class="info">
+                <strong>Credits:</strong> {{credits}} points<br>
+                <strong>Duration:</strong> {{duration}} hours<br>
+                <strong>Mode:</strong> {{mode}}<br>
+                <strong>College:</strong> {{collegeName}}<br>
+                <strong>Faculty:</strong> {{facultyName}}<br>
+            </p>
+            <p class="info">
+                <strong>Modules:</strong>
+                <ul>
+                    {{#each modules}}
+                        <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </p>
+            <button type="submit" class="enroll-btn">Register Now</button>
+        </div>
+    </section>
+    <script>
+        function viewEnrolledStudents(courseId) {
+            window.location.href = `/view-enrolled-students/${courseId}`;
+        }
+        function viewCourse(courseId) {
+            window.location.href = `/view-course/${courseId}`;
+        }
+    </script>
 </body>
 </html>

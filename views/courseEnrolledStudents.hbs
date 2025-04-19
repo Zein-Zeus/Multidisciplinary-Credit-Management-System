@@ -8,15 +8,17 @@
 </head>
 <body>
     <nav>
-        <div class="header-banner">
-            <a href="/" class="banner-img-container">
-                <img class="banner-img" src="/images/logo.png" alt="University Logo">
+        <div class="logo">
+            <a href="/">
+                <img src="/images/logo.png" alt="Logo">
             </a>
-            <div class="banner-text">
-                <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
-                <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
-            </div>
         </div>
+        <ul>
+            <li><a href="#" onclick="viewCourse('{{course._id}}')">Stream</a></li>
+            <li><a href="#">Classwork</a></li>
+            <li><a href="#" onclick="viewEnrolledStudents('{{this._id}}')" class="active-tab">People</a></li>
+            <li><a href="#">Grades</a></li>
+        </ul>
     </nav>
 
     <main>
@@ -75,5 +77,13 @@
     </main>
 
     <script src="/js/courseEnrolledStudents.js"></script>
+    <script>
+        function viewEnrolledStudents(courseId) {
+            window.location.href = `/view-enrolled-students/${courseId}`;
+        }
+        function viewCourse(courseId) {
+            window.location.href = `/view-course/${courseId}`;
+        }
+    </script>
 </body>
 </html>

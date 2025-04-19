@@ -50,5 +50,15 @@
             </div>
         </section>
     </div>
+    
+    <script>
+        document.querySelector('.enroll-btn').addEventListener('click', function(e) {
+            e.preventDefault();  // Prevent default form submission
+            const confirmation = confirm("Are you sure you want to enroll in this course?");
+            if (confirmation) {
+                document.querySelector('form').submit(); // Submit form if confirmed
+            }
+        });
+    </script>
 </body>
 </html>

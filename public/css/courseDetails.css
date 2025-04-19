@@ -2,7 +2,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', Arial, sans-serif; /* Modern font */
+    font-family: Arial, sans-serif; /* Modern font */
     background-color: #f5f7fa;
     color: #333;
 }
@@ -59,22 +59,9 @@ nav ul li a:hover {
     color: #007BFF;
 }
 
-.user-profile {
-    display: flex;
-    align-items: center;
-}
-
-.user-initials {
-    background-color: #333;
-    color: white;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 18px; /* Slightly bigger initials */
+.active-tab {
+  color: #007BFF;
+  border-bottom: 2px solid #007BFF;
 }
 
 /* Course Overview Section */

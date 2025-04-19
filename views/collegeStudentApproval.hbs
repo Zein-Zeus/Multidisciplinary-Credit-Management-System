@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Approval</title>
+    <link rel="stylesheet" href="css/collegeStudentApproval.css">
+</head>
+<body>
+    <nav>
+        <div class="header-banner">
+            <div class="banner-bg"></div>
+            <a href="/" class="banner-img-container">
+                <img class="banner-img" src="images/logo.png" alt="University Logo" />
+            </a>
+            <div class="banner-text">
+                <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
+                <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
+            </div>
+        </div>
+    </nav>
+    
+    <main>
+        <div class="dashboard">
+            <h2>Student Approvals</h2>
+    
+            <!-- Bulk Action Buttons -->
+            <form id="bulk-approve-form" action="/clgstudentapproval/bulk-approve" method="POST">
+                <div style="margin-bottom: 15px; display: flex; justify-content: center; gap: 20px;">
+                    <button type="submit" class="accept-btn bulk-approve-btn">Bulk Accept</button>
+                    <button type="submit" formaction="/clgstudentapproval/bulk-reject" class="reject-btn bulk-reject-btn">Bulk Reject</button>
+                </div>
+            
+    
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>PRN</th>
+                            <th>ABC ID</th>
+                            <th>Name</th>
+                            <th>College</th>
+                            <th>Branch</th>
+                            <th>Degree</th>
+                            <th>Year</th>
+                            <th>Course</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each students}}
+                        <tr>
+                            <td><input type="checkbox" name="studentIds" value="{{this._id}}" /></td>
+                            <td>{{this.prnNumber}}</td>
+                            <td>{{this.abcId}}</td>
+                            <td>{{this.name}}</td>
+                            <td>{{this.collegeName}}</td>
+                            <td>{{this.branch}}</td>
+                            <td>{{this.degree}}</td>
+                            <td>{{this.year}}</td>
+                            <td>{{this.courseName}}</td>
+                            <td>{{this.status}}</td>
+                            <td class="action-buttons">
+                                <button class="accept-btn" onclick="approveStudent('{{this._id}}')">Accept</button>
+                                <form action="/clgstudentapproval/reject/{{this._id}}" method="POST" style="display:inline;">
+                                    <button type="submit" class="reject-btn">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {{else}}
+                        <tr>
+                            <td colspan="11" style="text-align: center;">No students pending approval</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/collegeStudentApproval.js"></script>
+
+</body>
+</html>

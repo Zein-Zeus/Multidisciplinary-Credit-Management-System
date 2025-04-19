@@ -29,80 +29,33 @@ const studentSchema = new mongoose.Schema({
     branch: { type: String, required: true } // New Field
 });
 
-// Create a new model for registered students
 const registeredStudentSchema = new mongoose.Schema({
-    firstName: {
-        type: String,
-        required: true
-    },
+    firstName: String,
     middleName: String,
-    lastName: {
-        type: String,
-        required: true
-    },
-    prnNumber: {
-        type: Number,
-        required: true
-    },
-    Email: {
-        type: String,
-        required: true
-    },
+    lastName: String,
+    prnNumber: { type: Number, required: true },
+    Email: String,
     Contact: Number,
     collegeName: String,
-    passoutYear: { type: Number, required: true }, // New Field
-    degree: { type: String, required: true }, // New Field
-    branch: { type: String, required: true }, // New Field
-    abcId: {
-        type: Number,
-        required: true
-    },
-    password: {
-        type: String,
-        required: true
-    } 
+    admissionYear: { type: Number, required: true },
+    passoutYear: { type: Number, required: true },
+    degree: { type: String, required: true },
+    branch: { type: String, required: true },
+    abcId: { type: Number, required: true },
+    password: String
 });
 
 const courseSchema = new mongoose.Schema({
-    courseName: {
-        type: String,
-        required: true
-    },
-    courseDescription: {
-        type: String,
-        required: true
-    },
-    credits: {
-        type: Number,
-        required: true
-    },
-    duration: {
-        type: String,
-        required: true
-    },
-    mode: {
-        type: String,
-        required: true,
-        enum: ['online', 'offline']
-    },
-    collegeID: {  // Added collegeID for better navigation
-        type: String,
-        required: true
-    },
-    collegeName: {
-        type: String,
-        required: true
-    },
-    facultyName: {
-        type: String,
-        required: true
-    },
-    courseModules: {
-        type: String
-    },
-    image: {
-        type: String
-    }
+    courseName: { type: String, required: true },
+    courseDescription: { type: String, required: true },
+    credits: { type: Number, required: true },
+    duration: { type: String, required: true },
+    mode: { type: String, required: true, enum: ['online', 'offline'] },
+    collegeID: { type: String, required: true },
+    collegeName: { type: String, required: true },
+    facultyName: { type: String, required: true },
+    courseModules: { type: String },
+    image: { type: String }
 });
 
 const collegeSchema = new mongoose.Schema({
@@ -111,24 +64,56 @@ const collegeSchema = new mongoose.Schema({
     password: String
 })
 
-const EnrolledStudentSchema = new mongoose.Schema({
+const enrolledStudentSchema = new mongoose.Schema({
     prnNumber: { type: String, required: true },
     studentName: { type: String, required: true },
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
     courseName: { type: String, required: true },
     collegeName: { type: String, required: true },
-    status: { type: String, enum: ["Ongoing", "Completed"], default: "Ongoing" },
+    status: {
+        type: String,
+        enum: ["Ongoing", "Completed", "Approval Pending"],
+        default: "Approval Pending"
+    },
     enrollmentDate: { type: Date, default: Date.now },
     completionDate: { type: Date },
     certificateUrl: { type: String },
     abcId: { type: String } // New field for ABC ID
 });
 
+const assignmentSchema = new mongoose.Schema({
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+    title: { type: String, required: true },
+    topic: { type: String },
+    dueDate: { type: Date, required: true },
+    marks: { type: Number },
+    createdAt: { type: Date, default: Date.now }
+});
+
+const submissionSchema = new mongoose.Schema({
+    assignmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Assignment', required: true },
+    studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredStudent', required: true },
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+    submittedAt: { type: Date, default: Date.now },
+    fileUrl: { type: String }, // Or actual file data if you're storing it differently
+    marksObtained: { type: Number }
+});
+
+const attendanceSchema = new mongoose.Schema({
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+    studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredStudent', required: true },
+    date: { type: Date, required: true },
+    status: { type: String, enum: ['Present', 'Absent'], required: true }
+});
+
 const RegisteredStudent = mongoose.model('RegisteredStudent', registeredStudentSchema);
 const Student = mongoose.model('StudentDetails', studentSchema);
 const Course = mongoose.model('Course', courseSchema); // Create the Course model
 const College = mongoose.model('CollegeDetails', collegeSchema)
-const EnrolledStudent = mongoose.model("EnrolledStudent", EnrolledStudentSchema);
+const EnrolledStudent = mongoose.model("EnrolledStudent", enrolledStudentSchema);
+const Assignment = mongoose.model('Assignment', assignmentSchema);
+const Submission = mongoose.model('Submission', submissionSchema);
+const Attendance = mongoose.model('Attendance', attendanceSchema);
 
 async function importExcelToMongoDB(filePath) {
     try {
@@ -175,4 +160,4 @@ async function importExcelToMongoDB(filePath) {
 }
 
 // module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, UploadedCertificate };
-module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent};
+module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance };

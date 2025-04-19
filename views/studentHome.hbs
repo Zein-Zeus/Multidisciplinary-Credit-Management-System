@@ -1,57 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home</title>
   <link rel="stylesheet" href="/css/studentHome.css"> <!-- Make sure the path is correct -->
 </head>
+
 <body>
-  
-<div class="container">
-  <nav>
-    <div class="logo">
-      <a href="/">
-        <img src="images/logo.png" alt="Logo">
-      </a>
-    </div>
-    <ul>
+
+  <div class="container">
+    <nav>
+      <div class="logo">
+        <a href="/">
+          <img src="images/logo.png" alt="Logo">
+        </a>
+      </div>
+      <ul>
         <li><a href="/home">Home</a></li>
         <li><a href="/dashboard">Dashboard</a></a></li>
         <li><a href="/course">Courses</a></li>
-    </ul>
-    <div class="user-profile">
+      </ul>
+      <div class="user-profile">
         <div class="user-initials">{{userInitials}}</div>
-    </div>
-  </nav>
-
-  <section class="courses">
-    <div class="section-title">Continue Learning <br></div>
-    
-    <div class="course-cards">
-      {{#each courses}}
-      <div class="card">
-        <a href="/course/{{this._id}}"> <!-- Link to the individual course page -->
-          <img src="{{this.image}}" alt="{{this.courseName}}" class="course-image"/>
-          <div class="card-details">
-            <div class="course-name">{{this.courseName}}</div>
-            <div class="course-type">Mode: {{this.mode}}</div>
-            <div class="course-credits">Credits: {{this.credits}}</div>
-          </div>
-        </a>
       </div>
-      {{/each}}
-    </div>
-  </section>
-</div>
+    </nav>
 
-{{!-- <footer>
-  <div class="footer-info">
-    <p>Address: 1, Nathibai Thackersey Road, Mumbai 400020</p>
-    <p>Contact Information:</p>
-    <p>Website: <a href="https://sndt.ac.in/">https://sndt.ac.in/</a></p>
-    <p>Phone: 022-2203 1879 | 022-2203 2159</p>
+    <section class="courses">
+      <div class="section-title">Continue Learning <br></div>
+
+      <div class="course-cards">
+        {{#each courses}}
+        <div class="card">
+          <a href="/course/{{this._id}}"> <!-- Link to the individual course page -->
+            <img src="{{this.image}}" alt="{{this.courseName}}" class="course-image" />
+            <div class="card-details">
+              <div class="course-name">{{this.courseName}}</div>
+              <div class="course-type">Mode: {{this.mode}}</div>
+              <div class="course-credits">Credits: {{this.credits}}</div>
+            </div>
+          </a>
+        </div>
+        {{/each}}
+      </div>
+    </section>
   </div>
-</footer> --}}
+
+  {{!-- <footer>
+    <div class="footer-info">
+      <p>Address: 1, Nathibai Thackersey Road, Mumbai 400020</p>
+      <p>Contact Information:</p>
+      <p>Website: <a href="https://sndt.ac.in/">https://sndt.ac.in/</a></p>
+      <p>Phone: 022-2203 1879 | 022-2203 2159</p>
+    </div>
+  </footer> --}}
 </body>
+
 </html>

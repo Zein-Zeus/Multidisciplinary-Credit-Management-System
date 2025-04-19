@@ -29,6 +29,26 @@
                 <div class="user-initials-profile">{{userInitials}}</div>
                 <h2>{{userName}}</h2>
             </div>
+
+            <h3>Approval Pending</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>College</th>
+                        <th>Enrollment Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each approvalPendingCourses}}
+                        <tr>
+                            <td>{{this.courseName}}</td>
+                            <td>{{this.collegeName}}</td>
+                            <td>{{this.enrollmentDate}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>            
     
             <h3>Ongoing Courses</h3>
             <table>

@@ -1,0 +1,183 @@
+/* General Styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    height: 60px;
+}
+
+.header-banner {
+    width: 100%;
+    max-height: 160px;
+    background: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.banner-img {
+    width: 100px;
+    height: auto;
+    margin-right: 20px;
+}
+
+.banner-text {
+    flex: 1;
+}
+
+.banner-title {
+    color: rgba(0, 0, 153, 0.89);
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.banner-subtitle {
+    color: #494949;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Main Content */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #002147;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    background-color: white;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f9f9f9;
+    color: #002147;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+table tr:hover {
+    background-color: #eaf2ff;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.accept-btn, .reject-btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.accept-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.accept-btn:hover {
+    background-color: #218838;
+}
+
+.reject-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #c82333;
+}
+
+/* Year badge styling */
+.year-badge {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+}
+
+/* Export Button */
+.export-button {
+    background-color: #007BFF;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    display: block;
+    margin: 15px auto;
+    text-align: center;
+}
+
+.export-button:hover {
+    background-color: #0056b3;
+}
+
+/* Filter icon override */
+.filter-icon {
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    table {
+        font-size: 0.85rem;
+    }
+
+    .accept-btn, .reject-btn {
+        padding: 6px 10px;
+    }
+
+    .export-button {
+        width: 100%;
+    }
+}
