@@ -1,1 +1,1 @@
-<h1>ABC (Academic Bank Of Credits) Website</h1>
+<h1>Multidisciplinary Course Credit Management System Website</h1>
