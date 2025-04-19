@@ -884,10 +884,9 @@ app.post("/course-login", async (req, res) => {
     }
 });
 
-// Add this route for handling course upload
 app.post("/uploadcourse", uploadCourseImage.single('image'), async (req, res) => {
     if (!req.session.collegeID) {
-        res.redirect('/course-login');
+        return res.redirect('/course-login');
     }
 
     console.log(req.body);
@@ -897,6 +896,14 @@ app.post("/uploadcourse", uploadCourseImage.single('image'), async (req, res) =>
         credits = Number(req.body.customCredits);
     }
     if (isNaN(credits)) {
+        // Delete uploaded image if validation fails
+        if (req.file) {
+            const imagePath = path.join(__dirname, '..', 'public', 'uploads', 'courseImage', req.file.filename);
+            fs.unlink(imagePath, (err) => {
+                if (err) console.error('Error deleting unused image:', err);
+                else console.log('Unused image deleted due to validation error.');
+            });
+        }
         return res.status(400).send('Please enter a valid number for credits.');
     }
 
@@ -906,8 +913,8 @@ app.post("/uploadcourse", uploadCourseImage.single('image'), async (req, res) =>
         credits: credits,
         duration: req.body.duration,
         mode: req.body.mode,
-        collegeID: req.session.collegeID, // Auto-fill from session
-        collegeName: req.session.collegeName, // Auto-fill from session
+        collegeID: req.session.collegeID,
+        collegeName: req.session.collegeName,
         facultyName: req.body.facultyName,
         courseModules: req.body.courseModules,
         image: req.file ? `/uploads/courseImage/${req.file.filename}` : null
@@ -920,6 +927,16 @@ app.post("/uploadcourse", uploadCourseImage.single('image'), async (req, res) =>
         return res.json({ success: true, message: 'Course uploaded successfully.' });
     } catch (error) {
         console.error('Error saving course:', error);
+
+        // Delete uploaded image on DB error
+        if (req.file) {
+            const imagePath = path.join(__dirname, '..', 'public', 'uploads', 'courseImage', req.file.filename);
+            fs.unlink(imagePath, (err) => {
+                if (err) console.error('Error deleting image after DB failure:', err);
+                else console.log('Image deleted after DB save error.');
+            });
+        }
+
         res.status(500).json({ success: false, message: 'Error saving course: ' + error.message });
     }
 });
@@ -968,7 +985,7 @@ app.delete("/delete-course/:id", async (req, res) => {
 
 app.post("/update-course/:id", uploadCourseImage.single("image"), async (req, res) => {
     if (!req.session.collegeID) {
-        res.redirect('/course-login');
+        return res.redirect('/course-login');
     }
 
     try {
@@ -985,7 +1002,12 @@ app.post("/update-course/:id", uploadCourseImage.single("image"), async (req, re
             return res.status(400).send("Please enter a valid number for credits.");
         }
 
-        // Prepare update data
+        const existingCourse = await Course.findOne({ _id: courseId, collegeID: req.session.collegeID });
+
+        if (!existingCourse) {
+            return res.status(404).json({ success: false, message: "Course not found or unauthorized." });
+        }
+
         const updatedData = {
             courseName: req.body.courseName,
             courseDescription: req.body.courseDescription,
@@ -994,24 +1016,24 @@ app.post("/update-course/:id", uploadCourseImage.single("image"), async (req, re
             mode: req.body.mode,
             facultyName: req.body.facultyName,
             courseModules: req.body.courseModules,
-            collegeID: req.session.collegeID, // Ensure it belongs to logged-in college
-            collegeName: req.session.collegeName, // Keep original name
+            collegeID: req.session.collegeID,
+            collegeName: req.session.collegeName,
         };
 
-        // If a new image is uploaded, update it
+        // If new image uploaded, delete old image
         if (req.file) {
+            if (existingCourse.image) {
+                const oldImagePath = path.join(__dirname, '..', 'src', existingCourse.image);
+                fs.unlink(oldImagePath, (err) => {
+                    if (err) console.error("Error deleting old image:", err);
+                    else console.log("Old image deleted:", existingCourse.image);
+                });
+            }
+
             updatedData.image = `/uploads/courseImage/${req.file.filename}`;
         }
 
-        const updatedCourse = await Course.findOneAndUpdate(
-            { _id: courseId, collegeID: req.session.collegeID }, // Ensure only the uploader can modify
-            updatedData,
-            { new: true }
-        );
-
-        if (!updatedCourse) {
-            return res.status(404).json({ success: false, message: "Course not found or unauthorized." });
-        }
+        const updatedCourse = await Course.findByIdAndUpdate(courseId, updatedData, { new: true });
 
         console.log("Course updated successfully:", updatedCourse);
         return res.json({ success: true, message: "Course updated successfully." });
