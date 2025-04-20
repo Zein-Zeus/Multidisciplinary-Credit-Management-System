@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="/css/studentCourseDashboard.css"> <!-- Make sure the path is correct -->
+</head>
+
+<body>
+  
+    <div class="container">
+        <nav>
+            <div class="logo">
+            <a href="/">
+                <img src= "/images/logo.png" alt="Logo">
+            </a>
+            </div>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/course">Courses</a></li>
+            </ul>
+            <div class="user-profile">
+                <div class="user-initials">{{userInitials}}</div>
+            </div>
+        </nav>
+
+        <main>
+
+            <div class="course-header">
+                <img class="course-image" src="{{course.image}}" alt="Course Image"/>
+                <div class="course-info">
+                    <h1 id="course_name">{{course.courseName}}</h1>
+                    <h2 id="college_name">{{course.collegeName}}</h2>
+                    <p >Mode: {{course.mode}} | Credits: {{course.credits}} | Duration: {{course.duration}}</p>
+                </div>
+            </div>
+
+            <div class="course-nav">
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#modules">Modules</a></li>
+                    <li><a href="#studyM">Study Material</a></li>
+                    <li><a href="#assignment">Assignment</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="course-section">
+                <h3 id="about">About</h3>
+                <p>{{course.courseDescription}}</p>
+
+                <h3 id="modules">Modules</h3>
+                <p>{{course.courseModules}}</p>
+
+                <h3 id="studyM">Study Material</h3>
+                <p>{{#if course.studyMaterial}}Uploaded{{else}}Not Uploaded Yet{{/if}}</p>
+
+                <h3 id="assignment">Assignment</h3>
+                <table>
+                    <tbody>
+                    {{#each course.assignments}}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>{{posted}}</td>
+                        <td>{{due}}</td>
+                        <td><a href="#">Upload</a></td>
+                        <td><a href="#">View</a></td>
+                        <td><button class="{{statusClass}}">{{status}}</button></td>
+                    </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+
+                <h3 id="contact">Contact</h3>
+                <p>Faculty: {{course.facultyName}}</p>
+            </div>
+
+
+        </main>
+
+    </div>
+
+    {{!-- <footer>
+        <div class="footer-info">
+            <p>Address: 1, Nathibai Thackersey Road, Mumbai 400020</p>
+            <p>Contact Information:</p>
+            <p>Website: <a href="https://sndt.ac.in/">https://sndt.ac.in/</a></p>
+            <p>Phone: 022-2203 1879 | 022-2203 2159</p>
+        </div>
+    </footer> --}}
+</body>
