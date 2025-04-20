@@ -129,6 +129,37 @@ app.get("/home", async (req, res) => {
     }
 });
 
+//studentCourseDashboard
+app.get("/course/:id", async (req, res) => {
+    const courseId = req.params.id;
+
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).send('Course not found');
+        }
+
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        res.render("studentCourseDashboard", {
+            title: "Student Course Dashboard",
+            username: `${user.firstName} ${user.lastName}`,
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            course // sending the course data to the HBS file
+        });
+    } catch (error) {
+        console.error("Error loading course details:", error);
+        res.status(500).send("Server error");
+    }
+});
+
 app.get("/dashboard", async (req, res) => {
     if (!req.session.prnNumber) {
         return res.redirect("/login");
