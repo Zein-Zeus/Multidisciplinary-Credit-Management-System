@@ -84,6 +84,7 @@ const enrolledStudentSchema = new mongoose.Schema({
 const assignmentSchema = new mongoose.Schema({
     title: String,
     topic: String,
+    uploadedAt: { type: Date, default: Date.now },
     dueDate: Date,
     marks: Number,
     description: String,
@@ -100,12 +101,40 @@ const assignmentSchema = new mongoose.Schema({
 });
 
 const submissionSchema = new mongoose.Schema({
-    assignmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Assignment', required: true },
-    studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredStudent', required: true },
-    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
-    submittedAt: { type: Date, default: Date.now },
-    fileUrl: { type: String }, // Or actual file data if you're storing it differently
-    marksObtained: { type: Number }
+    assignmentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Assignment',
+        required: true
+    },
+    courseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course',
+        required: true
+    },
+    studentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'RegisteredStudent',
+        required: true
+    },
+    studentName: {
+        type: String,
+        required: true
+    },
+    submittedDate: {
+        type: Date,
+        default: Date.now
+    },
+    fileUrl: {
+        type: String
+    },
+    marks: {
+        type: Number,
+        default: null
+    },
+    feedback: {
+        type: String,
+        default: ''
+    }
 });
 
 const attendanceSchema = new mongoose.Schema({

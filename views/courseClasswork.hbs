@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{courseName}} - Classwork</title>
+    <link rel="stylesheet" href="/css/courseClasswork.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <a href="/"><img src="/images/logo.png" alt="Logo"></a>
+            </div>
+            <ul>
+                <li><a href="#" onclick="viewCourse('{{courseId}}')">Stream</a></li>
+                <li><a href="#" onclick="viewClasswork('{{courseId}}')" class="active-tab">Classwork</a></li>
+                <li><a href="#" onclick="viewEnrolledStudents('{{courseId}}')">People</a></li>
+                <li><a href="#">Grades</a></li>
+            </ul>
+        </nav>
+
+        <div class="title">Manage Assignments</div>
+
+        <div class="top-controls">
+            <div class="filter-group">
+                <label for="topicFilter">Filter by Topic:</label>
+                <select id="topicFilter">
+                    <option value="all">All Topics</option>
+                    {{#each assignments}}
+                        <option value="{{topic}}">{{topic}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <a href="/create-assignment/{{courseId}}" class="create-btn">Create Assignment</a>
+        </div>
+
+        <div class="form-container">
+            <div class="background-box1">
+                <section class="form-section">
+                    <div class="assignments-list" id="assignments">
+                        {{#each assignments}}
+                            <div class="assignment-card">
+                                <h3>{{title}}</h3>
+                                <p><strong>Topic:</strong> {{topic}}</p>
+                                <p><strong>Due Date:</strong> {{dueDate}}</p>
+                                <p><strong>Marks:</strong> {{marks}}</p>
+                                <div class="buttons">
+                                    <a href="/edit-assignment/{{courseId}}/{{_id}}">Edit</a>
+                                    <button class="delete-btn" onclick="deleteAssignment('{{_id}}')">Delete</button>
+                                    <a href="/assignment-submissions/{{../courseId}}/{{_id}}">Submissions</a>
+                                </div>
+                            </div>
+                        {{/each}}
+                        {{#unless assignments.length}}
+                            <p>No assignments found.</p>
+                        {{/unless}}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewEnrolledStudents(courseId) {
+            window.location.href = `/view-enrolled-students/${courseId}`;
+        }
+        function viewCourse(courseId) {
+            window.location.href = `/view-course/${courseId}`;
+        }
+        function viewClasswork(courseId) {
+            window.location.href = `/view-classwork/${courseId}`;
+        }
+
+        function editAssignment(assignmentId, courseId) {
+            window.location.href = `/edit-assignment/${courseId}/${assignmentId}`;
+        }
+
+        function deleteAssignment(assignmentId, courseId) {
+            if (confirm("Are you sure you want to delete this assignment?")) {
+                fetch(`/delete-assignment/${assignmentId}`, {
+                    method: 'DELETE'
+                }).then(res => res.json()).then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload(); // Reload the page to reflect changes
+                    } else {
+                        alert("Error deleting assignment: " + data.message);
+                    }
+                }).catch(err => {
+                    console.error("Error deleting assignment:", err);
+                });
+            }
+        }
+        function viewSubmissions(assignmentId, courseId) {
+            window.location.href = `/assignment-submissions/${courseId}/${assignmentId}`;
+        }
+    </script>
+</body>
+</html>

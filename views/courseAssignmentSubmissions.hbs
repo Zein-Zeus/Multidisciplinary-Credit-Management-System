@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>View Submissions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/courseAssignmentSubmissions.css">
+</head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <a href="/">
+                <img src="/images/logo.png" alt="Logo">
+            </a>
+        </div>
+        <ul>
+            <li><a href="#" onclick="viewCourse('{{courseId}}')">Stream</a></li>
+            <li><a href="#" onclick="viewClasswork('{{courseId}}')">Classwork</a></li>
+            <li><a href="#" onclick="viewEnrolledStudents('{{courseId}}')">People</a></li>
+            <li><a href="#">Grades</a></li>
+        </ul>
+    </nav>
+
+    <div class="submissions-container">
+        <h2>Submissions for: {{assignment.title}}</span></h2>
+
+        <div id="submission-list"></div>
+    </div>
+
+    <div class="back-link">
+        <a href="#" onclick="viewClasswork('{{courseId}}')" class="back-link">Back</a>
+    </div>
+
+
+    <script src="/js/courseAssignmentSubmissions.js"></script>
+    <script>
+        function viewEnrolledStudents(courseId) {
+            window.location.href = `/view-enrolled-students/${courseId}`;
+        }
+        function viewCourse(courseId) {
+            window.location.href = `/view-course/${courseId}`;
+        }
+        function viewClasswork(courseId) {
+            window.location.href = `/view-classwork/${courseId}`;
+        }
+    </script>
+</body>
+
+</html>

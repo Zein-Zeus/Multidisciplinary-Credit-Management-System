@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Assignment</title>
+    <link rel="stylesheet" href="/css/courseEditAssignment.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-banner">
+            <img src="/images/logo.png" class="banner-img" alt="Logo">
+            <div class="banner-text">
+                <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br /></span>
+                <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
+            </div>
+        </div>
+
+        <div class="edit-assignment">
+            <div class="edit-assignment-container">
+                <h2 class="section-title">Update Assignment Information</h2>
+
+                <form id="edit-assignment-form" method="POST" action="/edit-assignment/{{assignment._id}}"
+                    enctype="multipart/form-data">
+
+                    <input type="hidden" name="courseId" value="{{courseId}}">
+
+                    <div class="form-group">
+                        <label for="assignmentTitle">Title:</label>
+                        <input type="text" id="assignmentTitle" name="assignmentTitle" value="{{assignment.title}}"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="topic">Topic:</label>
+                        <input type="text" id="topic" name="topic" value="{{assignment.topic}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentInstructions">Instructions:</label>
+                        <textarea id="assignmentInstructions" name="assignmentInstructions"
+                            required>{{assignment.description}}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dueDate">Due Date:</label>
+                        <input type="date" id="dueDate" name="dueDate" value="{{assignment.dueDate}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="marks">Marks:</label>
+                        <input type="number" id="marks" name="marks" value="{{assignment.marks}}" required>
+                    </div>
+
+                    {{#if assignment.file}}
+                    <div class="form-group">
+                        <label>Current File:</label>
+                        <p>
+                            <a href="{{assignment.file.path}}" target="_blank">{{assignment.file.name}}</a>
+                        </p>
+                    </div>
+                    {{/if}}
+
+                    <div class="form-group">
+                        <label for="file">Upload New File (optional):</label>
+                        <input type="file" name="file" id="file"
+                            accept=".pdf,.doc,.docx,.ppt,.pptx,.zip,.rar,.jpg,.png,.jpeg">
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="submit">Update Assignment</button>
+                        <a href="/view-classwork/{{courseId}}" class="btn-cancel">Cancel</a>
+                    </div>
+
+                    <a href="/view-classwork/{{courseId}}" class="back-link">← Back</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup Notification -->
+    <div id="popup-notification" class="popup">
+        <div class="popup-content">
+            <p id="popup-message"></p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById('edit-assignment-form');
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const contentType = response.headers.get("content-type") || "";
+
+                    if (contentType.includes("application/json")) {
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showPopup("Assignment updated successfully!");
+                            setTimeout(() => {
+                                const courseId = "{{courseId}}";
+                                window.location.href = `/view-classwork/${courseId}`;
+                            }, 2000);
+                        } else {
+                            showPopup("Error: " + (data.message || "Unknown issue"));
+                        }
+                    } else if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        showPopup("⚠ Non-JSON response received.");
+                    }
+                } catch (error) {
+                    console.error("⚠ Fetch error:", error);
+                    showPopup("⚠ Unexpected error occurred.");
+                }
+            });
+
+            function showPopup(message) {
+                const popup = document.getElementById("popup-notification");
+                const popupMessage = document.getElementById("popup-message");
+
+                popupMessage.textContent = message;
+                popup.style.display = "block";
+
+                setTimeout(() => {
+                    popup.style.display = "none";
+                }, 2500);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

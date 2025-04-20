@@ -1,0 +1,242 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f5fc;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Navigation Bar */
+nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 60px;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.logo img {
+  height: 45px; /* Slightly smaller to avoid being too bulky */
+}
+
+nav ul {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  justify-content: center;
+}
+
+nav ul li {
+  margin: 0 20px; /* Wider space between links */
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+  color: #007BFF;
+}
+
+.active-tab {
+  color: #007BFF;
+  border-bottom: 2px solid #007BFF;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 80px auto; /* Adjusted for fixed navbar */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Title */
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #163172;
+  text-align: center;
+  margin: 30px 0 10px;
+  letter-spacing: 0.5px;
+}
+
+.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px auto 10px;
+  max-width: 832px;
+  width: 90%;
+  padding: 0 10px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: #163172;
+}
+
+.filter-group select {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  min-width: 180px;
+}
+
+.create-btn {
+  background-color: #1c6bba;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.create-btn:hover {
+  background-color: #163172;
+}
+
+
+.create-assignment-button {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.create-assignment-button button {
+  background-color: #163172;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.create-assignment-button button:hover {
+  background-color: #1c6bba;
+}
+
+/* Assignments List - Container */
+.assignments-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Assignment Card - Enhanced */
+.assignment-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f2f5fc 100%);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 20px 24px;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.assignment-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(28, 107, 186, 0.2);
+}
+
+.assignment-card h3 {
+  font-size: 1.4rem;
+  color: #163172;
+  margin-bottom: 12px;
+}
+
+.assignment-card p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.assignment-card p strong {
+  color: #1c6bba;
+}
+
+.assignment-card .buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* Action Buttons */
+.assignment-card .buttons button,
+.assignment-card .buttons a {
+  background: #1c6bba;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  text-align: center;
+  flex: 1;
+  margin: 0 5px;
+}
+
+.assignment-card .buttons button:hover,
+.assignment-card .buttons a:hover {
+  background: #163172;
+}
+
+.assignment-card .buttons .delete-btn {
+  background: #d9534f;
+}
+
+.assignment-card .buttons .delete-btn:hover {
+  background: #c9302c;
+}
+
+/* Responsive Adjustments */
+/* Mobile Responsiveness */
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 1.8rem;
+    height: 60px;
+  }
+}

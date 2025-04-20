@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Assignment</title>
+    <link rel="stylesheet" href="/css/courseCreateAssignment.css">
+</head>
+
+<body>
+    <div class="container">
+        <nav>
+            <div class="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="#" onclick="viewCourse('{{courseId}}')">Stream</a></li>
+                <li><a href="#" onclick="viewClasswork('{{courseId}}')" class="active-tab">Classwork</a></li>
+                <li><a href="#" onclick="viewEnrolledStudents('{{courseId}}')">People</a></li>
+                <li><a href="#">Grades</a></li>
+            </ul>
+        </nav>
+
+        <div class="title">Create Assignment</div>
+
+        <div class="form-container">
+            <div class="background-box1">
+                <section class="form-section">
+                    <form id="assignmentForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="assignmentTitle">Assignment Title:<span class="required">*</span></label>
+                            <input type="text" id="assignmentTitle" name="assignmentTitle"
+                                placeholder="Enter assignment title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignmentInstructions">Instructions:<span class="required">*</span></label>
+                            <textarea id="assignmentInstructions" name="assignmentInstructions"
+                                placeholder="Enter instructions" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="dueDate">Due Date:<span class="required">*</span></label>
+                                <input type="date" id="dueDate" name="dueDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="marks">Marks:<span class="required">*</span></label>
+                                <input type="number" id="marks" name="marks" placeholder="Enter marks" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="topic">Topic:<span class="required">*</span></label>
+                            <input type="text" id="topic" name="topic" placeholder="Enter topic" required>
+                        </div>
+
+                        <!-- Optional File Upload -->
+                        <div class="form-group">
+                            <label for="assignmentFile">Upload File (Optional):</label>
+                            <input type="file" id="assignmentFile" name="assignmentFile"
+                                accept=".pdf,.doc,.docx,.ppt,.jpg,.png">
+                            <small>Accepted formats: PDF, Word, PowerPoint, Images</small>
+                        </div>
+
+                        <button type="submit">Assign</button>
+                        <a href="index.html" class="back-link">← Back</a>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Notification -->
+    <div id="popup-notification" class="popup">
+        <div class="popup-content">
+            <p id="popup-message"></p>
+        </div>
+    </div>
+
+    <script src="/js/courseCreateAssignment.js"></script>
+    <script>
+        function viewEnrolledStudents(courseId) {
+            window.location.href = `/view-enrolled-students/${courseId}`;
+        }
+        function viewCourse(courseId) {
+            window.location.href = `/view-course/${courseId}`;
+        }
+        function viewClasswork(courseId) {
+            window.location.href = `/view-classwork/${courseId}`;
+        }
+    </script>
+</body>
+
+</html>

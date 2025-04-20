@@ -11,6 +11,7 @@ const fs = require('fs');
 require('dotenv').config();
 const mongoose = require("mongoose");
 const ExcelJS = require("exceljs");
+const moment = require('moment');
 
 hbs.registerHelper("json", function (context) {
     return JSON.stringify(context);
@@ -1308,34 +1309,60 @@ app.post('/create-assignment/:courseId', uploadAssignmentFile.single('assignment
 
 app.get("/edit-assignment/:courseId/:assignmentId", async (req, res) => {
     const { courseId, assignmentId } = req.params;
+
     try {
         const assignment = await Assignment.findById(assignmentId);
+
         if (!assignment) {
             return res.status(404).send("Assignment not found");
         }
-        res.render("editAssignment", { courseId, assignment }); // You'll need to create this view
+
+        // Format dueDate to YYYY-MM-DD for HTML input
+        const formattedDueDate = assignment.dueDate
+            ? assignment.dueDate.toISOString().split("T")[0]
+            : "";
+
+        res.render("courseEditAssignment", {
+            courseId,
+            assignment: {
+                ...assignment.toObject(),
+                dueDate: formattedDueDate
+            }
+        });
     } catch (err) {
         console.error("Error loading assignment:", err);
         res.status(500).send("Server error");
     }
 });
 
-app.post("/edit-assignment/:assignmentId", async (req, res) => {
+app.post("/edit-assignment/:assignmentId", uploadAssignmentFile.single('file'), async (req, res) => {
     const { assignmentId } = req.params;
     const { assignmentTitle, assignmentInstructions, topic, dueDate, marks } = req.body;
+    const file = req.file;
 
     try {
-        await Assignment.findByIdAndUpdate(assignmentId, {
+        const updateData = {
             title: assignmentTitle,
             description: assignmentInstructions,
             topic,
-            dueDate,
+            dueDate: new Date(dueDate),
             marks
-        });
-        res.redirect("back");
+        };
+
+        if (file) {
+            updateData.file = {
+                name: file.originalname,
+                path: "/uploads/assignmentFiles/" + file.filename,
+                mimeType: file.mimetype,
+                uploadedAt: new Date()
+            };
+        }
+
+        await Assignment.findByIdAndUpdate(assignmentId, updateData);
+        res.status(200).json({ message: "Assignment updated successfully" });
     } catch (err) {
         console.error("Error updating assignment:", err);
-        res.status(500).send("Failed to update assignment");
+        res.status(500).json({ message: "Failed to update assignment" });
     }
 });
 
@@ -1378,8 +1405,12 @@ app.get("/assignment-submissions/:courseId/:assignmentId", async (req, res) => {
             return res.status(404).send("Assignment not found");
         }
 
-        const submissions = await Submission.find({ assignmentId }); // Assuming a Submission model
-        res.render("assignmentSubmissions", { assignment, submissions }); // View required
+        const submissions = await Submission.find({ assignmentId });
+        res.render("courseAssignmentSubmissions", {
+            assignment,
+            submissions,
+            courseId  // Pass courseId if needed in the view
+        });
     } catch (err) {
         console.error("Error fetching submissions:", err);
         res.status(500).send("Internal Server Error");
