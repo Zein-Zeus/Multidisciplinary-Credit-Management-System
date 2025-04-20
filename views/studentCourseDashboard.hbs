@@ -57,21 +57,40 @@
                 <h3 id="studyM">Study Material</h3>
                 <p>{{#if course.studyMaterial}}Uploaded{{else}}Not Uploaded Yet{{/if}}</p>
 
-                <h3 id="assignment">Assignment</h3>
+                <h3 id="assignment">Assignments</h3>
                 <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Topic</th>
+                            <th>Description</th>
+                            <th>Marks</th>
+                            <th>Posted</th>
+                            <th>Due</th>
+                            <th>File</th>
+                            <th>Action</th>
+                            <th>View</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                    {{#each course.assignments}}
-                    <tr>
-                        <td>{{name}}</td>
-                        <td>{{posted}}</td>
-                        <td>{{due}}</td>
-                        <td><a href="#">Upload</a></td>
-                        <td><a href="#">View</a></td>
-                        <td><button class="{{statusClass}}">{{status}}</button></td>
-                    </tr>
-                    {{/each}}
+                        {{#each assignmentDetails}}
+                            <tr>
+                                <td>{{name}}</td>
+                                <td>{{topic}}</td>
+                                <td>{{description}}</td>
+                                <td>{{marks}}</td>
+                                <td>{{posted}}</td>
+                                <td>{{due}}</td>
+                                <td>{{file}}</td>
+                                <td><a href="#">Upload</a></td>
+                                <td><a href="#">View</a></td>
+                                <td class="status {{statusClass}}">{{status}}</td>
+                            </tr>
+                        {{/each}}
                     </tbody>
                 </table>
+
 
                 <h3 id="contact">Contact</h3>
                 <p>Faculty: {{course.facultyName}}</p>

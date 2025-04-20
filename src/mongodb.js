@@ -82,12 +82,21 @@ const enrolledStudentSchema = new mongoose.Schema({
 });
 
 const assignmentSchema = new mongoose.Schema({
-    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
-    title: { type: String, required: true },
-    topic: { type: String },
-    dueDate: { type: Date, required: true },
-    marks: { type: Number },
-    createdAt: { type: Date, default: Date.now }
+    title: String,
+    topic: String,
+    dueDate: Date,
+    marks: Number,
+    description: String,
+    courseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    },
+    file: {
+        name: String,       // Name of the file
+        path: String,       // Path to the file
+        mimeType: String,   // MIME type of the file
+        uploadedAt: { type: Date, default: Date.now }  // Upload timestamp
+    }
 });
 
 const submissionSchema = new mongoose.Schema({

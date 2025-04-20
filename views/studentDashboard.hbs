@@ -62,7 +62,9 @@
                 <tbody>
                     {{#each ongoingCourses}}
                         <tr>
-                            <td>{{this.courseName}}</td>
+                            <td onclick="viewCourse('{{this.courseId}}')" style="cursor: pointer; color: blue; text-decoration: underline;">
+                              {{this.courseName}}
+                            </td>
                             <td>{{this.collegeName}}</td>
                             <td>{{this.enrollmentDate}}</td>
                         </tr>
@@ -83,7 +85,9 @@
                 <tbody>
                     {{#each completedCourses}}
                         <tr>
-                            <td>{{this.courseName}}</td>
+                            <td onclick="viewCourse('{{this.courseId}}')" style="cursor: pointer; color: blue; text-decoration: underline;">
+                              {{this.courseName}}
+                            </td>
                             <td>{{this.collegeName}}</td>
                             <td>{{this.completionDate}}</td>
                             <td>
@@ -113,6 +117,10 @@
             .then(response => response.json())
             .then(data => alert(data.message))
             .catch(error => console.error("Error:", error));
+        }
+
+        function viewCourse(courseId) {
+            window.location.href = `/enrolled-course/${courseId}`;
         }
 
         function logout() {

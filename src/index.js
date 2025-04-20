@@ -51,6 +51,18 @@ const courseImage = multer.diskStorage({
 
 const uploadCourseImage = multer({ storage: courseImage });
 
+// Multer config for assignment file upload
+const assignmentFile = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = path.join(__dirname, 'uploads', 'assignmentFiles');
+        cb(null, dir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+const uploadAssignmentFile = multer({ storage: assignmentFile });
+
 // Generate a random secret key for each session
 const secret = crypto.randomBytes(16).toString('hex');
 
@@ -129,37 +141,6 @@ app.get("/home", async (req, res) => {
     }
 });
 
-//studentCourseDashboard
-app.get("/course/:id", async (req, res) => {
-    const courseId = req.params.id;
-
-    if (!req.session.prnNumber) {
-        return res.redirect('/login');
-    }
-
-    try {
-        const course = await Course.findById(courseId);
-        if (!course) {
-            return res.status(404).send('Course not found');
-        }
-
-        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-        res.render("studentCourseDashboard", {
-            title: "Student Course Dashboard",
-            username: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
-            course // sending the course data to the HBS file
-        });
-    } catch (error) {
-        console.error("Error loading course details:", error);
-        res.status(500).send("Server error");
-    }
-});
-
 app.get("/dashboard", async (req, res) => {
     if (!req.session.prnNumber) {
         return res.redirect("/login");
@@ -191,6 +172,51 @@ app.get("/dashboard", async (req, res) => {
     } catch (error) {
         console.error("Error fetching dashboard data:", error);
         res.status(500).send("An error occurred while loading the dashboard");
+    }
+});
+
+app.get("/enrolled-course/:id", async (req, res) => {
+    const courseId = req.params.id;
+
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).send('Course not found');
+        }
+
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Fetch assignments
+        const assignments = await Assignment.find({ courseId: courseId }).exec(); // Fetch assignments for this course
+        const assignmentDetails = assignments.map(assign => ({
+            name: assign.title,
+            topic: assign.topic,
+            marks: assign.marks,
+            description: assign.description,
+            posted: assign.uploadedAt ? assign.uploadedAt.toDateString() : "N/A",
+            due: assign.dueDate ? assign.dueDate.toDateString() : "N/A",
+            file: assign.file ? assign.file.name : "No file uploaded",
+            status: "Pending",
+            statusClass: "status-pending"
+        }));
+
+        res.render("studentCourseDashboard", {
+            title: "Student Course Dashboard",
+            username: `${user.firstName} ${user.lastName}`,
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            course,
+            assignmentDetails
+        });
+    } catch (error) {
+        console.error("Error loading course details:", error);
+        res.status(500).send("Server error");
     }
 });
 
@@ -1219,28 +1245,30 @@ app.get("/export-enrolled-students", async (req, res) => {
 });
 
 app.get('/view-classwork/:courseId', async (req, res) => {
+    const courseId = req.params.courseId;
+
     try {
-        const courseId = req.params.courseId;
         const course = await Course.findById(courseId);
+        const assignments = await Assignment.find({ courseId: courseId }); // Fetch assignments based on courseId
 
-        if (!course) return res.status(404).send('Course not found');
-
-        const assignments = await Assignment.find({ courseId });
+        if (!course) {
+            return res.status(404).send('Course not found');
+        }
 
         res.render('courseClasswork', {
-            courseId: course._id.toString(),
             courseName: course.courseName,
-            assignments: assignments 
+            courseId: courseId,
+            assignments: assignments
         });
     } catch (error) {
-        console.error("Error loading classwork view:", error);
-        res.status(500).send("Internal server error");
+        console.error('Error fetching course or assignments:', error);
+        res.status(500).send('Error fetching course or assignments');
     }
 });
 
 app.get("/create-assignment/:courseId", (req, res) => {
     const { courseId } = req.params;
-    res.render("createAssignment", { courseId }); // you'll need to make this view
+    res.render("courseCreateAssignment", { courseId }); // you'll need to make this view
 });
 
 app.post("/create-assignment", async (req, res) => {
@@ -1252,6 +1280,109 @@ app.post("/create-assignment", async (req, res) => {
     } catch (err) {
         console.error("Error creating assignment:", err);
         res.status(500).send("Error creating assignment");
+    }
+});
+
+app.post('/create-assignment/:courseId', uploadAssignmentFile.single('assignmentFile'), async (req, res) => {
+    try {
+        const { assignmentTitle, assignmentInstructions, dueDate, marks, topic } = req.body;
+        const courseId = req.params.courseId;
+
+        const newAssignment = new Assignment({
+            title: assignmentTitle,
+            description: assignmentInstructions,
+            dueDate,
+            marks,
+            topic,
+            courseId,
+            file: req.file ? `/uploads/assignmentFiles/${req.file.filename}` : null
+        });
+
+        await newAssignment.save();
+        return res.json({ success: true, message: 'Assignment created successfully.' });
+    } catch (err) {
+        console.error('Error creating assignment:', err);
+        return res.status(500).json({ success: false, message: 'Error creating assignment.' });
+    }
+});
+
+app.get("/edit-assignment/:courseId/:assignmentId", async (req, res) => {
+    const { courseId, assignmentId } = req.params;
+    try {
+        const assignment = await Assignment.findById(assignmentId);
+        if (!assignment) {
+            return res.status(404).send("Assignment not found");
+        }
+        res.render("editAssignment", { courseId, assignment }); // You'll need to create this view
+    } catch (err) {
+        console.error("Error loading assignment:", err);
+        res.status(500).send("Server error");
+    }
+});
+
+app.post("/edit-assignment/:assignmentId", async (req, res) => {
+    const { assignmentId } = req.params;
+    const { assignmentTitle, assignmentInstructions, topic, dueDate, marks } = req.body;
+
+    try {
+        await Assignment.findByIdAndUpdate(assignmentId, {
+            title: assignmentTitle,
+            description: assignmentInstructions,
+            topic,
+            dueDate,
+            marks
+        });
+        res.redirect("back");
+    } catch (err) {
+        console.error("Error updating assignment:", err);
+        res.status(500).send("Failed to update assignment");
+    }
+});
+
+app.delete("/delete-assignment/:assignmentId", async (req, res) => {
+    const { assignmentId } = req.params;
+
+    try {
+        const assignment = await Assignment.findById(assignmentId);
+        if (!assignment) {
+            return res.status(404).json({ success: false, message: "Assignment not found." });
+        }
+
+        // Check and delete uploaded file if exists
+        if (assignment.filePath) {
+            const filePath = path.join(__dirname,'..', 'src', assignment.filePath); // adjust path as per your structure
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.warn("Error deleting file:", err.message);
+                } else {
+                    console.log("Assignment file deleted:", filePath);
+                }
+            });
+        }
+
+        await Assignment.findByIdAndDelete(assignmentId);
+
+        res.json({ success: true, message: "Assignment deleted successfully." });
+    } catch (err) {
+        console.error("Delete error:", err);
+        res.status(500).json({ success: false, message: "Failed to delete assignment." });
+    }
+});
+
+app.get("/assignment-submissions/:courseId/:assignmentId", async (req, res) => {
+    const { courseId, assignmentId } = req.params;
+
+    try {
+        const assignment = await Assignment.findById(assignmentId);
+        if (!assignment) {
+            return res.status(404).send("Assignment not found");
+        }
+
+        const submissions = await Submission.find({ assignmentId }); // Assuming a Submission model
+        res.render("assignmentSubmissions", { assignment, submissions }); // View required
+    } catch (err) {
+        console.error("Error fetching submissions:", err);
+        res.status(500).send("Internal Server Error");
     }
 });
 
