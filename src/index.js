@@ -115,30 +115,42 @@ app.get("/signup", (req, res) => {
 });
 
 app.get("/home", async (req, res) => {
-    // Check if user is logged in
     if (!req.session.prnNumber) {
         return res.redirect('/login');
     }
 
     try {
-        // Find the user by PRN number
         const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
         if (!user) {
             return res.status(404).send('User not found');
         }
 
-        // Fetch all courses from the database
-        const courses = await Course.find();
+        // Fetch enrolled courses by status
+        const enrolledCourses = await EnrolledStudent.find({ prnNumber: req.session.prnNumber });
 
-        // Render the student home page with user info and courses
-        res.render('studentHome', {
+        // Separate course IDs by status
+        const ongoingIds = enrolledCourses
+            .filter(course => course.status === "Ongoing")
+            .map(course => course.courseId);
+
+        const completedIds = enrolledCourses
+            .filter(course => course.status === "Completed")
+            .map(course => course.courseId);
+
+        // Fetch full course details
+        const ongoingCourses = await Course.find({ _id: { $in: ongoingIds } });
+        const completedCourses = await Course.find({ _id: { $in: completedIds } });
+
+        // Render the page
+        res.render("studentHome", {
             userName: `${user.firstName} ${user.lastName}`,
             userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
-            courses // Pass the courses to the template
+            ongoingCourses,
+            completedCourses
         });
     } catch (error) {
-        console.error('Error fetching data:', error);
-        res.status(500).send('Error fetching data');
+        console.error("Error fetching courses:", error);
+        res.status(500).send("Server error");
     }
 });
 
