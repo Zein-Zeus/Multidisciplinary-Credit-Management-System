@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Dashboard</title>
-    <link rel="stylesheet" href="css/collegeDashboard.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>College Dashboard</title>
+  <link rel="stylesheet" href="css/collegeDashboard.css" />
 </head>
-
 <body>
     <div class="nav-container">
         <nav>
@@ -26,29 +24,46 @@
         </nav>
     </div>
 
-    <!-- Main Dashboard Content -->
-    <div class="dashboard-content">
-        <div class="dashboard-item streams">
-            <a href="">Total Streams</a>
-            <div class="data">120</div>
-        </div>
-        <div class="dashboard-item courses">
-            <a href="">Total Courses</a>
-            <div class="data">{{totalCourses}}</div>
-        </div>
-        <div class="dashboard-item students">
-            <a href="">Students Enrolled</a>
-            <div class="data">{{totalStudents}}</div> <!-- Display the total number of students -->
-        </div>
-        {{!-- <div class="dashboard-item verifications">
-            <a href="">Pending Verifications</a>
-            <div class="data">84</div>
-        </div> --}}
-        <div class="dashboard-item notifications">
-            <a href="">Notifications</a>
-        </div>
-    </div>
-    <script src="js/collegeDashboard.js"></script>
-</body>
+  <main>
+    <!-- Admin Greeting -->
+    <h1 class="greeting">Hi Admin, here’s what’s happening today 👇</h1>
 
+    <!-- Stat Cards -->
+    <div class="stats-container">
+      <div class="stat-card">Total Streams<br><strong>120</strong></div>
+      <div class="stat-card">Total Courses<br><strong>6</strong></div>
+      <div class="stat-card">Students Enrolled<br><strong>4</strong></div>
+      <div class="stat-card">Notifications<br><strong>3</strong></div>
+    </div>
+
+
+    <!-- Calendar Widget -->
+    <div class="calendar-card">
+      📅 <strong>Today:</strong> <span id="todayDate"></span>
+    </div>
+
+    <!-- Recent Activity -->
+    
+    <h2 class="section-heading">Recent Activity</h2>
+    <div class="activity-container" id="activityContainer"></div>
+
+    <!-- Pending Approvals -->
+    <div class="approvals-preview">
+      <p>📌 <strong>Pending Course Approvals: 2</strong></p>
+      <a href="#">Go to Approvals →</a>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="notifications-panel">
+      <h3>🔔 Notifications</h3>
+      <ul>
+        <li>New course added: Advanced Java</li>
+        <li>Student Priya registered</li>
+        <li>Stream updated by Admin</li>
+      </ul>
+    </div>
+  </main>
+
+  <script src="js/collegeDashboard.js"></script>
+</body>
 </html>
