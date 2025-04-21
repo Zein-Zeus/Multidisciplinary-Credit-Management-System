@@ -37,7 +37,6 @@ const registeredStudentSchema = new mongoose.Schema({
     Email: String,
     Contact: Number,
     collegeName: String,
-    admissionYear: { type: Number, required: true },
     passoutYear: { type: Number, required: true },
     degree: { type: String, required: true },
     branch: { type: String, required: true },
