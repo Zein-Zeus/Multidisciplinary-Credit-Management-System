@@ -1,114 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Registration</title>
     <link rel="stylesheet" href="css/collegeStudentRegistration.css">
 </head>
+
 <body>
+    <div class="nav-container">
         <nav>
-            <div class="header-banner">
-                <div class="banner-bg"></div>
-                <a href="/" class="banner-img-container">
-                    <img class="banner-img" src="images/logo.png" alt="University Logo" />
+            <div class="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="Logo">
                 </a>
-                <div class="banner-text">
-                    <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
-                    <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
-                </div>
             </div>
+            <ul>
+                <li><a href="/clgdashboard">Dashboard</a></li>
+                <li><a href="/clgstudentreg" class="active-tab">New Registration</a></li>
+                <li><a href="/clgstudentrecords">Student Records</a></li>
+                <li><a href="/clgstudentapproval">Course Approval</a></li>
+                <li><a href="/">Logout</a></li>
+            </ul>
         </nav>
-    <div class="container">
-
-        <div class="collapsible-bar">
-            <button class="collapsible" onclick="toggleMenu()">☰</button>
-            <div class="content">
-                <button class="close-btn" onclick="toggleMenu()">×</button> <!-- Close Button -->
-                <div class="menu-item"><a href="/clgdashboard">Dashboard</a></div>
-                <div class="menu-item"><a href="/clgstudentreg">New Registration</a></div>
-                <div class="menu-item"><a href="/clgstudentrecords">Student Records</a></div>
-                <div class="menu-item"><a href="/">Logout</a></div>
-            </div>
+    </div>
+    <div class="title">Register New Student</div>
+    <div class="form-container">
+        <div class="background-box1">
+            <form action="/register" method="POST">
+                <div class="input-group">
+                    <!-- Popup Notification -->
+                    <div id="popup-notification"
+                        style="display: none; position: fixed; top: 10px; right: 10px; background-color: #4CAF50; color: white; padding: 15px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); z-index: 1000;">
+                        <span id="popup-message"></span>
+                    </div>
+                    <div class="f_name">
+                        <div class="label">First Name:<span class="required">*</span></div>
+                        <input type="text" id="f_name" name="firstName" placeholder="Enter first name" required>
+                    </div>
+                    <div class="m_name">
+                        <div class="label">Middle Name:</div>
+                        <input type="text" id="m_name" name="middleName" placeholder="Enter middle name">
+                    </div>
+                    <div class="l_name">
+                        <div class="label">Last Name:<span class="required">*</span></div>
+                        <input type="text" id="l_name" name="lastName" placeholder="Enter last name" required>
+                    </div>
+                    <div class="prn">
+                        <div class="label">PRN Number:<span class="required">*</span></div>
+                        <input type="text" id="prn" name="prnNumber" placeholder="Enter PRN" required>
+                    </div>
+                    <div class="abc">
+                        <div class="label">ABC ID:<span class="required">*</span></div>
+                        <input type="text" id="abc" name="abcId" placeholder="Enter ABC ID" required>
+                    </div>
+                    <div class="email">
+                        <div class="label">Email Id:<span class="required">*</span></div>
+                        <input type="email" id="email" name="email" placeholder="Enter email" required>
+                    </div>
+                    <div class="contact">
+                        <div class="label">Contact:<span class="required">*</span></div>
+                        <input type="text" id="contact" name="contact" placeholder="Enter contact no." required>
+                    </div>
+                    <div class="degree">
+                        <div class="label">Degree:<span class="required">*</span></div>
+                        <input type="text" id="degree" name="degree" placeholder="Enter degree (e.g., B.Tech, M.Sc)"
+                            required>
+                    </div>
+                    <div class="branch">
+                        <div class="label">Branch:<span class="required">*</span></div>
+                        <input type="text" id="branch" name="branch" placeholder="Enter branch (e.g., Computer Science)"
+                            required>
+                    </div>
+                    <div class="college_name">
+                        <div class="label">College Name:<span class="required">*</span></div>
+                        <input type="text" id="college_name" name="collegeName" value="{{collegeName}}" readonly>
+                    </div>
+                    <div class="passout-year">
+                        <div class="label">Passout Year:<span class="required">*</span></div>
+                        <select id="passoutYear" name="passoutYear" required>
+                            <option value="" disabled selected>Select Passout Year</option>
+                        </select>
+                    </div>
+                    <button class="submit-button" type="submit">Submit</button>
+                </div>
+            </form>
         </div>
 
+        <div class="or-text">OR</div>
 
-        <div class="title">Register New Student</div>
-
-        <div class="form-container">
-            <div class="background-box1">
-                <form action="/register" method="POST">
-                    <div class="input-group">
-                        <!-- Popup Notification -->
-                        <div id="popup-notification" style="display: none; position: fixed; top: 10px; right: 10px; background-color: #4CAF50; color: white; padding: 15px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); z-index: 1000;">
-                            <span id="popup-message"></span>
-                        </div>
-                        <div class="f_name">
-                            <div class="label">First Name:<span class="required">*</span></div>
-                            <input type="text" id="f_name" name="firstName" placeholder="Enter first name" required>
-                        </div>
-                        <div class="m_name">
-                            <div class="label">Middle Name:</div>
-                            <input type="text" id="m_name" name="middleName" placeholder="Enter middle name">
-                        </div>
-                        <div class="l_name">
-                            <div class="label">Last Name:<span class="required">*</span></div>
-                            <input type="text" id="l_name" name="lastName" placeholder="Enter last name" required>
-                        </div>
-                        <div class="prn">
-                            <div class="label">PRN Number:<span class="required">*</span></div>
-                            <input type="text" id="prn" name="prnNumber" placeholder="Enter PRN" required>
-                        </div>
-                        <div class="abc">
-                            <div class="label">ABC ID:<span class="required">*</span></div>
-                            <input type="text" id="abc" name="abcId" placeholder="Enter ABC ID" required>
-                        </div>
-                        <div class="email">
-                            <div class="label">Email Id:<span class="required">*</span></div>
-                            <input type="email" id="email" name="email" placeholder="Enter email" required>
-                        </div>
-                        <div class="contact">
-                            <div class="label">Contact:<span class="required">*</span></div>
-                            <input type="text" id="contact" name="contact" placeholder="Enter contact no." required>
-                        </div>
-                        <div class="degree">
-                            <div class="label">Degree:<span class="required">*</span></div>
-                            <input type="text" id="degree" name="degree" placeholder="Enter degree (e.g., B.Tech, M.Sc)" required>
-                        </div>
-                        <div class="branch">
-                            <div class="label">Branch:<span class="required">*</span></div>
-                            <input type="text" id="branch" name="branch" placeholder="Enter branch (e.g., Computer Science)" required>
-                        </div>
-                        <div class="college_name">
-                            <div class="label">College Name:<span class="required">*</span></div>
-                            <input type="text" id="college_name" name="collegeName" value="{{collegeName}}" readonly>
-                        </div>
-                        <div class="passout-year">
-                            <div class="label">Passout Year:<span class="required">*</span></div>
-                            <select id="passoutYear" name="passoutYear" required>
-                                <option value="" disabled selected>Select Passout Year</option>
-                            </select>
-                        </div>
-                        <button class="submit-button" type="submit">Submit</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="or-text">OR</div>
-
-            <!-- Form for Excel import -->
-            <div class="background-box2">
-                <form id="import-form" enctype="multipart/form-data">
-                    <div class="import-container">
-                        <div class="import-label">Import Using Excel Sheet:<span class="required">*</span></div>
-                        <button id="import-button" class="import-button" type="button">Import</button>
-                        <input type="file" id="file-input" name="excelFile" style="display: none;" required>
-                    </div>
-                </form>
-            </div>
-
-            <div class="or-text"></div>
+        <!-- Form for Excel import -->
+        <div class="background-box2">
+            <form id="import-form" enctype="multipart/form-data">
+                <div class="import-container">
+                    <div class="import-label">Import Using Excel Sheet:<span class="required">*</span></div>
+                    <button id="import-button" class="import-button" type="button">Import</button>
+                    <input type="file" id="file-input" name="excelFile" style="display: none;" required>
+                </div>
+            </form>
         </div>
+
+        <div class="or-text"></div>
+    </div>
     </div>
 
 
@@ -129,4 +123,5 @@
         }
     </script>
 </body>
+
 </html>

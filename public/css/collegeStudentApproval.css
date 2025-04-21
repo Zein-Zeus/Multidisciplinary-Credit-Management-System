@@ -1,4 +1,4 @@
-/* General Styling */
+/* General Page Styling */
 body {
     margin: 0;
     padding: 0;
@@ -7,45 +7,64 @@ body {
     color: #333;
 }
 
-/* Navigation */
+/* Navigation Bar */
 nav {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
-    height: 60px;
-}
-
-.header-banner {
     width: 100%;
-    max-height: 160px;
-    background: white;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 15px 20px;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 60px;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
-.banner-img {
-    width: 100px;
-    height: auto;
-    margin-right: 20px;
+.logo img {
+    height: 45px; /* Slightly smaller to avoid being too bulky */
 }
 
-.banner-text {
+nav ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
     flex: 1;
+    justify-content: center;
 }
 
-.banner-title {
-    color: rgba(0, 0, 153, 0.89);
-    font-size: 20px;
-    font-weight: 500;
+nav ul li {
+    margin: 0 20px; /* Wider space between links */
 }
 
-.banner-subtitle {
-    color: #494949;
-    font-size: 14px;
-    font-weight: 500;
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+nav ul li a.active-tab {
+    text-decoration: none;
+    color: #007BFF;
+  border-bottom: 2px solid #007BFF;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #007BFF;
+}
+
+/* Push page content below the navbars */
+.nav-container {
+    padding-top: 70px; /* Adjust based on combined navbar height */
 }
 
 /* Main Content */

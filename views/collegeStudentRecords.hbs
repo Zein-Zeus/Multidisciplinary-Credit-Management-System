@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,20 +29,24 @@
         }
     </style>
 </head>
-<body>
-    <nav>
-        <div class="header-banner">
-            <div class="banner-bg"></div>
-            <a href="/" class="banner-img-container">
-                <img class="banner-img" src="images/logo.png" alt="University Logo" />
-            </a>
-            <div class="banner-text">
-                <span class="banner-title">Shreemati Nathibai Damodar Thackersey Women’s University<br/></span>
-                <span class="banner-subtitle">1, Nathibai Thackersey Road, Mumbai 400020</span>
-            </div>
-        </div>
-    </nav>
 
+<body>
+    <div class="nav-container">
+        <nav>
+            <div class="logo">
+                <a href="/">
+                    <img src="/images/logo.png" alt="Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="/clgdashboard">Dashboard</a></li>
+                <li><a href="/clgstudentreg">New Registration</a></li>
+                <li><a href="/clgstudentrecords" class="active-tab">Student Records</a></li>
+                <li><a href="/clgstudentapproval">Course Approval</a></li>
+                <li><a href="/">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
     <main>
         <div class="dashboard">
             <h2>Student Records</h2>
@@ -77,9 +82,9 @@
                         <td>{{#if this.completionDate}}{{this.completionDate}}{{else}}N/A{{/if}}</td>
                         <td>
                             {{#if this.certificateUrl}}
-                                <a href="{{this.certificateUrl}}" target="_blank">Download</a>
+                            <a href="{{this.certificateUrl}}" target="_blank">Download</a>
                             {{else}}
-                                N/A
+                            N/A
                             {{/if}}
                         </td>
                     </tr>
@@ -101,4 +106,5 @@
 
     <script src="js/collegeStudentRecords.js"></script>
 </body>
+
 </html>
