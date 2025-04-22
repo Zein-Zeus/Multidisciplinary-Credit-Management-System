@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>College Dashboard</title>
-  <link rel="stylesheet" href="css/collegeDashboard.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>College Dashboard</title>
+    <link rel="stylesheet" href="css/collegeDashboard.css" />
 </head>
+
 <body>
     <!-- NAVBAR (unchanged) -->
     <div class="nav-container">
@@ -25,44 +27,50 @@
         </nav>
     </div>
 
-  <main>
-    <!-- Admin Greeting -->
-    <h1 class="greeting">Hi Admin, here’s what’s happening today 👇</h1>
+    <main>
+        <h1 class="greeting">Hi {{collegeName}}, here’s what’s happening today 👇</h1>
 
-    <!-- Stat Cards -->
-    <div class="stats-container">
-      <div class="stat-card">Total Streams<br><strong>120</strong></div>
-      <div class="stat-card">Total Courses<br><strong>6</strong></div>
-      <div class="stat-card">Students Enrolled<br><strong>4</strong></div>
-      <div class="stat-card">Notifications<br><strong>3</strong></div>
-    </div>
+        <div class="stats-container">
+            <div class="stat-card">Total Streams<br><strong>5</strong></div> <!-- If dynamic, fetch from DB -->
+            <div class="stat-card">Total Courses<br><strong>{{totalCourses}}</strong></div>
+            <div class="stat-card">Students Enrolled<br><strong>{{totalStudents}}</strong></div>
+            <div class="stat-card">Notifications<br><strong>{{totalNotifications}}</strong></div>
+        </div>
 
+        <!-- Calendar Widget -->
+        <div class="calendar-card">
+            📅 <strong>Today:</strong> <span id="todayDate"></span>
+        </div>
 
-    <!-- Calendar Widget -->
-    <div class="calendar-card">
-      📅 <strong>Today:</strong> <span id="todayDate"></span>
-    </div>
+        <!-- Recent Activity -->
 
-    <!-- Recent Activity -->
-    
-    <h2 class="section-heading">Recent Activity</h2>
-    <div class="activity-container" id="activityContainer"></div>
+        <h2 class="section-heading">Recent Activity</h2>
 
-    <!-- Pending Approvals -->
-    <div class="approvals-preview">
-      <p>📌 <strong>Pending Course Approvals: 2</strong></p>
-      <a href="#">Go to Approvals →</a>
-    </div>
+        <!-- Pending Approvals -->
+        <div class="activity-container" id="activityContainer">
+            {{#if activities.length}}
+            {{#each activities}}
+            <div class="activity-card">{{this.icon}} {{this.message}}</div>
+            {{/each}}
+            {{else}}
+            <p>No recent activity to show.</p>
+            {{/if}}
+        </div>
 
-    <!-- Notifications Panel -->
-    <div class="notifications-panel">
-      <h3>🔔 Notifications</h3>
-      <ul>
-        <li>New course added: Advanced Java</li>
-        <li>Student Priya registered</li>
-        <li>Stream updated by Admin</li>
-      </ul>
-    </div>
-    <script src="js/collegeDashboard.js"></script>
+        <div class="notifications-panel">
+            <h3>🔔 Notifications</h3>
+            <ul>
+                {{#if notifications.length}}
+                {{#each notifications}}
+                <li>{{this}}</li>
+                {{/each}}
+                {{else}}
+                <li>No new notifications</li>
+                {{/if}}
+            </ul>
+        </div>
+
+        <script src="js/collegeDashboard.js"></script>
 </body>
+
 </html>

@@ -494,14 +494,100 @@ app.get("/clglogin", (req, res) => {
 app.get("/clgdashboard", async (req, res) => {
     try {
         if (!req.session.collegeName) {
-            res.redirect('/clglogin');
+            return res.redirect("/clglogin");
         }
-        const totalStudents = await RegisteredStudent.countDocuments(); // Count total students in the collection
-        const totalCourses = await Course.countDocuments();
-        res.render("collegeDashboard", { totalStudents, totalCourses }); // Pass the count to the view
+
+        // Fetch latest 5 registered students for this college
+        const recentRegistrations = await RegisteredStudent.find({ collegeName: req.session.collegeName })
+            .sort({ _id: -1 })  // latest first
+            .limit(5)
+            .lean();
+
+        // Fetch latest 5 pending approvals for this college
+        const pendingApprovals = await EnrolledStudent.find({
+            collegeName: req.session.collegeName,
+            status: "Approval Pending"
+        })
+            .sort({ enrollmentDate: -1 })
+            .limit(5)
+            .lean();
+
+        // Create activity messages
+        const activities = [];
+
+        recentRegistrations.forEach(student => {
+            activities.push({
+                icon: "✅",
+                message: `${student.firstName} ${student.lastName} registered.`
+            });
+        });
+
+        pendingApprovals.forEach(enrollment => {
+            activities.push({
+                icon: "📌",
+                message: `Course '${enrollment.courseName}' approval pending for ${enrollment.studentName}.`
+            });
+        });
+
+        // Fetch new courses added recently (limit 3)
+        const recentCourses = await Course.find({ collegeName: req.session.collegeName })
+            .sort({ _id: -1 })
+            .limit(3)
+            .lean();
+        
+        const totalNewCourses = recentCourses.length;
+
+        // Fetch latest registered students (limit 3)
+        const recentStudents = await RegisteredStudent.find({ collegeName: req.session.collegeName })
+            .sort({ _id: -1 })
+            .limit(3)
+            .lean();
+
+        const totalNewStudents = recentStudents.length;
+
+        const adminNotifications = [
+            "Stream updated by Admin",
+            // add more from DB if available
+        ];
+
+        const totalAdminNotifications = adminNotifications.length;
+
+        // Total notifications count is sum of all
+        const totalNotifications = totalNewCourses + totalNewStudents + totalAdminNotifications;
+
+        // Combine notifications in order
+        const notifications = [];
+
+        recentCourses.forEach(course => {
+            notifications.push(`New course added: ${course.courseName}`);
+        });
+
+        recentStudents.forEach(student => {
+            notifications.push(`Student ${student.firstName} registered`);
+        });
+
+        // Add admin notifications
+        notifications.push(...adminNotifications);
+
+        // Optionally limit to last 5 notifications total
+        const limitedNotifications = notifications.slice(0, 5);
+
+        // Pass the activities and other counts/stats to your template
+        const totalStudents = await RegisteredStudent.countDocuments({ collegeName: req.session.collegeName });
+        const totalCourses = await Course.countDocuments({ collegeName: req.session.collegeName });
+
+        res.render("collegeDashboard", {
+            collegeName: req.session.collegeName,
+            totalStudents,
+            totalCourses,
+            activities,
+            totalNotifications,
+            notifications: limitedNotifications
+        });
+
     } catch (err) {
-        console.error('Error fetching students:', err);
-        res.status(500).send('Error fetching student data.');
+        console.error("Error loading dashboard:", err);
+        res.status(500).send("Internal Server Error");
     }
 });
 
@@ -1539,8 +1625,8 @@ app.get('/course/:courseId/grades', async (req, res) => {
             .sort({ completionDate: -1 });
 
         res.render('courseGrades', {
-            course, 
-            grades: grade 
+            course,
+            grades: grade
         });
 
     } catch (error) {
