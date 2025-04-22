@@ -17,10 +17,11 @@
                 </a>
             </div>
             <ul>
-                <li><a href="#" onclick="viewCourse('{{courseId}}')">Stream</a></li>
+                <li><a href="#" onclick="viewCourse('{{courseId}}')">Preview</a></li>
                 <li><a href="#" onclick="viewClasswork('{{courseId}}')" class="active-tab">Classwork</a></li>
                 <li><a href="#" onclick="viewEnrolledStudents('{{courseId}}')">People</a></li>
-                <li><a href="#">Grades</a></li>
+                <li><a href="#" onclick="viewCourseAttendance('{{courseId}}')">Attendance</a></li>
+                <li><a href="#" onclick="viewGrades('{{courseId}}')">Grades</a></li>
             </ul>
         </nav>
 
@@ -88,6 +89,12 @@
         }
         function viewClasswork(courseId) {
             window.location.href = `/view-classwork/${courseId}`;
+        }
+        function viewCourseAttendance(courseId) {
+            window.location.href = `/course/${courseId}/attendance`;
+        }
+        function viewGrades(courseId) {
+            window.location.href = `/course/${courseId}/grades`;
         }
     </script>
 </body>

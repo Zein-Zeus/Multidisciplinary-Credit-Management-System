@@ -1,0 +1,142 @@
+/* General Page Styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Navigation Bar */
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 60px;
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.logo img {
+    height: 45px; /* Slightly smaller to avoid being too bulky */
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 20px; /* Wider space between links */
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #007BFF;
+}
+
+.active-tab {
+  color: #007BFF;
+  border-bottom: 2px solid #007BFF;
+}
+
+/* Push page content below the navbars */
+.nav-container {
+    padding-top: 70px; /* Adjust based on combined navbar height */
+}
+
+.container {
+    max-width: 95%;
+    margin: auto;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+header h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.actions button {
+    padding: 10px 15px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.actions button:hover {
+    background-color: #1d4ed8;
+}
+
+.table-section {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+thead {
+    background-color: #eff6ff;
+}
+
+th,
+td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+footer a {
+    color: #2563eb;
+    text-decoration: none;
+}

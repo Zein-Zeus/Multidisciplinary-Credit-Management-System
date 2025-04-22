@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grades - {{course.courseName}}</title>
+    <link rel="stylesheet" href="/css/courseGrades.css" />
+</head>
+
+<body>
+    <div class="nav-container">
+        <nav>
+            <div class="logo">
+                <a href="/"><img src="/images/logo.png" alt="Logo"></a>
+            </div>
+            <ul>
+                <li><a href="#" onclick="viewCourse('{{course._id}}')">Preview</a></li>
+                <li><a href="#" onclick="viewClasswork('{{course._id}}')">Classwork</a></li>
+                <li><a href="#" onclick="viewEnrolledStudents('{{course._id}}')">People</a></li>
+                <li><a href="#" onclick="viewCourseAttendance('{{course._id}}')">Attendance</a></li>
+                <li><a href="#" onclick="viewGrades('{{course._id}}')" class="active-tab">Grades</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>{{course.courseName}} - Grades</h1>
+            <div class="actions">
+                <button onclick="downloadTemplate()">Download Template</button>
+                <input type="file" id="excelInput" accept=".xlsx, .xls" hidden />
+                <button onclick="document.getElementById('excelInput').click()">Import from Excel</button>
+            </div>
+        </header>
+
+        <div class="table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Student Name</th>
+                        <th>PRN</th>
+                        <th>College</th>
+                        <th>ABC ID</th>
+                        <th>Completion Date</th>
+                        <th>Marks Obtained</th>
+                        <th>Total Marks</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody id="gradesBody">
+                    {{#each grades}}
+                    <tr>
+                        <td>{{addOne @index}}</td>
+                        <td>{{this.studentName}}</td>
+                        <td>{{this.prnNumber}}</td>
+                        <td>{{this.collegeName}}</td>
+                        <td>{{this.abcId}}</td>
+                        <td>{{formatDate this.completionDate}}</td>
+                        <td>{{this.marksObtained}}</td>
+                        <td>{{this.totalMarks}}</td>
+                        <td>{{this.percentage}}%</td>
+                        <td>{{this.grade}}</td>
+                        <input type="hidden" name="grades[{{@index}}][studentId]" value="{{this.student._id}}" />
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const courseId = "{{course._id}}";
+    </script>
+
+    <script>
+        function viewCourse(courseId) {
+            window.location.href = `/view-course/${courseId}`;
+        }
+
+        function viewClasswork(courseId) {
+            window.location.href = `/view-classwork/${courseId}`;
+        }
+
+        function viewEnrolledStudents(courseId) {
+            window.location.href = `/view-enrolled-students/${courseId}`;
+        }
+
+        function viewCourseAttendance(courseId) {
+            window.location.href = `/course/${courseId}/attendance`;
+        }
+
+        function viewGrades(courseId) {
+            window.location.href = `/course/${courseId}/grades`;
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="/js/courseGrades.js"></script>
+</body>
+
+</html>

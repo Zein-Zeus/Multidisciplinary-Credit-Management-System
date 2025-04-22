@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{courseName}}</title>
-    <link rel="stylesheet" href="/css/courseDetails.css"> 
+    <link rel="stylesheet" href="/css/courseDetails.css">
 </head>
+
 <body>
     <nav>
         <div class="logo">
@@ -14,10 +16,11 @@
             </a>
         </div>
         <ul>
-            <li><a href="#" onclick="viewCourse('{{_id}}')" class="active-tab">Stream</a></li>
+            <li><a href="#" onclick="viewCourse('{{_id}}')" class="active-tab">Preview</a></li>
             <li><a href="#" onclick="viewClasswork('{{_id}}')">Classwork</a></li>
             <li><a href="#" onclick="viewEnrolledStudents('{{_id}}')">People</a></li>
-            <li><a href="#">Grades</a></li>
+            <li><a href="#" onclick="viewCourseAttendance('{{_id}}')">Attendance</a></li>
+            <li><a href="#" onclick="viewGrades('{{_id}}')">Grades</a></li>
         </ul>
     </nav>
 
@@ -34,11 +37,11 @@
             </p>
             <p class="info">
                 <strong>Modules:</strong>
-                <ul>
-                    {{#each modules}}
-                        <li>{{this}}</li>
-                    {{/each}}
-                </ul>
+            <ul>
+                {{#each modules}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
             </p>
             <button type="submit" class="enroll-btn">Register Now</button>
             <a href="/course-dashboard" class="back-link">Back to Dashboard</a>
@@ -53,6 +56,12 @@
         }
         function viewClasswork(courseId) {
             window.location.href = `/view-classwork/${courseId}`;
+        }
+        function viewCourseAttendance(courseId) {
+            window.location.href = `/course/${courseId}/attendance`;
+        }
+        function viewGrades(courseId) {
+            window.location.href = `/course/${courseId}/grades`;
         }
     </script>
 </body>

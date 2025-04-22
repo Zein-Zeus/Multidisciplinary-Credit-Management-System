@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance - {{course.courseName}}</title>
+    <link rel="stylesheet" href="/css/courseAttendance.css" />
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="nav-container">
+        <nav>
+            <div class="logo">
+                <a href="/"><img src="/images/logo.png" alt="Logo"></a>
+            </div>
+            <ul>
+                <li><a href="#" onclick="viewCourse('{{course._id}}')">Preview</a></li>
+                <li><a href="#" onclick="viewClasswork('{{course._id}}')">Classwork</a></li>
+                <li><a href="#" onclick="viewEnrolledStudents('{{course._id}}')">People</a></li>
+                <li><a href="#" onclick="viewCourseAttendance('{{course._id}}')" class="active-tab">Attendance</a></li>
+                <li><a href="#" onclick="viewGrades('{{course._id}}')">Grades</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Page Content -->
+    <div class="container">
+        <header>
+            <h1>{{course.courseName}} - Attendance Records</h1>
+            <div class="actions">
+                <button onclick="downloadTemplate()">Download Template</button>
+                <input type="file" id="excelInput" accept=".xlsx, .xls" hidden />
+                <button onclick="document.getElementById('excelInput').click()">Import from Excel</button>
+            </div>
+        </header>
+
+        <section class="table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Student Name</th>
+                        <th>PRN</th>
+                        <th>College</th>
+                        <th>ABC ID</th>
+                        <th>Completion Date</th>
+                        <th>Attendance</th>
+                        <th>Total Classes</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceBody">
+                    {{#each attendanceRecords}}
+                    <tr>
+                        <td>{{addOne @index}}</td>
+                        <td>{{this.studentName}}</td>
+                        <td>{{this.prnNumber}}</td>
+                        <td>{{this.collegeName}}</td>
+                        <td>{{this.abcId}}</td>
+                        <td>{{formatDate this.completionDate}}</td>
+                        <td>{{this.attendance}}</td>
+                        <td>{{this.totalClasses}}</td>
+                        <td>{{this.percentage}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        const courseId = "{{course._id}}";
+
+        function viewEnrolledStudents(courseId) {
+            window.location.href = `/view-enrolled-students/${courseId}`;
+        }
+        function viewCourse(courseId) {
+            window.location.href = `/view-course/${courseId}`;
+        }
+        function viewClasswork(courseId) {
+            window.location.href = `/view-classwork/${courseId}`;
+        }
+        function viewCourseAttendance(courseId) {
+            window.location.href = `/course/${courseId}/attendance`;
+        }
+        function viewGrades(courseId) {
+            window.location.href = `/course/${courseId}/grades`;
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="/js/courseAttendance.js"></script>
+</body>
+
+</html>

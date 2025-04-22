@@ -139,8 +139,28 @@ const submissionSchema = new mongoose.Schema({
 const attendanceSchema = new mongoose.Schema({
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
     studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredStudent', required: true },
-    date: { type: Date, required: true },
-    status: { type: String, enum: ['Present', 'Absent'], required: true }
+    studentName: { type: String, required: true },
+    prnNumber: { type: Number, required: true },
+    collegeName: String,
+    abcId: { type: Number, required: true },
+    completionDate: { type: Date },
+    attendance: { type: Number, default: 0 },
+    totalClasses: { type: Number, default: 0 },
+    percentage: { type: Number, default: 0 }
+});
+
+const gradeSchema = new mongoose.Schema({
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+    studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredStudent', required: true },
+    studentName: { type: String, required: true },
+    prnNumber: { type: Number, required: true },
+    collegeName: String,
+    abcId: { type: Number, required: true },
+    completionDate: { type: Date },
+    marksObtained: { type: Number, required: true },
+    totalMarks: { type: Number, required: true },
+    percentage: { type: Number, default: 0 },
+    grade: { type: String, default: '-' }
 });
 
 const RegisteredStudent = mongoose.model('RegisteredStudent', registeredStudentSchema);
@@ -151,6 +171,7 @@ const EnrolledStudent = mongoose.model("EnrolledStudent", enrolledStudentSchema)
 const Assignment = mongoose.model('Assignment', assignmentSchema);
 const Submission = mongoose.model('Submission', submissionSchema);
 const Attendance = mongoose.model('Attendance', attendanceSchema);
+const Grade = mongoose.model('Grade', gradeSchema);
 
 async function importExcelToMongoDB(filePath) {
     try {
@@ -197,4 +218,4 @@ async function importExcelToMongoDB(filePath) {
 }
 
 // module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, UploadedCertificate };
-module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance };
+module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance, Grade };

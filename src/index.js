@@ -4,7 +4,7 @@ const path = require("path");
 const hbs = require("hbs");
 const multer = require('multer'); // Import multer
 const XLSX = require('xlsx'); // Import xlsx
-const { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance } = require("./mongodb");
+const { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance, Grade } = require("./mongodb");
 const session = require('express-session');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -24,6 +24,16 @@ hbs.registerHelper("eq", function (a, b) {
 
 hbs.registerHelper('ifEquals', function (a, b, options) {
     return a === b ? options.fn(this) : options.inverse(this);
+});
+
+hbs.registerHelper('addOne', function (value) {
+    return value + 1;
+});
+
+hbs.registerHelper('formatDate', function (date) {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString();
 });
 
 // Set up storage engine for Multer
@@ -370,7 +380,7 @@ app.post("/login", async (req, res) => {
 
             console.log("Logged in user abcId:", req.session.abcId); // Debugging log
 
-            res.redirect("/dashboard"); // Redirect to the dashboard
+            res.redirect("/home"); // Redirect to the dashboard
         } else {
             res.send("Wrong Details"); // Handle incorrect login
         }
@@ -1389,7 +1399,7 @@ app.delete("/delete-assignment/:assignmentId", async (req, res) => {
 
         // Check and delete uploaded file if exists
         if (assignment.filePath) {
-            const filePath = path.join(__dirname,'..', 'src', assignment.filePath); // adjust path as per your structure
+            const filePath = path.join(__dirname, '..', 'src', assignment.filePath); // adjust path as per your structure
             fs.unlink(filePath, (err) => {
                 if (err) {
                     console.warn("Error deleting file:", err.message);
@@ -1426,6 +1436,225 @@ app.get("/assignment-submissions/:courseId/:assignmentId", async (req, res) => {
     } catch (err) {
         console.error("Error fetching submissions:", err);
         res.status(500).send("Internal Server Error");
+    }
+});
+
+app.get('/course/:courseId/attendance', async (req, res) => {
+    const { courseId } = req.params;
+
+    try {
+        const course = await Course.findById(courseId);
+        const attendance = await Attendance.find({ courseId })
+            .populate('studentId', 'name prn college abcId')
+            .sort({ completionDate: -1 });
+
+        res.render("courseAttendance", {
+            course,
+            attendanceRecords: attendance
+        });
+    } catch (error) {
+        console.error("Error fetching attendance:", error);
+        res.status(500).json({ error: 'Failed to fetch attendance records' });
+    }
+});
+
+app.post('/course/:courseId/attendance', async (req, res) => {
+    const { courseId } = req.params;
+    const { records } = req.body;
+
+    if (!records || !Array.isArray(records)) {
+        return res.status(400).json({ error: 'Invalid request format. Expected an array of records.' });
+    }
+
+    try {
+        const attendanceDocs = [];
+
+        function excelDateToJSDate(serial) {
+            const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // Dec 30, 1899 UTC
+            return new Date(excelEpoch.getTime() + serial * 86400000); // 86400000 ms per day
+        }
+
+        for (const record of records) {
+            const student = await Student.findOne({
+                $or: [
+                    { prn: record.prn },
+                    { abcId: record.abcId }
+                ]
+            });
+
+            if (!student) {
+                console.warn(`Student not found for PRN: ${record.prn} or ABC ID: ${record.abcId}`);
+                continue;
+            }
+
+            let parsedDate = null;
+            if (record.completionDate) {
+                if (typeof record.completionDate === 'number') {
+                    // Convert Excel serial date to JS Date
+                    parsedDate = excelDateToJSDate(record.completionDate);
+                } else {
+                    const tempDate = new Date(record.completionDate);
+                    if (!isNaN(tempDate)) {
+                        parsedDate = tempDate;
+                    } else {
+                        console.warn(`Invalid completionDate for student ${student._id}: ${record.completionDate}`);
+                    }
+                }
+            }
+
+            attendanceDocs.push({
+                courseId,
+                studentId: student._id,
+                studentName: record.studentName,
+                prnNumber: record.prn,
+                collegeName: record.college,
+                abcId: record.abcId,
+                completionDate: parsedDate,
+                attendance: Number(record.attendance) || 0,
+                totalClasses: Number(record.totalClasses) || 0,
+                percentage: ((record.attendance / record.totalClasses) * 100).toFixed(2) || 0
+            });
+        }
+
+        if (attendanceDocs.length === 0) {
+            return res.status(400).json({ error: "No valid attendance records to save." });
+        }
+
+        await Attendance.insertMany(attendanceDocs);
+        res.status(201).json({ message: 'Attendance records saved successfully' });
+    } catch (error) {
+        console.error("Error saving attendance:", error);
+        res.status(500).json({ error: 'Failed to save attendance records' });
+    }
+});
+
+// GET grades page
+app.get('/course/:courseId/grades', async (req, res) => {
+    const { courseId } = req.params;
+
+    try {
+        const course = await Course.findById(courseId);
+        const grade = await Grade.find({ courseId })
+            .populate('studentId', 'name prn college abcId')
+            .sort({ completionDate: -1 });
+
+        res.render('courseGrades', {
+            course, 
+            grades: grade 
+        });
+
+    } catch (error) {
+        console.error('Error fetching grades:', error);
+        res.status(500).json({ error: 'Failed to fetch grades' });
+    }
+});
+
+// POST grades (import) handler
+app.post('/course/:courseId/grades', async (req, res) => {
+    const { courseId } = req.params;
+    const { records } = req.body;  // <-- expect 'records' array in JSON body
+
+    if (!records || !Array.isArray(records)) {
+        return res.status(400).json({ error: 'Invalid request format. Expected an array of records.' });
+    }
+
+    try {
+        function calculateGrade(marks, total) {
+            const percent = (marks / total) * 100;
+            if (percent >= 90) return 'A+';
+            if (percent >= 80) return 'A';
+            if (percent >= 70) return 'B+';
+            if (percent >= 60) return 'B';
+            if (percent >= 50) return 'C';
+            return 'F';
+        }
+
+        function excelDateToJSDate(serial) {
+            const excelEpoch = new Date(Date.UTC(1899, 11, 30)); // Dec 30, 1899 UTC
+            return new Date(excelEpoch.getTime() + serial * 86400000); // 86400000 ms per day
+        }
+
+        const gradeDocs = [];
+
+        for (const record of records) {
+            const student = await Student.findOne({
+                $or: [
+                    { prn: record.prnNumber || record.prn },
+                    { abcId: record.abcId }
+                ]
+            });
+
+            if (!student) {
+                console.warn(`Student not found for PRN: ${record.prnNumber || record.prn} or ABC ID: ${record.abcId}`);
+                continue;
+            }
+
+            let parsedDate = null;
+            if (record.completionDate) {
+                if (typeof record.completionDate === 'number') {
+                    // Convert Excel serial date to JS Date
+                    parsedDate = excelDateToJSDate(record.completionDate);
+                } else {
+                    const tempDate = new Date(record.completionDate);
+                    if (!isNaN(tempDate)) {
+                        parsedDate = tempDate;
+                    } else {
+                        console.warn(`Invalid completionDate for student ${student._id}: ${record.completionDate}`);
+                    }
+                }
+            }
+
+            const marksObtained = Number(record.marksObtained) || 0;
+            const totalMarks = Number(record.totalMarks) || 0;
+            if (totalMarks === 0) {
+                console.warn(`Total marks zero or invalid for student ${student._id}`);
+                continue;
+            }
+
+            const percentage = ((marksObtained / totalMarks) * 100).toFixed(2);
+            const grade = calculateGrade(marksObtained, totalMarks);
+
+            gradeDocs.push({
+                courseId,
+                studentId: student._id,
+                studentName: record.studentName || student.name,
+                prnNumber: record.prnNumber || student.prn,
+                collegeName: record.collegeName || student.college,
+                abcId: record.abcId || student.abcId,
+                completionDate: parsedDate,
+                marksObtained,
+                totalMarks,
+                percentage,
+                grade
+            });
+        }
+
+        if (gradeDocs.length === 0) {
+            return res.status(400).json({ error: "No valid grade records to save." });
+        }
+
+        for (const doc of gradeDocs) {
+            const existing = await Grade.findOne({ courseId, studentId: doc.studentId });
+            if (existing) {
+                existing.studentName = doc.studentName;
+                existing.prnNumber = doc.prnNumber;
+                existing.collegeName = doc.collegeName;
+                existing.abcId = doc.abcId;
+                existing.completionDate = doc.completionDate;
+                existing.marksObtained = doc.marksObtained;
+                existing.totalMarks = doc.totalMarks;
+                existing.percentage = doc.percentage;
+                existing.grade = doc.grade;
+                await existing.save();
+            } else {
+                await Grade.create(doc);
+            }
+        }
+
+        res.status(201).json({ message: 'Grades saved successfully' });
+    } catch (error) {
+        console.error("Error saving grades:", error);
+        res.status(500).json({ error: 'Failed to save grades' });
     }
 });
 

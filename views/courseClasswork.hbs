@@ -12,10 +12,11 @@
                 <a href="/"><img src="/images/logo.png" alt="Logo"></a>
             </div>
             <ul>
-                <li><a href="#" onclick="viewCourse('{{courseId}}')">Stream</a></li>
+                <li><a href="#" onclick="viewCourse('{{courseId}}')">Preview</a></li>
                 <li><a href="#" onclick="viewClasswork('{{courseId}}')" class="active-tab">Classwork</a></li>
                 <li><a href="#" onclick="viewEnrolledStudents('{{courseId}}')">People</a></li>
-                <li><a href="#">Grades</a></li>
+                <li><a href="#" onclick="viewCourseAttendance('{{courseId}}')">Attendance</a></li>
+                <li><a href="#" onclick="viewGrades('{{courseId}}')">Grades</a></li>
             </ul>
         </nav>
 
@@ -73,6 +74,14 @@
 
         function editAssignment(assignmentId, courseId) {
             window.location.href = `/edit-assignment/${courseId}/${assignmentId}`;
+        }
+
+        function viewCourseAttendance(courseId) {
+            window.location.href = `/course/${courseId}/attendance`;
+        }
+
+        function viewGrades(courseId) {
+            window.location.href = `/course/${courseId}/grades`;
         }
 
         function deleteAssignment(assignmentId, courseId) {
