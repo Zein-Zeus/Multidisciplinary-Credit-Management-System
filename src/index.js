@@ -4,7 +4,7 @@ const path = require("path");
 const hbs = require("hbs");
 const multer = require('multer'); // Import multer
 const XLSX = require('xlsx'); // Import xlsx
-const { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance, Grade } = require("./mongodb");
+const { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance, Grade, StudentUploadAssignment } = require("./mongodb");
 const session = require('express-session');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -73,6 +73,18 @@ const assignmentFile = multer.diskStorage({
     }
 });
 const uploadAssignmentFile = multer({ storage: assignmentFile });
+
+const studentUploadAssignment = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = path.join(__dirname, 'uploads', 'studentUploadAssignment');
+        cb(null, dir); 
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Add timestamp to avoid conflicts
+    }
+});
+
+const uploadStudentAssignment = multer({ storage: studentUploadAssignment });
 
 // Generate a random secret key for each session
 const secret = crypto.randomBytes(16).toString('hex');
@@ -468,6 +480,27 @@ app.post("/enroll", async (req, res) => {
     } catch (error) {
         console.error("Error enrolling in course:", error);
         res.status(500).send("An error occurred while enrolling.");
+    }
+});
+
+app.post('/student-upload-assignment', uploadStudentAssignment.single('assignmentFile'), (req, res) => {
+    if (req.file) {
+        const newSubmission = new StudentUploadAssignment({
+            filename: req.file.originalname,
+            filepath: req.file.path,
+            uploadedAt: new Date()
+        });
+
+        newSubmission.save()
+            .then(() => {
+                res.json({ success: true, message: 'Assignment uploaded successfully!' });
+            })
+            .catch((err) => {
+                console.error('Error saving to DB:', err);
+                res.status(500).json({ success: false, message: 'Database error.' });
+            });
+    } else {
+        res.status(400).json({ success: false, message: 'No file uploaded!' });
     }
 });
 
@@ -1504,24 +1537,35 @@ app.delete("/delete-assignment/:assignmentId", async (req, res) => {
     }
 });
 
-app.get("/assignment-submissions/:courseId/:assignmentId", async (req, res) => {
-    const { courseId, assignmentId } = req.params;
-
+app.post('/student-upload-assignment', uploadStudentAssignment.single('assignmentFile'), async (req, res) => {
     try {
-        const assignment = await Assignment.findById(assignmentId);
-        if (!assignment) {
-            return res.status(404).send("Assignment not found");
+        const { studentId, courseId, assignmentId } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded!' });
         }
 
-        const submissions = await Submission.find({ assignmentId });
-        res.render("courseAssignmentSubmissions", {
-            assignment,
-            submissions,
-            courseId  // Pass courseId if needed in the view
+        if (!studentId || !courseId || !assignmentId) {
+            return res.status(400).json({ success: false, message: 'Missing studentId, courseId, or assignmentId.' });
+        }
+
+        const newSubmission = new StudentUploadAssignment({
+            studentId,
+            courseId,
+            assignmentId,
+            file: {
+                name: req.file.originalname,
+                path: req.file.path,
+                mimeType: req.file.mimetype
+            }
         });
+
+        await newSubmission.save();
+        res.json({ success: true, message: 'Assignment uploaded successfully!' });
+
     } catch (err) {
-        console.error("Error fetching submissions:", err);
-        res.status(500).send("Internal Server Error");
+        console.error('Error saving to DB:', err);
+        res.status(500).json({ success: false, message: 'Database error.' });
     }
 });
 
