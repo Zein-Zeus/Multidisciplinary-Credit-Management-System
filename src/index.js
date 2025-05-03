@@ -4,7 +4,7 @@ const path = require("path");
 const hbs = require("hbs");
 const multer = require('multer'); // Import multer
 const XLSX = require('xlsx'); // Import xlsx
-const { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance, Grade, StudentUploadAssignment } = require("./mongodb");
+const { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance, Grade } = require("./mongodb");
 const session = require('express-session');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -36,6 +36,8 @@ hbs.registerHelper('formatDate', function (date) {
     return d.toLocaleDateString();
 });
 
+hbs.registerHelper("lookup", (obj, field) => obj && obj[field]);
+
 // Set up storage engine for Multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -46,7 +48,7 @@ const storage = multer.diskStorage({
     }
 });
 
-// Create upload instance
+// Create upload instance (excel sheet - student registration)
 const upload = multer({ storage: storage });
 
 //Seperate storage for course images
@@ -74,17 +76,18 @@ const assignmentFile = multer.diskStorage({
 });
 const uploadAssignmentFile = multer({ storage: assignmentFile });
 
-const studentUploadAssignment = multer.diskStorage({
+const studentAssignmentFiles = multer.diskStorage({
     destination: function (req, file, cb) {
-        const dir = path.join(__dirname, 'uploads', 'studentUploadAssignment');
-        cb(null, dir); 
+        const dir = path.join(__dirname, 'uploads', 'studentAssignmentFiles');
+        cb(null, dir);
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Add timestamp to avoid conflicts
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
     }
 });
 
-const uploadStudentAssignment = multer({ storage: studentUploadAssignment });
+const uploadStudentAssignment = multer({ storage: studentAssignmentFiles });
 
 // Generate a random secret key for each session
 const secret = crypto.randomBytes(16).toString('hex');
@@ -134,180 +137,6 @@ app.get("/login", (req, res) => {
 
 app.get("/signup", (req, res) => {
     res.render("studentSignup");
-});
-
-app.get("/home", async (req, res) => {
-    if (!req.session.prnNumber) {
-        return res.redirect('/login');
-    }
-
-    try {
-        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-        // Fetch enrolled courses by status
-        const enrolledCourses = await EnrolledStudent.find({ prnNumber: req.session.prnNumber });
-
-        // Separate course IDs by status
-        const ongoingIds = enrolledCourses
-            .filter(course => course.status === "Ongoing")
-            .map(course => course.courseId);
-
-        const completedIds = enrolledCourses
-            .filter(course => course.status === "Completed")
-            .map(course => course.courseId);
-
-        // Fetch full course details
-        const ongoingCourses = await Course.find({ _id: { $in: ongoingIds } });
-        const completedCourses = await Course.find({ _id: { $in: completedIds } });
-
-        // Render the page
-        res.render("studentHome", {
-            userName: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
-            ongoingCourses,
-            completedCourses
-        });
-    } catch (error) {
-        console.error("Error fetching courses:", error);
-        res.status(500).send("Server error");
-    }
-});
-
-app.get("/dashboard", async (req, res) => {
-    if (!req.session.prnNumber) {
-        return res.redirect("/login");
-    }
-
-    try {
-        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
-
-        if (!user) {
-            return res.status(404).send("User not found");
-        }
-
-        // Fetch enrolled courses
-        const enrolledCourses = await EnrolledStudent.find({ prnNumber: req.session.prnNumber });
-
-        // Filter courses by their status
-        const ongoingCourses = enrolledCourses.filter(course => course.status === "Ongoing");
-        const completedCourses = enrolledCourses.filter(course => course.status === "Completed");
-        const approvalPendingCourses = enrolledCourses.filter(course => course.status === "Approval Pending");
-
-        // Render the dashboard page with dynamic data
-        res.render("studentDashboard", {
-            userName: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
-            ongoingCourses,
-            completedCourses,
-            approvalPendingCourses, // Include approval pending courses
-        });
-    } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        res.status(500).send("An error occurred while loading the dashboard");
-    }
-});
-
-app.get("/enrolled-course/:id", async (req, res) => {
-    const courseId = req.params.id;
-
-    if (!req.session.prnNumber) {
-        return res.redirect('/login');
-    }
-
-    try {
-        const course = await Course.findById(courseId);
-        if (!course) {
-            return res.status(404).send('Course not found');
-        }
-
-        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-        // Fetch assignments
-        const assignments = await Assignment.find({ courseId: courseId }).exec(); // Fetch assignments for this course
-        const assignmentDetails = assignments.map(assign => ({
-            name: assign.title,
-            topic: assign.topic,
-            marks: assign.marks,
-            description: assign.description,
-            posted: assign.uploadedAt ? assign.uploadedAt.toDateString() : "N/A",
-            due: assign.dueDate ? assign.dueDate.toDateString() : "N/A",
-            file: assign.file ? assign.file.name : "No file uploaded",
-            status: "Pending",
-            statusClass: "status-pending"
-        }));
-
-        res.render("studentCourseDashboard", {
-            title: "Student Course Dashboard",
-            username: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
-            course,
-            assignmentDetails
-        });
-    } catch (error) {
-        console.error("Error loading course details:", error);
-        res.status(500).send("Server error");
-    }
-});
-
-app.get("/course", async (req, res) => {
-    if (!req.session.prnNumber) {
-        return res.redirect('/login');
-    }
-
-    try {
-        // Find the user by PRN number
-        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-        // Fetch all courses from the database
-        const courses = await Course.find();
-
-        // Render the student home page with user info and courses
-        res.render('studentCourses', {
-            userName: `${user.firstName} ${user.lastName}`,
-            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
-            courses // Pass the courses to the template
-        });
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        res.status(500).send('Error fetching data');
-    }
-});
-
-// Route to get PRNs by first and last name (Already present)
-app.get('/api/getPrn', async (req, res) => {
-    const { firstName, lastName } = req.query;
-    console.log('Received firstName:', firstName, 'lastName:', lastName); // Log incoming params
-
-    try {
-        const query = {};
-
-        if (firstName) {
-            query.firstName = new RegExp(firstName, 'i'); // Case-insensitive match for first name
-        }
-
-        if (lastName) {
-            query.lastName = new RegExp(lastName, 'i'); // Case-insensitive match for last name
-        }
-
-        console.log('Query:', query);  // Log the database query being used
-
-        const students = await Student.find(query);
-        console.log('Found students:', students); // Log the students returned by the query
-
-        res.json(students);
-    } catch (error) {
-        console.error('Error fetching students:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
 });
 
 app.get('/get-student-info', async (req, res) => {
@@ -387,18 +216,122 @@ app.post("/login", async (req, res) => {
         // Check if user exists and password matches
         if (user && user.password === password) {
             req.session.prnNumber = user.prnNumber;
-            req.session.studentName = `${user.firstName} ${user.lastName}`; // Full name
-            req.session.abcId = user.abcId; // Store abcId in session
-
-            console.log("Logged in user abcId:", req.session.abcId); // Debugging log
-
-            res.redirect("/home"); // Redirect to the dashboard
-        } else {
+            req.session.studentName = `${user.firstName} ${user.lastName}`;
+            req.session.abcId = user.abcId;
+            req.session.studentId = user._id; 
+        
+            console.log("Logged in user abcId:", req.session.abcId);
+            console.log("Logged in user studentId:", req.session.studentId); // Optional debug log
+        
+            res.redirect("/home");
+        }
+        else {
             res.send("Wrong Details"); // Handle incorrect login
         }
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).send("An error occurred during login.");
+    }
+});
+
+app.get("/home", async (req, res) => {
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Fetch enrolled courses by status
+        const enrolledCourses = await EnrolledStudent.find({ prnNumber: req.session.prnNumber });
+
+        // Separate course IDs by status
+        const ongoingIds = enrolledCourses
+            .filter(course => course.status === "Ongoing")
+            .map(course => course.courseId);
+
+        const completedIds = enrolledCourses
+            .filter(course => course.status === "Completed")
+            .map(course => course.courseId);
+
+        // Fetch full course details
+        const ongoingCourses = await Course.find({ _id: { $in: ongoingIds } });
+        const completedCourses = await Course.find({ _id: { $in: completedIds } });
+
+        // Render the page
+        res.render("studentHome", {
+            userName: `${user.firstName} ${user.lastName}`,
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            ongoingCourses,
+            completedCourses
+        });
+    } catch (error) {
+        console.error("Error fetching courses:", error);
+        res.status(500).send("Server error");
+    }
+});
+
+app.get("/dashboard", async (req, res) => {
+    if (!req.session.prnNumber) {
+        return res.redirect("/login");
+    }
+
+    try {
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        // Fetch enrolled courses
+        const enrolledCourses = await EnrolledStudent.find({ prnNumber: req.session.prnNumber });
+
+        // Filter courses by their status
+        const ongoingCourses = enrolledCourses.filter(course => course.status === "Ongoing");
+        const completedCourses = enrolledCourses.filter(course => course.status === "Completed");
+        const approvalPendingCourses = enrolledCourses.filter(course => course.status === "Approval Pending");
+
+        // Render the dashboard page with dynamic data
+        res.render("studentDashboard", {
+            userName: `${user.firstName} ${user.lastName}`,
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            ongoingCourses,
+            completedCourses,
+            approvalPendingCourses, // Include approval pending courses
+        });
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        res.status(500).send("An error occurred while loading the dashboard");
+    }
+});
+
+app.get("/course", async (req, res) => {
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    try {
+        // Find the user by PRN number
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Fetch all courses from the database
+        const courses = await Course.find();
+
+        // Render the student home page with user info and courses
+        res.render('studentCourses', {
+            userName: `${user.firstName} ${user.lastName}`,
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            courses // Pass the courses to the template
+        });
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error fetching data');
     }
 });
 
@@ -483,24 +416,141 @@ app.post("/enroll", async (req, res) => {
     }
 });
 
-app.post('/student-upload-assignment', uploadStudentAssignment.single('assignmentFile'), (req, res) => {
-    if (req.file) {
-        const newSubmission = new StudentUploadAssignment({
-            filename: req.file.originalname,
-            filepath: req.file.path,
-            uploadedAt: new Date()
+
+app.get("/enrolled-course/:id", async (req, res) => {
+    const courseId = req.params.id;
+
+    if (!req.session.prnNumber) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).send('Course not found');
+        }
+
+        const user = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Fetch assignments for this course
+        const assignments = await Assignment.find({ courseId: courseId }).exec();
+
+        // Fetch submissions for this student
+        const studentSubmissions = await Submission.find({ studentId: user._id });
+
+        // Prepare assignment details, including fileUrl and clean fileName
+        const assignmentDetails = assignments.map(assign => {
+            const submission = studentSubmissions.find(sub => sub.assignmentId.toString() === assign._id.toString());
+
+            let fileUrl = null;
+            let fileName = null;
+
+            if (submission && submission.file && submission.file.path) {
+                fileUrl = submission.file.path;
+
+                // Extract clean file name
+                const fullName = path.basename(fileUrl); // e.g., '1746285791306-3324283-Ancient Indian Craftsmanship (1).pdf'
+                const nameParts = fullName.split('-');
+                fileName = nameParts.slice(2).join('-'); // remove first two parts (timestamp and ID)
+            }
+
+            return {
+                assignmentId: assign._id,
+                name: assign.title,
+                topic: assign.topic,
+                marks: assign.marks,
+                description: assign.description,
+                posted: assign.uploadedAt ? assign.uploadedAt.toDateString() : "N/A",
+                due: assign.dueDate ? assign.dueDate.toDateString() : "N/A",
+                file: assign.file ? assign.file.name : "No file uploaded",
+                submitted: !!submission,
+                fileUrl: fileUrl,
+                fileName: fileName
+            };
         });
 
-        newSubmission.save()
-            .then(() => {
-                res.json({ success: true, message: 'Assignment uploaded successfully!' });
-            })
-            .catch((err) => {
-                console.error('Error saving to DB:', err);
-                res.status(500).json({ success: false, message: 'Database error.' });
-            });
-    } else {
-        res.status(400).json({ success: false, message: 'No file uploaded!' });
+        res.render("studentCourseDashboard", {
+            title: "Student Course Dashboard",
+            username: `${user.firstName} ${user.lastName}`,
+            userInitials: `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`,
+            course,
+            assignmentDetails
+        });
+    } catch (error) {
+        console.error("Error loading course details:", error);
+        res.status(500).send("Server error");
+    }
+});
+
+app.post("/student-upload-assignment", uploadStudentAssignment.single('assignmentFile'), async (req, res) => {
+    if (!req.session.prnNumber) {
+        return res.status(401).send({ message: "Student session not found. Please log in." });
+    }
+
+    const { assignmentId } = req.body;
+    const file = req.file;
+
+    if (!file) return res.status(400).send({ message: "No file uploaded" });
+    if (!assignmentId) return res.status(400).send({ message: "Missing assignmentId" });
+
+    try {
+        if (!mongoose.Types.ObjectId.isValid(assignmentId)) {
+            return res.status(400).send({ message: "Invalid assignmentId" });
+        }
+
+        const assignment = await Assignment.findById(assignmentId);
+        if (!assignment) return res.status(404).send({ message: "Assignment not found" });
+
+        const student = await RegisteredStudent.findOne({ prnNumber: req.session.prnNumber });
+        if (!student) return res.status(404).send({ message: "Student not found" });
+
+        const submission = new Submission({
+            studentId: student._id,
+            courseId: assignment.courseId,
+            assignmentId: assignment._id,
+            studentName: `${student.firstName} ${student.lastName}`,
+            file: {
+                name: file.originalname,
+                path: `/uploads/studentAssignmentFiles/${file.filename}`,
+                mimeType: file.mimetype
+            },
+            status: 'Uploaded'
+        });
+
+        await submission.save();
+        res.json({ message: "Assignment submitted successfully!" });
+    } catch (err) {
+        console.error("Error submitting assignment:", err);
+        res.status(500).send({ message: "Server error" });
+    }
+});
+
+app.post("/student-unsubmit-assignment", async (req, res) => {
+    try {
+        const assignmentId = req.body.assignmentId;
+        const studentId = req.session.studentId; // Ensure this is saved during login
+
+        if (!studentId) {
+            return res.status(401).json({ message: "Unauthorized: No studentId in session." });
+        }
+
+        // Remove the submission from the database
+        const result = await Submission.deleteOne({
+            assignmentId: assignmentId,
+            studentId: studentId
+        });
+
+        if (result.deletedCount > 0) {
+            return res.json({ message: "Unsubmission successful." });
+        } else {
+            return res.status(404).json({ message: "No submission found." });
+        }
+    } catch (error) {
+        console.error("Error in unsubmit route:", error);
+        return res.status(500).json({ message: "Error during unsubmission." });
     }
 });
 
@@ -567,7 +617,7 @@ app.get("/clgdashboard", async (req, res) => {
             .sort({ _id: -1 })
             .limit(3)
             .lean();
-        
+
         const totalNewCourses = recentCourses.length;
 
         // Fetch latest registered students (limit 3)
@@ -1537,37 +1587,60 @@ app.delete("/delete-assignment/:assignmentId", async (req, res) => {
     }
 });
 
-app.post('/student-upload-assignment', uploadStudentAssignment.single('assignmentFile'), async (req, res) => {
+app.get("/assignment-submissions/:courseId/:assignmentId", async (req, res) => {
+    const { courseId, assignmentId } = req.params;
+
     try {
-        const { studentId, courseId, assignmentId } = req.body;
-
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'No file uploaded!' });
+        // Fetch the course to validate it exists
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).send("Course not found");
         }
 
-        if (!studentId || !courseId || !assignmentId) {
-            return res.status(400).json({ success: false, message: 'Missing studentId, courseId, or assignmentId.' });
+        // Fetch the assignment for the course
+        const assignment = await Assignment.findById(assignmentId);
+        if (!assignment) {
+            return res.status(404).send("Assignment not found");
         }
 
-        const newSubmission = new StudentUploadAssignment({
-            studentId,
-            courseId,
-            assignmentId,
-            file: {
-                name: req.file.originalname,
-                path: req.file.path,
-                mimeType: req.file.mimetype
-            }
+        // Fetch all submissions for the assignment
+        const submissions = await Submission.find({ assignmentId: assignmentId });
+
+        // Render the view with assignment and submissions
+        res.render("courseAssignmentSubmissions", {
+            title: "View Submissions",
+            courseId: courseId,
+            assignment: assignment,
+            submissions: submissions // Pass the submissions data
         });
-
-        await newSubmission.save();
-        res.json({ success: true, message: 'Assignment uploaded successfully!' });
-
-    } catch (err) {
-        console.error('Error saving to DB:', err);
-        res.status(500).json({ success: false, message: 'Database error.' });
+    } catch (error) {
+        console.error("Error fetching submissions:", error);
+        res.status(500).send("Server error");
     }
 });
+
+app.post("/submit-feedback/:submissionId", async (req, res) => {
+    const { submissionId } = req.params;
+    const { marks, feedback } = req.body;
+
+    try {
+        const submission = await Submission.findById(submissionId);
+        if (!submission) {
+            return res.status(404).json({ error: "Submission not found" });
+        }
+
+        submission.marksObtained = marks;
+        submission.feedback = feedback;
+        submission.status = 'Graded'; // Optional: update status
+
+        await submission.save();
+
+        res.json({ success: true, message: "Feedback saved successfully" });
+    } catch (error) {
+        console.error("Error saving feedback:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+}); 
 
 app.get('/course/:courseId/attendance', async (req, res) => {
     const { courseId } = req.params;

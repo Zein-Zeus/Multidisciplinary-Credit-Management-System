@@ -85,23 +85,50 @@
                             <td>{{posted}}</td>
                             <td>{{due}}</td>
                             <td>
-                                <input type="file" id="fileInput-{{@index}}" style="display: none;" />
+                                {{!-- <p>ID: {{assignmentId}}</p> --}}
+                                <input type="file" id="fileInput-{{@index}}" style="display: none;" {{#if
+                                    submitted}}disabled{{/if}} />
                             </td>
                             <td>
-                                <button id="uploadBtn-{{@index}}" onclick="openFileManager({{@index}})">Upload</button>
+                                {{#if submitted}}
+                                {{fileName}}
+                                {{else}}
+                                <button id="uploadBtn-{{@index}}"
+                                    onclick="openFileManager({{@index}}, '{{assignmentId}}')">
+                                    Upload
+                                </button>
+                                {{/if}}
                             </td>
                             <td>
-                                <button onclick="viewFile({{@index}})">View</button>
+                                {{#if fileUrl}}
+                                <button type="button" onclick="viewFileFromUrl('{{fileUrl}}', '{{fileName}}')"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded">
+                                    View
+                                </button>
+                                {{else}}
+                                <button type="button" class="bg-gray-300 text-gray-600 font-bold py-1 px-3 rounded"
+                                    disabled>
+                                    No file uploaded
+                                </button>
+                                {{/if}}
                             </td>
                             <td>
-                                <button onclick="submitAssignment({{@index}})">Submit</button>
+                                {{#if submitted}}
+                                <button onclick="unsubmitAssignment('{{assignmentId}}')">Unsubmit</button>
+                                {{else}}
+                                <button id="submitBtn-{{@index}}"
+                                    onclick="submitAssignment({{@index}}, '{{assignmentId}}')">Submit</button>
+                                {{/if}}
                             </td>
-                            <td class="status {{statusClass}}">{{status}}</td>
+                            <td>
+                                <span id="status-{{@index}}">
+                                    {{#if submitted}}Uploaded{{else}}Pending{{/if}}
+                                </span>
+                            </td>
                         </tr>
                         {{/each}}
                     </tbody>
                 </table>
-
 
                 <h3 id="contact">Contact</h3>
                 <p>Faculty: {{course.facultyName}}</p>
@@ -111,15 +138,6 @@
         </main>
 
     </div>
-    
-    {{!-- <footer>
-        <div class="footer-info">
-            <p>Address: 1, Nathibai Thackersey Road, Mumbai 400020</p>
-            <p>Contact Information:</p>
-            <p>Website: <a href="https://sndt.ac.in/">https://sndt.ac.in/</a></p>
-            <p>Phone: 022-2203 1879 | 022-2203 2159</p>
-        </div>
-    </footer> --}}
 
     <script>
         const uploadedFiles = [];
@@ -155,40 +173,32 @@
             });
         });
 
-        function viewFile(index) {
-            const file = uploadedFiles[index];
-            if (file) {
-                const fileURL = URL.createObjectURL(file);
+        function viewFileFromUrl(fileUrl, fileName) {
+            const previewTypes = ['pdf']; // Add other extensions if needed
 
-                const previewTypes = ['application/pdf'];
-                if (previewTypes.includes(file.type)) {
-                    // Open a new popup window with minimal features
-                    const popup = window.open("", "_blank", "width=800,height=600,scrollbars=yes,resizable=yes");
-                    popup.document.write(`
-                <html>
-                    <head>
-                        <title>View File - ${file.name}</title>
-                    </head>
-                    <body style="margin:0">
-                        <embed src="${fileURL}" type="${file.type}" width="100%" height="100%" />
-                    </body>
-                </html>
-            `);
-                    popup.document.close();
-                } else {
-                    alert("Preview not supported for this file type.");
-                }
+            const extension = fileUrl.split('.').pop().toLowerCase();
+            if (previewTypes.includes(extension)) {
+                const popup = window.open("", "_blank", "width=800,height=600,scrollbars=yes,resizable=yes");
+                popup.document.write(`
+            <html>
+                <head>
+                    <title>View File - ${fileName}</title>
+                </head>
+                <body style="margin:0">
+                    <embed src="${fileUrl}" type="application/pdf" width="100%" height="100%" />
+                </body>
+            </html>
+        `);
+                popup.document.close();
             } else {
-                alert("No file uploaded yet for this assignment.");
+                alert("Preview not supported for this file type.");
             }
         }
 
-        function closeModal() {
-            document.getElementById('fileModal').style.display = 'none';
-            document.getElementById('fileViewer').src = '';
-        }
+        function submitAssignment(index, assignmentIdRaw) {
+            const assignmentId = assignmentIdRaw.trim();
+            console.log("Cleaned assignmentId:", assignmentId);
 
-        function submitAssignment(index) {
             const fileInput = document.getElementById(`fileInput-${index}`);
             const file = fileInput.files[0];
 
@@ -199,6 +209,7 @@
 
             const formData = new FormData();
             formData.append('assignmentFile', file);
+            formData.append('assignmentId', assignmentId);
 
             fetch('/student-upload-assignment', {
                 method: 'POST',
@@ -207,10 +218,68 @@
                 .then(res => res.json())
                 .then(data => {
                     alert(data.message);
+
+                    // Disable the submit button
+                    const submitButton = document.getElementById(`submitButton-${index}`);
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.textContent = "Submitted";
+                        submitButton.classList.add("submitted"); // optional CSS class
+                    }
+
+                    // Change the status text to "Uploaded"
+                    const statusElement = document.getElementById(`status-${index}`);
+                    if (statusElement) {
+                        statusElement.textContent = "Uploaded";
+                        statusElement.classList.add("status-uploaded"); // optional CSS class
+                    }
                 })
                 .catch(err => {
                     console.error("Submit error:", err);
                     alert("Something went wrong.");
+                });
+        }
+
+        function uploadAssignment(index, assignmentId) {
+            const input = document.getElementById(`fileInput-${index}`);
+            const file = input.files[0];
+
+            if (!file) {
+                alert("Please select a file first.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("assignmentFile", file);
+            formData.append("assignmentId", assignmentId);
+
+            fetch("/student-upload-assignment", {
+                method: "POST",
+                body: formData
+            }).then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    location.reload();
+                }).catch(err => {
+                    console.error(err);
+                    alert("Error uploading assignment.");
+                });
+        }
+
+        function unsubmitAssignment(assignmentId) {
+            fetch('/student-unsubmit-assignment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ assignmentId })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || "Unsubmitted");
+                    location.reload(); // Refresh to update UI
+                })
+                .catch(err => {
+                    console.error("Unsubmit failed:", err);
+                    alert("Unsubmit error");
                 });
         }
     </script>

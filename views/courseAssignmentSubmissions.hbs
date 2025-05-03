@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    <!-- Navbar -->
     <nav>
         <div class="logo">
             <a href="/">
@@ -22,36 +23,107 @@
             <li><a href="#" onclick="viewCourseAttendance('{{courseId}}')">Attendance</a></li>
             <li><a href="#" onclick="viewGrades('{{courseId}}')">Grades</a></li>
         </ul>
+        <div class="user-profile">
+            <div class="user-initials">{{userInitials}}</div>
+        </div>
     </nav>
 
+    <!-- Submissions Container -->
     <div class="submissions-container">
-        <h2>Submissions for: {{assignment.title}}</span></h2>
+        <h2>Submissions for: {{assignment.title}}</h2>
 
-        <div id="submission-list"></div>
+        <!-- Submission List -->
+        <div id="submission-list">
+            {{#each submissions}}
+            <div class="submission-card">
+                <h3>{{this.studentName}}</h3>
+                <p><strong>Submitted At:</strong> {{this.submittedDate}}</p>
+                <button class="view-btn" onclick="toggleSubmissionDetails('{{this._id}}')">View</button>
+
+                <!-- Hidden Details -->
+                <div class="submission-details hidden" id="submission-details-{{this._id}}">
+                    <p><strong>File:</strong> <a href="{{this.file.path}}" target="_blank">{{this.file.name}}</a></p>
+
+                    <div class="feedback-group">
+                        <label for="marks-{{this._id}}">Marks:</label>
+                        <input type="number" id="marks-{{this._id}}" value="{{this.marksObtained}}"
+                            placeholder="Enter marks">
+
+                        <label for="feedback-{{this._id}}">Feedback:</label>
+                        <textarea id="feedback-{{this._id}}" rows="3"
+                            placeholder="Write your feedback...">{{this.feedback}}</textarea>
+
+                        <button onclick="submitFeedback('{{this._id}}')">Save Feedback</button>
+                    </div>
+                </div>
+            </div>
+            {{else}}
+            <p>No submissions yet.</p>
+            {{/each}}
+        </div>
     </div>
 
+    <!-- Back Link -->
     <div class="back-link">
         <a href="#" onclick="viewClasswork('{{courseId}}')" class="back-link">Back</a>
     </div>
-
 
     <script src="/js/courseAssignmentSubmissions.js"></script>
     <script>
         function viewEnrolledStudents(courseId) {
             window.location.href = `/view-enrolled-students/${courseId}`;
         }
+
         function viewCourse(courseId) {
             window.location.href = `/view-course/${courseId}`;
         }
+
         function viewClasswork(courseId) {
             window.location.href = `/view-classwork/${courseId}`;
         }
+
         function viewCourseAttendance(courseId) {
             window.location.href = `/course/${courseId}/attendance`;
         }
+
         function viewGrades(courseId) {
             window.location.href = `/course/${courseId}/grades`;
         }
+
+        function viewSubmissionDetails(submissionId) {
+            const details = document.getElementById(`submission-details-${submissionId}`);
+            details.classList.toggle('hidden');
+        }
+
+        function toggleSubmissionDetails(submissionId) {
+            const details = document.getElementById(`submission-details-${submissionId}`);
+            if (details) {
+                details.classList.toggle('hidden');
+            }
+        }
+
+        function submitFeedback(submissionId) {
+            const marks = document.getElementById(`marks-${submissionId}`).value;
+            const feedback = document.getElementById(`feedback-${submissionId}`).value;
+
+            // Example: Send feedback via fetch
+            fetch(`/submit-feedback/${submissionId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ marks, feedback }),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert("Feedback saved successfully!");
+                })
+                .catch(err => {
+                    console.error("Error saving feedback:", err);
+                    alert("Failed to save feedback.");
+                });
+        }
+
     </script>
 </body>
 

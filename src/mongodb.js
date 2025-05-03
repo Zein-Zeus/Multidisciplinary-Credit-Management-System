@@ -99,43 +99,6 @@ const assignmentSchema = new mongoose.Schema({
     }
 });
 
-const submissionSchema = new mongoose.Schema({
-    assignmentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Assignment',
-        required: true
-    },
-    courseId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Course',
-        required: true
-    },
-    studentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'RegisteredStudent',
-        required: true
-    },
-    studentName: {
-        type: String,
-        required: true
-    },
-    submittedDate: {
-        type: Date,
-        default: Date.now
-    },
-    fileUrl: {
-        type: String
-    },
-    marks: {
-        type: Number,
-        default: null
-    },
-    feedback: {
-        type: String,
-        default: ''
-    }
-});
-
 const attendanceSchema = new mongoose.Schema({
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
     studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredStudent', required: true },
@@ -163,7 +126,7 @@ const gradeSchema = new mongoose.Schema({
     grade: { type: String, default: '-' }
 });
 
-const studentUploadAssignmentSchema = new mongoose.Schema({
+const submissionSchema = new mongoose.Schema({
     studentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'RegisteredStudent',
@@ -176,8 +139,16 @@ const studentUploadAssignmentSchema = new mongoose.Schema({
     },
     assignmentId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Assignment', // This assumes you have an Assignment model
+        ref: 'Assignment',
         required: true
+    },
+    studentName: {
+        type: String,
+        required: true
+    },
+    submittedDate: {
+        type: Date,
+        default: Date.now
     },
     file: {
         name: String,
@@ -203,7 +174,6 @@ const studentUploadAssignmentSchema = new mongoose.Schema({
     }
 });
 
-const StudentUploadAssignment = mongoose.model('StudentUploadAssignment', studentUploadAssignmentSchema);
 const RegisteredStudent = mongoose.model('RegisteredStudent', registeredStudentSchema);
 const Student = mongoose.model('StudentDetails', studentSchema);
 const Course = mongoose.model('Course', courseSchema); // Create the Course model
@@ -259,4 +229,4 @@ async function importExcelToMongoDB(filePath) {
 }
 
 // module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, UploadedCertificate };
-module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance, Grade, StudentUploadAssignment };
+module.exports = { Student, RegisteredStudent, Course, importExcelToMongoDB, College, EnrolledStudent, Assignment, Submission, Attendance, Grade };
